@@ -3,6 +3,8 @@ from flask import request
 import json
 
 from controllers.util import authentication_required
+from manager.manager import create_customer
+
 # Just username, password, and device token
 def signin(): 
     user_login_data = request.get_json()

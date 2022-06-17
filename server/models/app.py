@@ -24,6 +24,7 @@ class Customers(db.Model):
     def __repr__(self):
         return f'<User: {self.name}>'
 
+# one donors should map to many foods
 class Donors(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String(32))
@@ -34,7 +35,8 @@ class Donors(db.Model):
     license_documentation_url = db.Column(db.String(64)) # Using s3 for this
     is_verified = db.Column(db.Boolean, unique=False, default=False)
     address = db.relationship("Addresses",back_populates="donor", uselist=False)
-    donations = db.relationship("Foods",backref='donor', lazy=True)
+    donations = db.relationship("Foods")
+
     def __repr__(self):
         return f'<User: {self.name}>'
 
@@ -44,7 +46,7 @@ class Foods(db.Model):
     tile = db.Column(db.String(32))
     description = db.Column(db.String(64))
     best_before = db.Column(db.String(12)) # Save an unix time stamp
-    donor = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
+    donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     def __repr__(self):
         return f'<User: {self.name}>'
 
@@ -56,6 +58,7 @@ class Addresses(db.Model):
     street_number = db.Column(db.String(20), nullable=False)
     postal_code = db.Column(db.String(6), nullable=False)
     building_name = db.Column(db.String(20))
+    donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable=False)
     donor = db.relationship('Donors', back_populates="address")
     __table_args__ =(
         db.UniqueConstraint('city_name','street_name','street_number'),

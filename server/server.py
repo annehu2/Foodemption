@@ -4,10 +4,10 @@ import controllers.donator_controller as donator_controller
 from flask import Flask
 
 app = Flask(__name__)
-
 ## decorator unprotected route
 app.add_url_rule('/cipher',view_func=controller.get_encrypted_data,methods=["GET"])
 app.add_url_rule('/login', view_func=auth_controller.signin, methods=['POST'])
+app.add_url_rule('/test_create_customer', view_func=controller.test_create_customer, methods=['POST'])
 
 ## decorator protected route
 app.add_url_rule('/',view_func=controller.index)

@@ -4,7 +4,7 @@ import jwt
 from flask import request
 
 from controllers.util import authentication_required
-
+from manager.manager import create_customer
 
 @authentication_required
 def index(data):
@@ -18,3 +18,8 @@ def get_encrypted_data():
         "device_token": "12345_android",
         "uuId" : "USR12345"
     }} ,"SecretCipher", algorithm="HS256") 
+
+
+def test_create_customer():
+    new_customer = create_customer()
+    return new_customer.uuid

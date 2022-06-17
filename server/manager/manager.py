@@ -2,7 +2,6 @@
  
 from db import session
 from models.app import Customers, Users,Login
-from sqlalchemy.orm import Query
 
 # Ideally we'd roll this as a transaction
 
@@ -16,10 +15,15 @@ def get_user_data(userId):
 
 # Needs to flip login_data's device token to be "device_token"
 # Needs to flip login_data's is_logged_in flag to true
-def set_user_state_to_login(login_data, device_token):
-    session.query(Login).filter(Login.id == login_data.id).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
+def set_user_state_to_login(user_id, device_token):
+    session.query(Login).filter(Login.user_id == user_id).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
     session.commit()
-    
+
+def set_user_state_to_logout(user_id):
+    session.query(Login).filter(Login.user_id == user_id).update({ Login.is_logged_in: False}, synchronize_session = False )
+    session.commit()
+
+# Testing purposes
 def create_customer():        
     user = Users(
             uuid="should_exist_UUID",

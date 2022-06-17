@@ -3,7 +3,7 @@ from flask import request
 import json,jwt
 
 from controllers.util import authentication_required
-from manager.manager import  get_login_data, get_user_data, set_user_state_to_login
+from manager.manager import  get_login_data, get_user_data, set_user_state_to_login, set_user_state_to_logout
 
 # Takes email, password and device token from user
 # Peform a look up in the login table. Make sure they match
@@ -37,7 +37,7 @@ def signin():
         "is_verified": user_data.is_verified
     },"SecretCipher", algorithm="HS256")
 
-    set_user_state_to_login(login_data, device_token)
+    set_user_state_to_login(user_data.id, device_token)
 
     return json.dumps({"status_code":200, "jwt": jwt_token})
 
@@ -47,4 +47,5 @@ def signin():
 # Once they log out their token is invalidated.
 @authentication_required
 def logout(currentUser):
+    set_user_state_to_logout(currentUser['id'])
     return json.dumps({"message":"successfully logged user out", "status_code":200})

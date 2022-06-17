@@ -16,12 +16,13 @@ def authentication_required(f):
                 
                 decoded_user_data = extract_user_from_token(auth_tokens)
         
-                if decoded_user_data["success"] == False: 
+                if decoded_user_data is None: 
                     return json.dumps({"message":"You are not authenticated to use this route", "status_code":400})
                 
                 return f(decoded_user_data["user_object"], **kwargs)
         return decorated_function
 
+# We check against db here, with the user's ID
 def extract_user_from_token(auth_token):
     user_object = None
     msg = None
@@ -40,8 +41,4 @@ def extract_user_from_token(auth_token):
     except jwt.InvalidTokenError:
             error_code = 400
             msg = 'Invalid Token'
-    
-    if error_code == 400:
-        return {"success": False, "reason": msg, "user_object": user_object}
-
-    return {"success": True, "reason": None, "user_object": user_object}
+    return user_object

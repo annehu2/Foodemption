@@ -8,15 +8,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost:3306/fo
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
- 
 #Todo: Somehow consolidate customers and donors into a single table. Otherwise
 # Not possible to set constraint on (customers | donors) <-> Login table
 
 # One to One relationship between donors and address
 class Customers(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32))
-    organization_name = db.Column(db.String(32))
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True)
+    # uuid = db.Column(db.String(32))
+    # organization_name = db.Column(db.String(32))
     non_profit_license_num = db.Column(db.String(32))
     license_documentation_url = db.Column(db.String(64)) # Use S3 for this one
     is_verified = db.Column(db.Boolean, unique=False, default=False)
@@ -26,9 +25,9 @@ class Customers(db.Model):
 
 # one donors should map to many foods
 class Donors(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32))
-    organization_name = db.Column(db.String(32))
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True)
+    # uuid = db.Column(db.String(32))
+    # organization_name = db.Column(db.String(32))
     address_id = db.Column(db.Integer)
     contact = db.Column(db.String(32))
     food_license_number = db.Column(db.String(32))
@@ -39,6 +38,12 @@ class Donors(db.Model):
 
     def __repr__(self):
         return f'<User: {self.name}>'
+
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(32))
+    organization_name = db.Column(db.String(32))
+    type = db.Column(db.Integer) # 1 stands for customer, 0 stands for donors
 
 class Foods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,8 +73,10 @@ class Addresses(db.Model):
         return f'<User: {self.name}>'
 
 #  test_obj_id = db.Column(db.Integer, db.ForeignKey('test_db_object.id'), nullable=False)
+#  
 class Login(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_uuid = db.Column(db.String(32))
     user_email = db.Column(db.String(32))
     user_password = db.Column(db.String(32))

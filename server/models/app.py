@@ -1,3 +1,4 @@
+from email.policy import default
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -21,7 +22,7 @@ class Customers(db.Model):
     is_verified = db.Column(db.Boolean, unique=False, default=False)
     
     def __repr__(self):
-        return f'<User: {self.name}>'
+        return f'<Customers: >'
 
 # one donors should map to many foods
 class Donors(db.Model):
@@ -37,7 +38,7 @@ class Donors(db.Model):
     donations = db.relationship("Foods")
 
     def __repr__(self):
-        return f'<User: {self.name}>'
+        return f'<Donors>'
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,7 +54,7 @@ class Foods(db.Model):
     best_before = db.Column(db.String(12)) # Save an unix time stamp
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     def __repr__(self):
-        return f'<User: {self.name}>'
+        return f'<Foods >'
 
 class Addresses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,7 +71,7 @@ class Addresses(db.Model):
         db.UniqueConstraint('street_number','postal_code'),
     )
     def __repr__(self):
-        return f'<User: {self.name}>'
+        return f'<Addresses >'
 
 #  test_obj_id = db.Column(db.Integer, db.ForeignKey('test_db_object.id'), nullable=False)
 #  
@@ -81,6 +82,7 @@ class Login(db.Model):
     user_email = db.Column(db.String(32))
     user_password = db.Column(db.String(32))
     device_token = db.Column(db.String(256))
+    is_logged_in = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f'<User: {self.name}>'
+        return f'<Login: >'

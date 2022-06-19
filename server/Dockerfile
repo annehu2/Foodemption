@@ -1,12 +1,9 @@
 FROM ubuntu:20.04
-
-# COPY server.py server.py
-# COPY db db
-# COPY manager manager
-# COPY controllers controllers
-# COPY .env .env
+ENV TZ=US/Eastern
 RUN mkdir server
 COPY . ./server
+WORKDIR /server
+
 # Install python
 RUN apt-get update && apt-get -y install python3.8 python3-pip
 # Install extra deps because of mysqlclient
@@ -20,8 +17,9 @@ RUN alias python=python3
 # Install all python dependencies
 RUN pip install flask flask_sqlalchemy flask_migrate pyjwt mysqlclient
 
+# Set up docker time zone. Or mysql-server install will hang
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN sudo apt-get -y install mysql-server
  
-
-WORKDIR /server
 EXPOSE 8000
-CMD ["python3", "server.py"]
+CMD ./start.sh

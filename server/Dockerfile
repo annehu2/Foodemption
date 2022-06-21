@@ -22,4 +22,4 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN sudo apt-get -y install mysql-server
  
 EXPOSE 8000
-CMD ./start.sh
+CMD ["bash", "start.sh"]

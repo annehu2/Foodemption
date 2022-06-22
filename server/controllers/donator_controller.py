@@ -1,13 +1,21 @@
- 
 import jwt, json
+import base64
+import boto3
 from flask import request
 from controllers.util import authentication_required
 from manager.manager import add_food, get_food, get_food_by_donor
+from botocore.vendored import requests
 
-# TODO
-def upload_to_s3(image_base64):
-    # should move to different file
-    return "image_url"
+def upload_to_s3(image_base64, file_name):
+        s3 = boto3.resource('s3')
+        bucket_name = 'foodemption'
+        obj = s3.Object(bucket_name, file_name)
+        obj.put(Body=base64.b64decode(image_base64))
+        # retrieve bucket location
+        location = boto3.client('s3').get_bucket_location(Bucket=bucket_name)['LocationConstraint']
+        # retrieve object url
+        object_url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket_name, location, file_name)
+    return object_url
 
 @authentication_required
 def donate_food(data):
@@ -27,7 +35,7 @@ def donate_food(data):
     
     print(title, description, image_base64, best_before, donor_id)
 
-    image_url = upload_to_s3(image_base64)
+    image_url = upload_to_s3(image_base64, title)
     food_data = add_food(title, description, image_url, best_before, donor_id)
 
     return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}})

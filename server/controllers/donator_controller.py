@@ -4,6 +4,11 @@ from flask import request
 from controllers.util import authentication_required
 from manager.manager import add_food, get_food, get_food_by_donor
 
+# TODO
+def upload_to_s3(image_base64):
+    # should move to different file
+    return "image_url"
+
 @authentication_required
 def donate_food(data):
     print(data)
@@ -12,7 +17,7 @@ def donate_food(data):
     try:
         title = donation_data["title"]
         description = donation_data["description"] 
-        image_url = donation_data["image_url"]
+        image_base64 = donation_data["image_base64"]
         best_before = donation_data["best_before"]
         donor_id = donation_data["donor_id"]
 
@@ -20,7 +25,9 @@ def donate_food(data):
         print(donation_data)
         return json.dumps({"status_code": 400, "message": "Fields are missing!"})
     
-    print(title, description, image_url, best_before, donor_id)
+    print(title, description, image_base64, best_before, donor_id)
+
+    image_url = upload_to_s3(image_base64)
     food_data = add_food(title, description, image_url, best_before, donor_id)
 
     return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}})

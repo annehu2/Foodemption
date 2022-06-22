@@ -4,7 +4,7 @@ import jwt
 from flask import request
 
 from controllers.util import authentication_required
-from manager.manager import create_customer
+from manager.manager import create_customer, create_donor
 
 @authentication_required
 def index(data):
@@ -23,3 +23,7 @@ def get_encrypted_data():
 def test_create_customer():
     new_customer = create_customer()
     return new_customer.uuid
+
+def test_create_donor():
+    new_donor = create_donor()
+    return new_donor.uuid

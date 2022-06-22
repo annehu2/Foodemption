@@ -3,7 +3,7 @@ from flask import request
 import json,jwt
 
 from controllers.util import authentication_required
-from manager.manager import  get_login_data, get_user_data, set_user_state_to_login, set_user_state_to_logout
+from manager.manager import  get_login_data, get_user_object, set_user_state_to_login, set_user_state_to_logout
 
 # Takes email, password and device token from user
 # Peform a look up in the login table. Make sure they match
@@ -13,11 +13,12 @@ from manager.manager import  get_login_data, get_user_data, set_user_state_to_lo
 def signin(): 
     user_login_data = request.get_json()
     
-    email = user_login_data['email']
-    password = user_login_data['password']
-    device_token = user_login_data['device_token']
+    try:
+        email = user_login_data['email']
+        password = user_login_data['password']
+        device_token = user_login_data['device_token']
     
-    if email is None or password is None or device_token is None: 
+    except KeyError: 
          return json.dumps({"status_code":400, "message":"Fields are missing!"})
 
     login_data = get_login_data(email)
@@ -26,7 +27,7 @@ def signin():
     if login_data is None or login_data.user_password != password:
         return json.dumps({"status_code":403, "message":"Access denied"})
 
-    user_data = get_user_data(login_data.user_id)
+    user_data = get_user_object(login_data.user_uuid)
     
     # We can add more data if necessary
     jwt_token = jwt.encode({
@@ -34,7 +35,6 @@ def signin():
         "id": user_data.id, 
         "organization_name": user_data.organization_name,
         "user_type": user_data.type,
-        "is_verified": user_data.is_verified
     },"SecretCipher", algorithm="HS256")
 
     set_user_state_to_login(user_data.id, device_token)

@@ -1,1 +1,2 @@
+DROP DATABASE IF EXISTS foodDemptionDb;
 CREATE DATABASE foodDemptionDb;

@@ -16,6 +16,7 @@ RUN alias python=python3
 
 # Install all python dependencies
 RUN pip install flask flask_sqlalchemy flask_migrate pyjwt mysqlclient
+RUN pip install boto3
 
 # Set up docker time zone. Or mysql-server install will hang
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

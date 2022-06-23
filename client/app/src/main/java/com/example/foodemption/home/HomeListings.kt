@@ -69,7 +69,7 @@ fun HomeListings(subTitle: String) {
         Text(
             text = subTitle,
             textAlign = TextAlign.Start,
-            fontSize = 20.sp,
+            fontSize = 14.sp,
             textDecoration = TextDecoration.None,
             letterSpacing = 0.sp,
             overflow = TextOverflow.Ellipsis,

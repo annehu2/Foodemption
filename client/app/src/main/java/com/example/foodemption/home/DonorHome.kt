@@ -3,31 +3,15 @@ package com.example.foodemption.home
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
-import com.example.foodemption.R
 
 class DonorHome : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +24,7 @@ class DonorHome : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Title("Anne")
+                    DonorHome("Anne")
                 }
             }
         }
@@ -50,7 +34,34 @@ class DonorHome : ComponentActivity() {
 @Composable
 fun DonorHome(name: String) {
 
-    Title("Anne")
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxHeight()
+    ) {
+        Title("Anne", "Cool Kids Club")
+        Spacer(Modifier.size(40.dp))
+        HomeListings(subTitle = "My Food Listings")
+        Spacer(Modifier.size(40.dp))
+        HomeListings(subTitle = "My Claimed Food")
+        Spacer(Modifier.size(40.dp))
+        HomeListings(subTitle = "Closest Organizations")
+        Spacer(Modifier.size(60.dp))
+        Box(Modifier.padding(), Alignment.BottomCenter) {
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color.Blue),
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(40.dp)
+            ) {
+                Text("Donate Food", color = Color.White)
+            }
+        }
+    }
+
 }
 
 @Preview(showBackground = true)

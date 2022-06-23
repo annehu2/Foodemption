@@ -39,7 +39,7 @@ class HomeTitle : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Title("Android")
+                    Title("Android", "Organization Name")
                 }
             }
         }
@@ -47,22 +47,12 @@ class HomeTitle : ComponentActivity() {
 }
 
 @Composable
-fun Title(name: String) {
+fun Title(name: String, orgName: String) {
     Box(
         modifier = Modifier
             .width(300.dp)
             .height(64.dp)
-            .clip(
-                RoundedCornerShape(
-                    topStart = 0.dp,
-                    topEnd = 0.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                )
-            )
             .background(Color.Transparent)
-            .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            .alpha(1f)
     ) {
         Box(
             modifier = Modifier
@@ -94,7 +84,7 @@ fun Title(name: String) {
         )
         Row(Modifier.fillMaxWidth()) {
             Text(
-                text = "Organization Name",
+                text = orgName,
                 textAlign = TextAlign.Start,
                 fontSize = 16.sp,
                 letterSpacing = 0.sp,
@@ -130,6 +120,6 @@ fun Title(name: String) {
 @Composable
 fun DefaultPreview2() {
     FoodemptionTheme {
-        Title("Android")
+        Title("Android", "Organization Name")
     }
 }

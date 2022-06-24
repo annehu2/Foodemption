@@ -46,6 +46,9 @@ class Users(db.Model):
     organization_name = db.Column(db.String(32))
     type = db.Column(db.Integer) # 1 stands for customer, 0 stands for donors
 
+    def __repr__(self):
+        return '<User:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
+
 class Foods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String(128))

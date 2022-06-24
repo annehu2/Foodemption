@@ -19,33 +19,35 @@ def upload_to_s3(image_base64, file_name):
         return object_url
 
 @authentication_required
-def donate_food(data):
-    print(data)
+def donate_food(currently_authenticated_user):
     donation_data = request.get_json()
+    print(currently_authenticated_user)
+    print(donation_data)
 
     try:
         title = donation_data["title"]
         description = donation_data["description"] 
         image_base64 = donation_data["image_base64"]
         best_before = donation_data["best_before"]
-        donor_id = donation_data["donor_id"]
+        donor_uuid = currently_authenticated_user["uuid"]
 
     except KeyError: 
         print(donation_data)
         return json.dumps({"status_code": 400, "message": "Fields are missing!"})
     
-    print(title, description, image_base64, best_before, donor_id)
+    print(title, description, image_base64, best_before, donor_uuid)
 
     image_url = upload_to_s3(image_base64, title)
-    food_data = add_food(title, description, image_url, best_before, donor_id)
+    food_data = add_food(title, description, image_url, best_before, donor_uuid)
 
     return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}})
 
-
 # TODO: discuss uuid vs id for api calls
+# TODO: a user can retrive food that belongs to another user - need to perform
+# a check to see if the food actually belongs to the currently authenticated user 
 
 @authentication_required
-def retrieve_food(data):
+def retrieve_food(currently_authenticated_user):
     food_data = request.get_json()
 
     try:
@@ -59,38 +61,32 @@ def retrieve_food(data):
         {
             "status_code": 200, 
             "data": {
-                "id": food.id,
                 "uuid": food.uuid,
                 "title": food.title,
                 "image_url": food.image_url,
                 "description": food.description,
                 "best_before": food.best_before,
-                "donor_id": food.donor_id
             }
         }
     )
 
 @authentication_required
-def retrieve_all_donations(data):
-    donor_data = request.get_json()
-
+def retrieve_all_donations(currently_authenticated_user):
     try:
-        donor_id = donor_data["donor_id"]
+        donor_uuid = currently_authenticated_user["uuid"]
     except KeyError: 
         return json.dumps({"status_code": 400, "message": "Fields are missing!"})
 
-    donations = get_food_by_donor(donor_id)
+    donations = get_food_by_donor(donor_uuid)
 
     return json.dumps(
         {
             "status_code": 200, 
-            "data": [ { "id": food.id,
-                        "uuid": food.uuid,
+            "data": [ { "uuid": food.uuid,
                         "title": food.title,
                         "image_url": food.image_url,
                         "description": food.description,
-                        "best_before": food.best_before,
-                        "donor_id": food.donor_id } for food in donations ]
+                        "best_before": food.best_before} for food in donations ]
         }
     )
 '''
@@ -98,9 +94,9 @@ def retrieve_all_donations(data):
 
 create user:
 
-curl -v -H "Content-Type: application/json" -X POST http://0.0.0.0:8000/test_create_customer
+curl -v -H "Content-Type: application/json" -X POST http://0.0.0.0:8000/test_create_donor
 
-now we can login with email: owner@gmail.com, password: password
+now we can login with email: test_donor@gmail.com, password: password
 
 curl -v -H "Content-Type: application/json" -X POST -d '{"email": "test_donor@gmail.com", "password": "password", "device_token": "12345_android"}' http://0.0.0.0:8000/login
 
@@ -118,13 +114,13 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 * upload completely sent off: 90 out of 90 bytes
 < HTTP/1.1 200 OK
 < Server: Werkzeug/2.1.2 Python/3.9.7
-< Date: Wed, 22 Jun 2022 13:18:46 GMT
+< Date: Fri, 24 Jun 2022 20:35:21 GMT
 < Content-Type: text/html; charset=utf-8
-< Content-Length: 234
+< Content-Length: 296
 < Connection: close
 < 
 * Closing connection 0
-{"status_code": 200, "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw"}%  
+{"status_code": 200, "data": {"jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4"}}%
 
 using other email like tanavya@gmail.com will fail
 
@@ -180,11 +176,34 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 
 test add food
 
-curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw" -X POST -d '{"title": "pizza", "description": "large margherita pizza", "best_before":"1656084484", "image_url": "https://www.abeautifulplate.com/wp-content/uploads/2015/08/the-best-homemade-margherita-pizza-1-4.jpg","donor_id": 1}' http://0.0.0.0:8000/donate
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4" -X POST -d '{"title": "pizza", "description": "large margherita pizza", "best_before":"1656084484", "image_base64": "test"}' http://0.0.0.0:8000/donate
+
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /donate HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4
+> Content-Length: 111
+> 
+* upload completely sent off: 111 out of 111 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 24 Jun 2022 21:10:35 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 78
+< Connection: close
+< 
+* Closing connection 0
+{"status_code": 200, "data": {"uuid": "73516342-9f2b-4483-b2fa-e01df6658bf3"}}
 
 test retrieve food
 
-curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw" -X GET -d '{"uuid": "11577079-a1ee-4b13-9bd5-6c13fe0576dc"}' http://0.0.0.0:8000/food
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4" -X GET -d '{"uuid": "73516342-9f2b-4483-b2fa-e01df6658bf3"}' http://0.0.0.0:8000/food
 *   Trying 0.0.0.0...
 * TCP_NODELAY set
 * Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
@@ -193,23 +212,24 @@ curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiL
 > User-Agent: curl/7.64.1
 > Accept: */*
 > Content-Type: application/json
-> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4
 > Content-Length: 48
 > 
 * upload completely sent off: 48 out of 48 bytes
 < HTTP/1.1 200 OK
 < Server: Werkzeug/2.1.2 Python/3.9.7
-< Date: Wed, 22 Jun 2022 13:30:55 GMT
+< Date: Fri, 24 Jun 2022 21:18:10 GMT
 < Content-Type: text/html; charset=utf-8
-< Content-Length: 308
+< Content-Length: 192
 < Connection: close
 < 
 * Closing connection 0
-{"status_code": 200, "data": {"id": 1, "uuid": "11577079-a1ee-4b13-9bd5-6c13fe0576dc", "title": "pizza", "image_url": "https://www.abeautifulplate.com/wp-content/uploads/2015/08/the-best-homemade-margherita-pizza-1-4.jpg", "description": "large margherita pizza", "best_before": "1656084484", "donor_id": 1}}
+{"status_code": 200, "data": {"uuid": "73516342-9f2b-4483-b2fa-e01df6658bf3", "title": "pizza", "image_url": "image_url", "description": "large margherita pizza", "best_before": "1656084484"}}%
 
 test retrieve all donations
 
-curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw" -X GET -d '{"donor_id": 1}' http://0.0.0.0:8000/donations
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4" -X GET http://0.0.0.0:8000/donations
+Note: Unnecessary use of -X or --request, GET is already inferred.
 *   Trying 0.0.0.0...
 * TCP_NODELAY set
 * Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
@@ -218,18 +238,16 @@ curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiL
 > User-Agent: curl/7.64.1
 > Accept: */*
 > Content-Type: application/json
-> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwiaWQiOjEsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.5h-jwvZ7F1sFzYxmIey0xsQxQoYWSXZN0HOFjA1Raiw
-> Content-Length: 15
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUxYTI5M2E0LTUyYzEtNDEzMS04MTBiLWFkMTdhMzNhODg0MSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.DSxmgDvgkKvaNyW4dtobs5nHrEOimZ7pXUK6AWXS5M4
 > 
-* upload completely sent off: 15 out of 15 bytes
 < HTTP/1.1 200 OK
 < Server: Werkzeug/2.1.2 Python/3.9.7
-< Date: Wed, 22 Jun 2022 13:31:58 GMT
+< Date: Fri, 24 Jun 2022 21:21:00 GMT
 < Content-Type: text/html; charset=utf-8
-< Content-Length: 310
+< Content-Length: 194
 < Connection: close
 < 
 * Closing connection 0
-{"status_code": 200, "data": [{"id": 1, "uuid": "11577079-a1ee-4b13-9bd5-6c13fe0576dc", "title": "pizza", "image_url": "https://www.abeautifulplate.com/wp-content/uploads/2015/08/the-best-homemade-margherita-pizza-1-4.jpg", "description": "large margherita pizza", "best_before": "1656084484", "donor_id": 1}]}%
+{"status_code": 200, "data": [{"uuid": "73516342-9f2b-4483-b2fa-e01df6658bf3", "title": "pizza", "image_url": "image_url", "description": "large margherita pizza", "best_before": "1656084484"}]}%
 
 '''

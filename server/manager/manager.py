@@ -127,14 +127,15 @@ def create_donor():
     return user
 
 def get_user_object(uuid):
-    return session.query(Users).filter(uuid == uuid).first()
+    return session.query(Users).filter(Users.uuid == uuid).first()
 
 def fetch_customer():
     return 20
 
-def add_food(title, description, image_url, best_before, donor_id):
+def add_food(title, description, image_url, best_before, donor_uuid):
+    donor_id = get_donor_by_uuid(donor_uuid).id
     new_food = Foods(uuid = str(uuid.uuid4()),
-                    tile = title,
+                    title = title,
                     image_url = image_url,
                     description = description,
                     best_before = best_before,
@@ -147,5 +148,11 @@ def add_food(title, description, image_url, best_before, donor_id):
 def get_food(uuid):
     return session.query(Foods).filter(Foods.uuid == uuid).first()
 
-def get_food_by_donor(donor_id):
-    return session.query(Foods).filter(Foods.donor_id == donor_id).all()
+def get_food_by_donor(donor_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    return session.query(Foods).filter(Foods.donor_id == donor.id).all()
+
+def get_donor_by_uuid(donor_uuid):
+    user = session.query(Users).filter(Users.uuid == donor_uuid).first()
+    donor = session.query(Donors).filter(Donors.id == user.id).first()
+    return donor

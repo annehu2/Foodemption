@@ -32,14 +32,22 @@ def signin():
     # We can add more data if necessary
     jwt_token = jwt.encode({
         "email": login_data.user_email,
-        "id": user_data.id, 
+        "uuid": user_data.uuid,
         "organization_name": user_data.organization_name,
         "user_type": user_data.type,
     },"SecretCipher", algorithm="HS256")
 
     set_user_state_to_login(user_data.id, device_token)
 
-    return json.dumps({"status_code":200, "jwt": jwt_token})
+    return json.dumps(
+        {
+            "status_code": 200, 
+            "data": 
+            {
+                "jwt": jwt_token
+            }
+        }
+    )
 
 # Not much to do here. Need to remove the device token
 # The currentUser is an UserObject

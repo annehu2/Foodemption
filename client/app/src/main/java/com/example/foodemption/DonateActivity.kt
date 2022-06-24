@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
@@ -39,6 +40,10 @@ class DonateActivity : ComponentActivity() {
             }
         }
     }
+}
+
+fun TakeFoodPhoto() {
+    // TODO
 }
 
 @Composable
@@ -103,7 +108,9 @@ fun DonatePage(orgName: String) {
                     painter = uploadImg,
                     contentDescription = ""
                 )
-                TextButton(onClick = { /*TODO */}) {
+                TextButton(onClick = {
+                    TakeFoodPhoto()
+                }) {
                     Text(text = "Add Image",
                         color = Color.DarkGray,
                         fontSize = 14.sp,
@@ -167,4 +174,10 @@ fun DonatePage(orgName: String) {
             Text("Add Food", color = Color.White)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreviewDonor() {
+    DonatePage("org name")
 }

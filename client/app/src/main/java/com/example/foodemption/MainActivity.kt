@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
 fun LandingPage(context: Context) {
 
     Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         val image: Painter = painterResource(id = R.drawable.logo_title)
         Image(
             painter = image,
@@ -50,9 +51,10 @@ fun LandingPage(context: Context) {
             alignment = Alignment.TopCenter,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 200.dp)
+                .scale(2.0F)
+
         )
-        Box(modifier = Modifier.padding(top = 20.dp))
+        Box(modifier = Modifier.padding(top = 100.dp))
         OutlinedButton(
             onClick = {
                 val intent = Intent(context, LoginActivity::class.java)

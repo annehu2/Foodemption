@@ -1,5 +1,7 @@
 package com.example.foodemption
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 class DonateActivity : ComponentActivity() {
@@ -34,7 +37,7 @@ class DonateActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DonatePage("org name")
+                    DonatePage(this, "org name")
                 }
             }
         }
@@ -42,7 +45,7 @@ class DonateActivity : ComponentActivity() {
 }
 
 @Composable
-fun DonatePage(orgName: String) {
+fun DonatePage(context: Context, orgName: String) {
     Column(modifier = Modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
@@ -145,12 +148,13 @@ fun DonatePage(orgName: String) {
                 )
         )
 
-        TextButton(onClick = { /* Do something! */ }) {
+        TextButton(onClick = { /* TODO */ }) {
             Text("Import Saved Food Description", color = Color.Blue)
         }
 
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { val intent = Intent(context, DonorHome::class.java)
+                context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)

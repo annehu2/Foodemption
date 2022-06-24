@@ -1,5 +1,7 @@
 package com.example.foodemption.home
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.DonateActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 class DonorHome : ComponentActivity() {
@@ -27,7 +30,7 @@ class DonorHome : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DonorHome("Anne")
+                    DonorHome(this, "Anne")
                 }
             }
         }
@@ -35,7 +38,7 @@ class DonorHome : ComponentActivity() {
 }
 
 @Composable
-fun DonorHome(name: String) {
+fun DonorHome(context: Context, name: String) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,7 +57,8 @@ fun DonorHome(name: String) {
         Spacer(Modifier.size(60.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
-                onClick = { /*TODO*/ },
+                onClick = { val intent = Intent(context, DonateActivity::class.java)
+                    context.startActivity(intent) },
                 colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                 modifier = Modifier
                     .width(298.dp)
@@ -71,14 +75,5 @@ fun DonorHome(name: String) {
                 Text("Donate Food", color = Color.White, fontSize = 20.sp,)
             }
         }
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview3() {
-    FoodemptionTheme {
-        DonorHome("Android")
     }
 }

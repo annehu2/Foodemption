@@ -74,7 +74,8 @@ fun LandingPage(context: Context) {
         }
         Box(modifier = Modifier.padding(top = 20.dp))
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { val intent = Intent(context, SignUpActivity::class.java)
+                context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)

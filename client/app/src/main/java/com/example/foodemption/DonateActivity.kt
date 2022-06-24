@@ -151,7 +151,7 @@ fun DonatePage(orgName: String) {
 
         OutlinedButton(
             onClick = { /*TODO*/ },
-            colors = ButtonDefaults.textButtonColors(backgroundColor = Color.Blue),
+            colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)
                 .height(48.dp)
@@ -163,7 +163,6 @@ fun DonatePage(orgName: String) {
                         bottomEnd = 9.dp
                     )
                 )
-                .background(Color(0x2A3B92))
         ) {
             Text("Add Food", color = Color.White)
         }

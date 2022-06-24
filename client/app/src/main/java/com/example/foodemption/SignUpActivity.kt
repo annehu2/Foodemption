@@ -123,7 +123,7 @@ fun SignUpPage() {
                     )
                 )
         ) {
-            Text("Sign Up", color = Color.White)
+            Text("Sign Up", color = Color.White, fontSize = 20.sp,)
         }
     }
 }

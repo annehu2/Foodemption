@@ -121,7 +121,7 @@ fun LoginPage() {
                     )
                 )
         ) {
-            Text("Login", color = Color.White)
+            Text("Login", color = Color.White, fontSize = 20.sp,)
         }
     }
 }

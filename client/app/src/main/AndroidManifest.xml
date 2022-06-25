@@ -4,6 +4,8 @@
     package="com.example.foodemption">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:name="android.hardware.camera.any"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -32,6 +34,8 @@
         <activity android:name=".SignUpActivity">
         </activity>
         <activity android:name=".home.DonorHome">
+        </activity>
+        <activity android:name=".camera.CameraActivity">
         </activity>
     </application>
 

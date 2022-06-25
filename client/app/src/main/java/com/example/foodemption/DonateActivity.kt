@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.camera.CameraActivity
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
@@ -43,10 +45,6 @@ class DonateActivity : ComponentActivity() {
             }
         }
     }
-}
-
-fun TakeFoodPhoto() {
-    // TODO
 }
 
 @Composable
@@ -112,7 +110,8 @@ fun DonatePage(context: Context, orgName: String) {
                     contentDescription = ""
                 )
                 TextButton(onClick = {
-                    TakeFoodPhoto()
+                    val intent = Intent(context, CameraActivity::class.java)
+                    context.startActivity(intent)
                 }) {
                     Text(text = "Add Image",
                         color = Color.DarkGray,
@@ -178,10 +177,11 @@ fun DonatePage(context: Context, orgName: String) {
             Text("Add Food", color = Color.White)
         }
     }
+
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreviewDonor() {
-    DonatePage("org name")
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreviewDonor() {
+//    DonatePage(this, "org name")
+//}

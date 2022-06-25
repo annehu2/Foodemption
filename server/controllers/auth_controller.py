@@ -37,7 +37,7 @@ def signin():
         "user_type": user_data.type,
     },"SecretCipher", algorithm="HS256")
 
-    set_user_state_to_login(user_data.id, device_token)
+    set_user_state_to_login(user_data.uuid, device_token)
 
     return json.dumps(
         {
@@ -55,5 +55,5 @@ def signin():
 # Once they log out their token is invalidated.
 @authentication_required
 def logout(currentUser):
-    set_user_state_to_logout(currentUser['id'])
+    set_user_state_to_logout(currentUser['uuid'])
     return json.dumps({"message":"successfully logged user out", "status_code":200})

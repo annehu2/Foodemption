@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@127.0.0.1:3306/foodDemptionDb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost:3306/foodDemptionDb'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

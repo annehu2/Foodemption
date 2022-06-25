@@ -16,12 +16,12 @@ def get_user_data(userId):
 
 # Needs to flip login_data's device token to be "device_token"
 # Needs to flip login_data's is_logged_in flag to true
-def set_user_state_to_login(user_id, device_token):
-    session.query(Login).filter(Login.user_id == user_id).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
+def set_user_state_to_login(user_uuid, device_token):
+    session.query(Login).filter(Login.user_uuid == user_uuid).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
     session.commit()
 
-def set_user_state_to_logout(user_id):
-    session.query(Login).filter(Login.user_id == user_id).update({ Login.is_logged_in: False}, synchronize_session = False )
+def set_user_state_to_logout(user_uuid):
+    session.query(Login).filter(Login.user_uuid == user_uuid).update({ Login.is_logged_in: False}, synchronize_session = False )
     session.commit()
 
 # Testing purposes

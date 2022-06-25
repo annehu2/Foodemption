@@ -1,18 +1,28 @@
-import jwt, json
+import json, os
 import base64
 import boto3
+from botocore.client import Config
 from flask import request
 from controllers.util import authentication_required
 from manager.manager import add_food, get_food, get_food_by_donor
 from botocore.vendored import requests
 
 def upload_to_s3(image_base64, file_name):
-        s3 = boto3.resource('s3')
+        print(os.getenv('ACCESS_KEY_ID'))
+
+        s3 = boto3.resource('s3', 
+            aws_access_key_id=os.getenv('ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('ACCESS_SECRET_KEY'),
+            config=Config(signature_version='s3v4')
+        )
         bucket_name = 'foodemptionimages'
         obj = s3.Object(bucket_name, file_name)
         obj.put(Body=base64.b64decode(image_base64))
         # retrieve bucket location
-        location = boto3.client('s3').get_bucket_location(Bucket=bucket_name)['LocationConstraint']
+        location = boto3.client('s3', 
+            aws_access_key_id=os.getenv('ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('ACCESS_SECRET_KEY')
+        ).get_bucket_location(Bucket=bucket_name)['LocationConstraint']
         # retrieve object url
         object_url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket_name, location, file_name)
 
@@ -21,8 +31,8 @@ def upload_to_s3(image_base64, file_name):
 @authentication_required
 def donate_food(currently_authenticated_user):
     donation_data = request.get_json()
-    print(currently_authenticated_user)
-    print(donation_data)
+    # print(currently_authenticated_user)
+    # print(donation_data)
 
     try:
         title = donation_data["title"]
@@ -35,7 +45,7 @@ def donate_food(currently_authenticated_user):
         print(donation_data)
         return json.dumps({"status_code": 400, "message": "Fields are missing!"})
     
-    print(title, description, image_base64, best_before, donor_uuid)
+    # print(title, description, image_base64, best_before, donor_uuid)
 
     image_url = upload_to_s3(image_base64, title)
     food_data = add_food(title, description, image_url, best_before, donor_uuid)

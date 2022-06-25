@@ -1,6 +1,8 @@
 # cs446-Foodemption!
-open client in Android Studio Code
-open server in IDE of your preference
+
+# Android Jetpack Compose App
+1. Make sure to open the client folder in Android Studio Code (not the entire repo)
+2. For Compatibility with CameraX Library, be sure to use SDK API 29
 
 # Backend setup guide:
 1. Make sure docker is installed on your machine.

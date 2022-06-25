@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost:3306/foodDemptionDb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@127.0.0.1:3306/foodDemptionDb'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -22,14 +22,14 @@ class Customers(db.Model):
     is_verified = db.Column(db.Boolean, unique=False, default=False)
     
     def __repr__(self):
-        return f'<Customers: >'
+        return '<Customer:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 
 # one donors should map to many foods
 class Donors(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True)
     # uuid = db.Column(db.String(32))
     # organization_name = db.Column(db.String(32))
-    address_id = db.Column(db.Integer)
+    address_id = db.Column(db.Integer) 
     contact = db.Column(db.String(32))
     food_license_number = db.Column(db.String(32))
     license_documentation_url = db.Column(db.String(64)) # Using s3 for this
@@ -38,27 +38,31 @@ class Donors(db.Model):
     donations = db.relationship("Foods")
 
     def __repr__(self):
-        return f'<Donors>'
+        return '<Donor:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32))
+    uuid = db.Column(db.String(128))
     organization_name = db.Column(db.String(32))
     type = db.Column(db.Integer) # 1 stands for customer, 0 stands for donors
 
+    def __repr__(self):
+        return '<User:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
+
 class Foods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32))
-    tile = db.Column(db.String(32))
+    uuid = db.Column(db.String(128))
+    title = db.Column(db.String(32))
+    image_url = db.Column(db.String(512))
     description = db.Column(db.String(64))
     best_before = db.Column(db.String(12)) # Save an unix time stamp
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     def __repr__(self):
-        return f'<Foods >'
+        return '<Food:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 
 class Addresses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32))
+    uuid = db.Column(db.String(128))
     city_name = db.Column(db.String(20), nullable=False)
     street_name = db.Column(db.String(20), nullable=False)
     street_number = db.Column(db.String(20), nullable=False)
@@ -71,18 +75,18 @@ class Addresses(db.Model):
         db.UniqueConstraint('street_number','postal_code'),
     )
     def __repr__(self):
-        return f'<Addresses >'
+        return '<Address:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 
 #  test_obj_id = db.Column(db.Integer, db.ForeignKey('test_db_object.id'), nullable=False)
 #  
 class Login(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user_uuid = db.Column(db.String(32))
+    user_uuid = db.Column(db.String(128))
     user_email = db.Column(db.String(32))
     user_password = db.Column(db.String(32))
     device_token = db.Column(db.String(256))
     is_logged_in = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f'<Login: >'
+        return '<Login:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))

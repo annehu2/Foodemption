@@ -31,6 +31,8 @@
         </activity>
         <activity android:name=".SignUpActivity">
         </activity>
+        <activity android:name=".home.DonorHome">
+        </activity>
     </application>
 
 </manifest>

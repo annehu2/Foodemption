@@ -1,5 +1,7 @@
 package com.example.foodemption
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 class SignUpActivity : ComponentActivity() {
@@ -36,7 +39,7 @@ class SignUpActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SignUpPage()
+                    SignUpPage(this)
                 }
             }
         }
@@ -44,7 +47,7 @@ class SignUpActivity : ComponentActivity() {
 }
 
 @Composable
-fun SignUpPage() {
+fun SignUpPage(context: Context) {
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
         val image: Painter = painterResource(id = R.drawable.logo)
@@ -109,7 +112,8 @@ fun SignUpPage() {
         Box(modifier = Modifier.padding(top = 20.dp))
 
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { val intent = Intent(context, DonorHome::class.java)
+                context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)

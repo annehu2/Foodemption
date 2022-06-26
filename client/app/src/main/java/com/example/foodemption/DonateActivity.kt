@@ -247,6 +247,20 @@ fun DonatePage(context: Context, orgName: String) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
+        var titleText = remember { mutableStateOf(TextFieldValue()) }
+        TextField(
+            value = titleText.value,
+            onValueChange = { titleText.value = it },
+            label = { Text("Title of Food") }
+        )
+
+        var bestBefore = remember { mutableStateOf(TextFieldValue()) }
+        TextField(
+            value = bestBefore.value,
+            onValueChange = { bestBefore.value = it },
+            label = { Text("Best Before of Food") }
+        )
+
         var descriptionText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = descriptionText.value,
@@ -281,7 +295,7 @@ fun DonatePage(context: Context, orgName: String) {
             onClick = {
                 // TODO: Officially submitted alert than go back to donorhome
                 // S3 Logic here as well
-                handleS3Upload()
+                donorUploadFood(titleText.value.text, descriptionText.value.text, foodPhotoUri, bestBefore.value.text)
                 val intent = Intent(context, DonorHome::class.java)
                 context.startActivity(intent)
             },
@@ -308,11 +322,11 @@ fun convertToBase64(attachment: File): String {
     return Base64.encodeToString(attachment.readBytes(), Base64.DEFAULT)
 }
 
-fun handleS3Upload() {
+fun donorUploadFood(title: String, description: String, uri: Uri, best_before: String) {
     val file = File(foodPhotoUri.path)
     val encoded = convertToBase64(file)
 
-    val foodBody = FoodRequestBody("testing1", "test description", encoded, "2")
+    val foodBody = FoodRequestBody(title, description, encoded, best_before)
 
     val payload = Json.encodeToString(foodBody)
 

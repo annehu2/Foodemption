@@ -171,8 +171,6 @@ fun processLogin(email: String, password: String) {
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
             val responseBody = Json.decodeFromString<LoginResponseBody>(json)
-
-            // Log.i("YAY", responseBody.data.toString())
         }
     })
 }

@@ -60,8 +60,10 @@ class LoginActivity : ComponentActivity() {
 
 @Composable
 fun LoginPage(context: Context) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val image: Painter = painterResource(id = R.drawable.logo)
         Image(
             painter = image,
@@ -122,9 +124,14 @@ fun LoginPage(context: Context) {
 
         OutlinedButton(
             onClick = {
-                processLogin()
-                val intent = Intent(context, DonorHome::class.java)
-                context.startActivity(intent) },
+                try {
+                    processLogin(emailText.value.text, passwordText.value.text)
+                    val intent = Intent(context, DonorHome::class.java)
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.i("fail", "wrong user/password")
+                }
+            },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)
@@ -138,14 +145,14 @@ fun LoginPage(context: Context) {
                     )
                 )
         ) {
-            Text("Login", color = Color.White, fontSize = 20.sp,)
+            Text("Login", color = Color.White, fontSize = 20.sp)
         }
     }
 
 }
 
-fun processLogin(/*email: String, password: String, device_token: String*/) {
-    val loginBody = LoginRequestBody("test_donor@gmail.com", "password", "NEWDEVICETOKEN")
+fun processLogin(email: String, password: String) {
+    val loginBody = LoginRequestBody(email, password, "NEWDEVICETOKEN")
 
     val payload = Json.encodeToString(loginBody)
 
@@ -158,14 +165,14 @@ fun processLogin(/*email: String, password: String, device_token: String*/) {
         .build()
     okHttpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            Log.i("Fail","you suck")
+            Log.i("Fail", "you suck")
         }
 
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
             val responseBody = Json.decodeFromString<LoginResponseBody>(json)
 
-           // Log.i("YAY", responseBody.data.toString())
+            // Log.i("YAY", responseBody.data.toString())
         }
     })
 }

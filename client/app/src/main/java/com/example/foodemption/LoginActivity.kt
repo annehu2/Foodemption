@@ -3,6 +3,7 @@ package com.example.foodemption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -32,6 +33,14 @@ import com.example.foodemption.home.DonorHome
 import com.example.foodemption.home.HomeListings
 import com.example.foodemption.home.HomeTitle
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,7 +121,9 @@ fun LoginPage(context: Context) {
         Box(modifier = Modifier.padding(top = 20.dp))
 
         OutlinedButton(
-            onClick = { val intent = Intent(context, DonorHome::class.java)
+            onClick = {
+                processLogin()
+                val intent = Intent(context, DonorHome::class.java)
                 context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
@@ -130,4 +141,49 @@ fun LoginPage(context: Context) {
             Text("Login", color = Color.White, fontSize = 20.sp,)
         }
     }
+
 }
+
+fun processLogin(/*email: String, password: String, device_token: String*/) {
+    val loginBody = LoginRequestBody("test_donor@gmail.com", "password", "NEWDEVICETOKEN")
+
+    val payload = Json.encodeToString(loginBody)
+
+    val okHttpClient = OkHttpClient()
+    val requestBody = payload.toRequestBody()
+    val request = Request.Builder()
+        .method("POST", requestBody)
+        .header("Content-Type", "application/json")
+        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/login".toHttpUrl())
+        .build()
+    okHttpClient.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.i("Fail","you suck")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val json = response.body.string()
+            val responseBody = Json.decodeFromString<LoginResponseBody>(json)
+
+           // Log.i("YAY", responseBody.data.toString())
+        }
+    })
+}
+
+@Serializable
+data class LoginRequestBody(
+    val email: String,
+    val password: String,
+    val device_token: String,
+)
+
+@Serializable
+data class LoginResponseBody(
+    val status_code: Int,
+    val data: JwtData,
+)
+
+@Serializable
+data class JwtData(
+    val jwt: String,
+)

@@ -29,24 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.R
 
-class HomeListings : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FoodemptionTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    HomeListings("My Food Listings")
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun HomeListings(subTitle: String) {
     Box(

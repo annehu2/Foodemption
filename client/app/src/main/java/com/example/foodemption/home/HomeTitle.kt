@@ -29,23 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.R
 
-class HomeTitle : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FoodemptionTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Title("Android", "Organization Name")
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun Title(name: String, orgName: String) {
     Box(

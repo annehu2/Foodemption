@@ -31,14 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,45 +140,3 @@ fun LoginPage(context: Context) {
     }
 
 }
-
-fun processLogin(email: String, password: String) {
-    val loginBody = LoginRequestBody(email, password, "NEWDEVICETOKEN")
-
-    val payload = Json.encodeToString(loginBody)
-
-    val okHttpClient = OkHttpClient()
-    val requestBody = payload.toRequestBody()
-    val request = Request.Builder()
-        .method("POST", requestBody)
-        .header("Content-Type", "application/json")
-        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/login".toHttpUrl())
-        .build()
-    okHttpClient.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            Log.i("Fail", "you suck")
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            val json = response.body.string()
-            val responseBody = Json.decodeFromString<LoginResponseBody>(json)
-        }
-    })
-}
-
-@Serializable
-data class LoginRequestBody(
-    val email: String,
-    val password: String,
-    val device_token: String,
-)
-
-@Serializable
-data class LoginResponseBody(
-    val status_code: Int,
-    val data: JwtData,
-)
-
-@Serializable
-data class JwtData(
-    val jwt: String,
-)

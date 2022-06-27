@@ -19,13 +19,13 @@ def signin():
         device_token = user_login_data['device_token']
     
     except KeyError: 
-         return json.dumps({"status_code":400, "message":"Fields are missing!"})
+        return json.dumps({"status_code":400,"data": {"jwt": None }})
 
     login_data = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
-        return json.dumps({"status_code":403, "message":"Access denied"})
+        return json.dumps({"status_code":400,"data": {"jwt": None }})
 
     user_data = get_user_object(login_data.user_uuid)
     

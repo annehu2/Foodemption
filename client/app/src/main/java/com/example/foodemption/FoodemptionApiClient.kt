@@ -27,7 +27,7 @@ fun processLogin(email: String, password: String) {
         .build()
     okHttpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            Log.i("Fail", "you suck")
+            Log.d("Fail", "you suck")
         }
 
         override fun onResponse(call: Call, response: Response) {

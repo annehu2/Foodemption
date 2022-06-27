@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -38,16 +36,9 @@ import coil.compose.rememberImagePainter
 import com.example.foodemption.camera.CameraView
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import okhttp3.*
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 
 private var openCamera: MutableState<Boolean> = mutableStateOf(false)
 private lateinit var foodPhotoUri: Uri
@@ -204,14 +195,6 @@ fun DonatePage(context: Context, orgName: String) {
             modifier = Modifier
                 .width(293.dp)
                 .height(232.dp)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 0.dp
-                    )
-                )
                 .background(
                     Color(
                         red = 0.9725490212440491f,
@@ -289,14 +272,19 @@ fun DonatePage(context: Context, orgName: String) {
             Text("Import Saved Food Description", color = Color.Blue)
         }
 
-        val openDialog = remember { mutableStateOf(false)  }
+        val openDialog = remember { mutableStateOf(false) }
 
         OutlinedButton(
             onClick = {
                 openDialog.value = true
                 // TODO: Add Error Handling
                 // S3 Logic here as well
-                donorUploadFood(titleText.value.text, descriptionText.value.text, foodPhotoUri, bestBefore.value.text)
+                donorUploadFood(
+                    titleText.value.text,
+                    descriptionText.value.text,
+                    foodPhotoUri,
+                    bestBefore.value.text
+                )
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
@@ -314,13 +302,23 @@ fun DonatePage(context: Context, orgName: String) {
             Text("Add Food", color = Color.White)
         }
         // TODO: should add error handling here
-        openAlertBox(context, openDialog,"Success!", "Your Food was Successfully Uploaded! Thank you for your donation!")
+        openAlertBox(
+            context,
+            openDialog,
+            "Success!",
+            "Your Food was Successfully Uploaded! Thank you for your donation!"
+        )
     }
 
 }
 
 @Composable
-fun openAlertBox(context: Context, openDialog: MutableState<Boolean>, title: String, text: String):  MutableState<Boolean> {
+fun openAlertBox(
+    context: Context,
+    openDialog: MutableState<Boolean>,
+    title: String,
+    text: String
+): MutableState<Boolean> {
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {

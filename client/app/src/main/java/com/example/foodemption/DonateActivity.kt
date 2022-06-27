@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -102,7 +103,12 @@ class DonateActivity : ComponentActivity() {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .width(285.dp)
-                                    .padding(start = 110.dp, top = 130.dp, end = 0.dp, bottom = 0.dp)
+                                    .padding(
+                                        start = 110.dp,
+                                        top = 130.dp,
+                                        end = 0.dp,
+                                        bottom = 0.dp
+                                    )
                             )
                         }
                     }
@@ -251,15 +257,23 @@ fun DonatePage(context: Context, orgName: String) {
         TextField(
             value = titleText.value,
             onValueChange = { titleText.value = it },
-            label = { Text("Title of Food") }
+            label = { Text("Title of Food") },
+            modifier = Modifier
+                .width(316.dp)
+                .height(50.dp)
         )
+        Box(modifier = Modifier.padding(top = 10.dp))
 
         var bestBefore = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = bestBefore.value,
             onValueChange = { bestBefore.value = it },
-            label = { Text("Best Before of Food") }
+            label = { Text("Best Before of Food") },
+            modifier = Modifier
+                .width(316.dp)
+                .height(50.dp)
         )
+        Box(modifier = Modifier.padding(top = 10.dp))
 
         var descriptionText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
@@ -268,36 +282,21 @@ fun DonatePage(context: Context, orgName: String) {
             label = { Text("Add Food Description") },
             modifier = Modifier
                 .width(316.dp)
-                .height(120.dp)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 0.dp
-                    )
-                )
-                .background(
-                    Color(
-                        red = 0.9725490212440491f,
-                        green = 0.9725490212440491f,
-                        blue = 1f,
-                        alpha = 1f
-                    )
-                )
+                .height(100.dp)
         )
 
         TextButton(onClick = { /* TODO */ }) {
             Text("Import Saved Food Description", color = Color.Blue)
         }
 
+        val openDialog = remember { mutableStateOf(false)  }
+
         OutlinedButton(
             onClick = {
-                // TODO: Officially submitted alert than go back to donorhome
+                openDialog.value = true
+                // TODO: Add Error Handling
                 // S3 Logic here as well
                 donorUploadFood(titleText.value.text, descriptionText.value.text, foodPhotoUri, bestBefore.value.text)
-                val intent = Intent(context, DonorHome::class.java)
-                context.startActivity(intent)
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
@@ -314,53 +313,40 @@ fun DonatePage(context: Context, orgName: String) {
         ) {
             Text("Add Food", color = Color.White)
         }
+        // TODO: should add error handling here
+        openAlertBox(context, openDialog,"Success!", "Your Food was Successfully Uploaded! Thank you for your donation!")
     }
 
 }
 
-fun convertToBase64(attachment: File): String {
-    return Base64.encodeToString(attachment.readBytes(), Base64.DEFAULT)
+@Composable
+fun openAlertBox(context: Context, openDialog: MutableState<Boolean>, title: String, text: String):  MutableState<Boolean> {
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+                val intent = Intent(context, DonorHome::class.java)
+                context.startActivity(intent)
+            },
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = text)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                        val intent = Intent(context, DonorHome::class.java)
+                        context.startActivity(intent)
+                    }) {
+                    Text("Ok")
+                }
+            }
+        )
+    }
+    return openDialog
 }
 
-fun donorUploadFood(title: String, description: String, uri: Uri, best_before: String) {
-    val file = File(foodPhotoUri.path)
-    val encoded = convertToBase64(file)
 
-    val foodBody = FoodRequestBody(title, description, encoded, best_before)
-
-    val payload = Json.encodeToString(foodBody)
-
-    val okHttpClient = OkHttpClient()
-    val requestBody = payload.toRequestBody()
-    val request = Request.Builder()
-        .method("POST", requestBody)
-        .header("Content-Type", "application/json")
-        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImJlNWQ5ZjExLTMxYWQtNDZkOC05NmI4LThjNDhjMGNhOTY0ZSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.FuH2inRFQyVf-VCxAh43WnLLrbuS7ed15vGP_AvQcVU")
-        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donate".toHttpUrl())
-        .build()
-    okHttpClient.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            Log.i("Fail","you suck")
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            Log.i("YAY","IT WORKED")
-        }
-    })
-    // Log.i("hellllo", encoded)
-
-}
-
-@Serializable
-data class FoodRequestBody(
-    val title: String,
-    val description: String,
-    val image_base64: String,
-    val best_before: String,
-)
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreviewDonor() {
-//    DonatePage(this, "org name")
-//}

@@ -3,6 +3,7 @@ package com.example.foodemption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,8 +51,10 @@ class LoginActivity : ComponentActivity() {
 
 @Composable
 fun LoginPage(context: Context) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val image: Painter = painterResource(id = R.drawable.logo)
         Image(
             painter = image,
@@ -109,9 +113,18 @@ fun LoginPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
+        val openDialog = remember { mutableStateOf(false) }
+
         OutlinedButton(
-            onClick = { val intent = Intent(context, DonorHome::class.java)
-                context.startActivity(intent) },
+            onClick = {
+                try {
+                    processLogin(emailText.value.text, passwordText.value.text)
+                    val intent = Intent(context, DonorHome::class.java)
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    openDialog.value = false
+                }
+            },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)
@@ -125,7 +138,39 @@ fun LoginPage(context: Context) {
                     )
                 )
         ) {
-            Text("Login", color = Color.White, fontSize = 20.sp,)
+            Text("Login", color = Color.White, fontSize = 20.sp)
         }
+        openAlertLoginFailBox(openDialog, "Login Fail", "Incorrect Username or Password")
     }
+
+}
+
+@Composable
+fun openAlertLoginFailBox(
+    openDialog: MutableState<Boolean>,
+    title: String,
+    text: String
+): MutableState<Boolean> {
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+            },
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = text)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                    }) {
+                    Text("Ok")
+                }
+            }
+        )
+    }
+    return openDialog
 }

@@ -29,8 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.home.DonorHome
-import com.example.foodemption.home.HomeListings
-import com.example.foodemption.home.HomeTitle
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 class LoginActivity : ComponentActivity() {

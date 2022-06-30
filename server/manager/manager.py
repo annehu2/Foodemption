@@ -11,8 +11,11 @@ def get_login_data(email):
 
 # Todo: Need to differentiate a get customer vs get donator data
 # Perform a join to fetch complete user data
-def get_user_data(userId):
+def get_customer_data(userId):
     return session.query(*Users.__table__.columns, *Customers.__table__.columns).select_from(Users).join(Customers, (Users.id == userId) & (Users.id == Customers.id )).first()
+
+def get_user_session_data(user_uuid):
+    return session.query(*Users.__table__.columns, *Login.__table__.columns).select_from(Users).join(Login, (Users.uuid == user_uuid) & (Users.id == Login.user_id )).first()
 
 # Needs to flip login_data's device token to be "device_token"
 # Needs to flip login_data's is_logged_in flag to true

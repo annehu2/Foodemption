@@ -3,7 +3,7 @@ import jwt
  
 from flask import request
 
-from controllers.util import authentication_required
+from controllers.middleware import authentication_required
 from manager.manager import create_customer, create_donor
 
 @authentication_required

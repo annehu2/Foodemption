@@ -53,10 +53,6 @@ def donate_food(currently_authenticated_user):
 
     return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}}), 200
 
-# TODO: discuss uuid vs id for api calls
-# TODO: a user can retrive food that belongs to another user - need to perform
-# a check to see if the food actually belongs to the currently authenticated user 
-
 @donator_only
 def retrieve_food(currently_authenticated_user):
     food_data = request.get_json()

@@ -2,4 +2,4 @@ import os
 
 CUSTOMER_TYPE=1
 DONOR_TYPE=0
-MYSQL_HOST="localhost"
+MYSQL_HOST=os.getenv('MYSQL_HOST')

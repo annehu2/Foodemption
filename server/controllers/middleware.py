@@ -1,10 +1,7 @@
- 
-from base64 import decode
 import json, jwt
 from functools import wraps
 from flask import request
-from sqlalchemy import true
-from manager.manager import get_login_data,   get_user_session_data
+from manager.manager import  get_user_session_data
 from utils.enum import CUSTOMER_TYPE, DONOR_TYPE
 
  
@@ -24,7 +21,6 @@ def donator_only(f):
         def decorated_function(*args, **kwargs):
     
                 authenticated_user = _get_authenticated_user()
-                print(authenticated_user.type)
                 if authenticated_user is None or authenticated_user.type == CUSTOMER_TYPE:
                         return json.dumps({"message":"You are not authenticated to use this route.status_code", "status_code":403}), 403
 

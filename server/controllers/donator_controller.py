@@ -1,28 +1,39 @@
-import jwt, json
+import json, os
 import base64
 import boto3
+from botocore.client import Config
 from flask import request
-from controllers.util import authentication_required
+from controllers.middleware import authentication_required, donator_only
 from manager.manager import add_food, get_food, get_food_by_donor
 from botocore.vendored import requests
 
+
 def upload_to_s3(image_base64, file_name):
-        s3 = boto3.resource('s3')
+        print(os.getenv('ACCESS_KEY_ID'))
+
+        s3 = boto3.resource('s3', 
+            aws_access_key_id=os.getenv('ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('ACCESS_SECRET_KEY'),
+            config=Config(signature_version='s3v4')
+        )
         bucket_name = 'foodemptionimages'
         obj = s3.Object(bucket_name, file_name)
         obj.put(Body=base64.b64decode(image_base64))
         # retrieve bucket location
-        location = boto3.client('s3').get_bucket_location(Bucket=bucket_name)['LocationConstraint']
+        location = boto3.client('s3', 
+            aws_access_key_id=os.getenv('ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('ACCESS_SECRET_KEY')
+        ).get_bucket_location(Bucket=bucket_name)['LocationConstraint']
         # retrieve object url
         object_url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket_name, location, file_name)
 
         return object_url
 
-@authentication_required
+@donator_only
 def donate_food(currently_authenticated_user):
     donation_data = request.get_json()
-    print(currently_authenticated_user)
-    print(donation_data)
+    # print(currently_authenticated_user)
+    # print(donation_data)
 
     try:
         title = donation_data["title"]
@@ -33,27 +44,23 @@ def donate_food(currently_authenticated_user):
 
     except KeyError: 
         print(donation_data)
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"})
+        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
     
-    print(title, description, image_base64, best_before, donor_uuid)
+    # print(title, description, image_base64, best_before, donor_uuid)
 
     image_url = upload_to_s3(image_base64, title)
     food_data = add_food(title, description, image_url, best_before, donor_uuid)
 
-    return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}})
+    return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}}), 200
 
-# TODO: discuss uuid vs id for api calls
-# TODO: a user can retrive food that belongs to another user - need to perform
-# a check to see if the food actually belongs to the currently authenticated user 
-
-@authentication_required
+@donator_only
 def retrieve_food(currently_authenticated_user):
     food_data = request.get_json()
 
     try:
         food_uuid = food_data["uuid"]
     except KeyError: 
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"})
+        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
 
     food = get_food(food_uuid)
 
@@ -70,7 +77,7 @@ def retrieve_food(currently_authenticated_user):
         }
     )
 
-@authentication_required
+@donator_only
 def retrieve_all_donations(currently_authenticated_user):
     try:
         donor_uuid = currently_authenticated_user["uuid"]
@@ -88,7 +95,7 @@ def retrieve_all_donations(currently_authenticated_user):
                         "description": food.description,
                         "best_before": food.best_before} for food in donations ]
         }
-    )
+    ), 200
 '''
 ---- TESTS ----
 

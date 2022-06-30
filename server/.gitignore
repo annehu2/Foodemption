@@ -1,2 +1,4 @@
 */__pycache__/
 /models/migrations/versions/*
+.env
+production-env-var.txt

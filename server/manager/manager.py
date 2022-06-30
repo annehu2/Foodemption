@@ -11,17 +11,20 @@ def get_login_data(email):
 
 # Todo: Need to differentiate a get customer vs get donator data
 # Perform a join to fetch complete user data
-def get_user_data(userId):
+def get_customer_data(userId):
     return session.query(*Users.__table__.columns, *Customers.__table__.columns).select_from(Users).join(Customers, (Users.id == userId) & (Users.id == Customers.id )).first()
+
+def get_user_session_data(user_uuid):
+    return session.query(*Users.__table__.columns, *Login.__table__.columns).select_from(Users).join(Login, (Users.uuid == user_uuid) & (Users.id == Login.user_id )).first()
 
 # Needs to flip login_data's device token to be "device_token"
 # Needs to flip login_data's is_logged_in flag to true
-def set_user_state_to_login(user_id, device_token):
-    session.query(Login).filter(Login.user_id == user_id).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
+def set_user_state_to_login(user_uuid, device_token):
+    session.query(Login).filter(Login.user_uuid == user_uuid).update({Login.device_token: device_token, Login.is_logged_in: True}, synchronize_session = False )
     session.commit()
 
-def set_user_state_to_logout(user_id):
-    session.query(Login).filter(Login.user_id == user_id).update({ Login.is_logged_in: False}, synchronize_session = False )
+def set_user_state_to_logout(user_uuid):
+    session.query(Login).filter(Login.user_uuid == user_uuid).update({ Login.is_logged_in: False}, synchronize_session = False )
     session.commit()
 
 # Testing purposes

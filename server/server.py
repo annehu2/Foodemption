@@ -1,8 +1,8 @@
 import controllers.controller as controller
 import controllers.auth_controller as auth_controller
 import controllers.donator_controller as donator_controller
+from utils.enum import MYSQL_HOST
 from flask import Flask
-
 app = Flask(__name__)
 ## decorator unprotected route
 app.add_url_rule('/cipher',view_func=controller.get_encrypted_data,methods=["GET"])
@@ -20,4 +20,5 @@ app.add_url_rule('/donations', view_func=donator_controller.retrieve_all_donatio
 # TODO: Look into docker's networking model and figure out how this work in another
 #       machine (i.e EC2)
 if __name__ == '__main__':
+        print(MYSQL_HOST)
         app.run(debug=True, host="0.0.0.0",port=8000)

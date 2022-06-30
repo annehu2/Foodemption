@@ -16,7 +16,7 @@ function run_db_migrations {
 
 function run_python_api_server {
     enter_wkdir;
-    python3 server.py;
+    gunicorn --bind 0.0.0.0:8000 server:app;
 }
 
 

@@ -2,7 +2,7 @@ from flask import request
 
 import json,jwt
 
-from controllers.util import authentication_required
+from controllers.middleware import authentication_required
 from manager.manager import  get_login_data, get_user_object, set_user_state_to_login, set_user_state_to_logout
 
 # Takes email, password and device token from user
@@ -19,13 +19,13 @@ def signin():
         device_token = user_login_data['device_token']
     
     except KeyError: 
-         return json.dumps({"status_code":400, "message":"Fields are missing!"})
+        return json.dumps({"status_code":400,"data": {"jwt": "" }}),400
 
     login_data = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
-        return json.dumps({"status_code":403, "message":"Access denied"})
+        return json.dumps({"status_code":400,"data": {"jwt": "" }}),400
 
     user_data = get_user_object(login_data.user_uuid)
     
@@ -37,7 +37,7 @@ def signin():
         "user_type": user_data.type,
     },"SecretCipher", algorithm="HS256")
 
-    set_user_state_to_login(user_data.id, device_token)
+    set_user_state_to_login(user_data.uuid, device_token)
 
     return json.dumps(
         {
@@ -47,7 +47,7 @@ def signin():
                 "jwt": jwt_token
             }
         }
-    )
+    ), 200
 
 # Not much to do here. Need to remove the device token
 # The currentUser is an UserObject
@@ -55,5 +55,5 @@ def signin():
 # Once they log out their token is invalidated.
 @authentication_required
 def logout(currentUser):
-    set_user_state_to_logout(currentUser['id'])
+    set_user_state_to_logout(currentUser['uuid'])
     return json.dumps({"message":"successfully logged user out", "status_code":200})

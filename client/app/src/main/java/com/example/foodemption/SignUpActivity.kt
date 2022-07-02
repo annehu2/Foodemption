@@ -6,10 +6,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -50,8 +52,14 @@ class SignUpActivity : ComponentActivity() {
 
 @Composable
 fun SignUpPage(context: Context) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+//    var scrollableState: ScrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+//            .verticalScroll(scrollableState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val image: Painter = painterResource(id = R.drawable.logo)
         Image(
             painter = image,
@@ -107,7 +115,7 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var emailText = remember { mutableStateOf(TextFieldValue()) }
+        val emailText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = emailText.value,
             onValueChange = { emailText.value = it },
@@ -116,7 +124,7 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var passwordText = remember { mutableStateOf(TextFieldValue()) }
+        val passwordText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = passwordText.value,
             onValueChange = { passwordText.value = it },
@@ -126,7 +134,7 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var passwordConfirmText = remember { mutableStateOf(TextFieldValue()) }
+        val passwordConfirmText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = passwordConfirmText.value,
             onValueChange = { passwordConfirmText.value = it },
@@ -137,7 +145,7 @@ fun SignUpPage(context: Context) {
         Box(modifier = Modifier.padding(top = 20.dp))
 
         OutlinedButton(
-            onClick = { val intent = Intent(context, ConsumerHome::class.java)
+            onClick = { val intent = Intent(context, VerificationActivity::class.java)
                 context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
@@ -152,7 +160,7 @@ fun SignUpPage(context: Context) {
                     )
                 )
         ) {
-            Text("Sign Up", color = Color.White, fontSize = 20.sp,)
+            Text("Sign Up", color = Color.White, fontSize = 20.sp)
         }
     }
 }

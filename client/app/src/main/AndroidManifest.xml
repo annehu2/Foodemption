@@ -43,6 +43,10 @@
         </activity>
         <activity android:name=".SignUpActivity">
         </activity>
+        <activity android:name=".VerificationActivity">
+        </activity>
+        <activity android:name=".VerificationFormActivity">
+        </activity>
         <activity android:name=".home.DonorHome">
         </activity>
         <activity android:name=".home.DetailedListingsPage">

@@ -3,7 +3,6 @@ package com.example.foodemption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -79,7 +78,7 @@ fun LoginPage(context: Context) {
         )
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var emailText = remember { mutableStateOf(TextFieldValue()) }
+        val emailText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = emailText.value,
             onValueChange = { emailText.value = it },
@@ -88,7 +87,7 @@ fun LoginPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var passwordText = remember { mutableStateOf(TextFieldValue()) }
+        val passwordText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = passwordText.value,
             onValueChange = { passwordText.value = it },

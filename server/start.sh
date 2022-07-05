@@ -22,7 +22,7 @@ function run_python_api_server {
 
 function boot_strap {
     enter_wkdir;
-    start_mysql_and_create_db;
+    # start_mysql_and_create_db;
     run_db_migrations;
     run_python_api_server;
 }

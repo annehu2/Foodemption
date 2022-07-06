@@ -36,6 +36,8 @@
         </activity>
         <activity android:name=".home.DonorHome">
         </activity>
+        <activity android:name=".home.DetailedListingsPage">
+        </activity>
     </application>
 
 </manifest>

@@ -9,6 +9,8 @@ if not database_exists(engine.url):
  
 engine = create_engine(
     f"mysql://root:password@{MYSQL_HOST}:3306/foodDemptionDb",
+    pool_recycle=60*5,
+    pool_pre_ping=True
 )
 
 Session = sessionmaker(bind=engine)

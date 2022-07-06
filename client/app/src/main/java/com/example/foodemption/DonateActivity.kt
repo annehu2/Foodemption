@@ -279,7 +279,7 @@ fun DonatePage(context: Context, orgName: String) {
                 openDialog.value = true
                 // TODO: Add Error Handling
                 // S3 Logic here as well
-                donorUploadFood(
+                FoodemptionApiClient().donorUploadFood(
                     titleText.value.text,
                     descriptionText.value.text,
                     foodPhotoUri,

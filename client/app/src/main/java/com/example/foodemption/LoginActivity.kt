@@ -120,7 +120,7 @@ fun LoginPage(context: Context) {
         OutlinedButton(
             onClick = {
                 try {
-                    processLogin(emailText.value.text, passwordText.value.text)
+                    FoodemptionApiClient().processLogin(emailText.value.text, passwordText.value.text)
                     val intent = Intent(context, DonorHome::class.java)
                     context.startActivity(intent)
                 } catch (e: Exception) {

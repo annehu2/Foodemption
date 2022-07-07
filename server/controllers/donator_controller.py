@@ -5,6 +5,7 @@ from botocore.client import Config
 from flask import request
 from controllers.middleware import authentication_required, donator_only
 from manager.manager import ManagerException
+from kafka import KafkaProducer
 import manager.manager as manager
 from botocore.vendored import requests
 
@@ -28,6 +29,30 @@ def upload_to_s3(image_base64, file_name):
         object_url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket_name, location, file_name)
 
         return object_url
+
+
+def new_donate():
+    configs = {
+       "bootstrap_servers":"pkc-ymrq7.us-east-2.aws.confluent.cloud:9092",
+       "security_protocol":"SASL_SSL",
+       "sasl_mechanism":"PLAIN",
+       "sasl_plain_username":"HE4UYYYMJXI3TQIL",
+       "sasl_plain_password":"gnm8lEq6qSR3p6XBtyOXGpOudznDchigH1X7vs5Z3JWstjxMtIwDexVKLEX/Inh4"
+    }
+    producer = KafkaProducer(**configs,  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+    new_donation_object = {
+    'message_type': 'Donations',
+    'payload':{
+       'food_id':1,
+       'filters':{
+          'location': "20",
+          'ingridents_filter': [1,2,3,4,5,6]
+       },
+       'message': "Your food should be ready for pick up in 5 minutes!"   
+    }
+    }
+    producer.send('foodemp_notif_pipe', new_donation_object)
+    return json.dumps({"status_code":200}), 200
 
 # only donors can mark a food as claimed because they own the food
 @donator_only

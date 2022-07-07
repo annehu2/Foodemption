@@ -1,17 +1,15 @@
 package com.example.foodemption
 
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +30,7 @@ import com.example.foodemption.home.DonorHome
 import com.example.foodemption.home.HomeListings
 import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import java.util.*
 
 class VerificationFormActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +49,6 @@ class VerificationFormActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VerificationForm(context: Context) {
 //    var scrollableState: ScrollState = rememberScrollState()
@@ -72,7 +70,7 @@ fun VerificationForm(context: Context) {
         )
         Text(
             "Organization Verification",
-            fontSize = 36.sp,
+            fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
@@ -111,29 +109,51 @@ fun VerificationForm(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        // add drop down menu here to choose time
+        val calendar = Calendar.getInstance()
+        val hour = calendar[Calendar.HOUR_OF_DAY]
+        val minute = calendar[Calendar.MINUTE]
+        val time = remember { mutableStateOf("") }
+        val timePickerDialog = TimePickerDialog(
+            context,
+            {_, hour : Int, minute: Int ->
+                if (minute < 10) {
+                    time.value = "$hour:0$minute"
+                }
+                else {
+                    time.value = "$hour:$minute"
+                }
+            }, hour, minute, false
+        )
 
-        Box(modifier = Modifier.padding(top = 20.dp))
+        Button(onClick = { timePickerDialog.show() },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 9.dp,
+                        topEnd = 9.dp,
+                        bottomStart = 9.dp,
+                        bottomEnd = 9.dp
+                    ))) {
+            Text(text = "Pick a Time for Contacting: ${time.value}", color = Color.White)
+        }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+//        Text(text = "Selected Time For Contacting: ${time.value}", fontSize = 16.sp)
+
+        Box(modifier = Modifier.padding(top = 10.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 40.dp, end = 40.dp)) {
             val checkedState = remember { mutableStateOf(false) }
             Checkbox(
                 checked = checkedState.value,
                 onCheckedChange = { checkedState.value = it }
             )
             
-            Text(text = "I agree all the information provided is true.")
+            Text(text = "I agree all the information provided is true. I agree to all the terms and conditions.", fontSize = 12.sp)
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val checkedState = remember { mutableStateOf(false) }
-            Checkbox(
-                checked = checkedState.value,
-                onCheckedChange = { checkedState.value = it }
-            )
-
-            Text(text = "I agree to all the terms and conditions.")
-        }
+        Box(modifier = Modifier.padding(top = 10.dp))
 
         Row() {
             OutlinedButton(
@@ -155,7 +175,7 @@ fun VerificationForm(context: Context) {
                 Text("Verify", color = Color.White, fontSize = 20.sp)
             }
 
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
 
             OutlinedButton(
                 onClick = { val intent = Intent(context, MainActivity::class.java)

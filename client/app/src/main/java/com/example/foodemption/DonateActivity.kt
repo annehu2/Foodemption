@@ -393,7 +393,8 @@ fun UploadOptions() {
                 Spacer(modifier = Modifier.padding(10.dp))
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { /*TODO*/
+                        showUploadDialog.value = false },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                     modifier = Modifier
                         .width(250.dp)
@@ -413,7 +414,8 @@ fun UploadOptions() {
                 Spacer(modifier = Modifier.padding(10.dp))
 
                 Button(
-                    onClick = {/*TODO*/ },
+                    onClick = {/*TODO*/
+                        showUploadDialog.value = false },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                     modifier = Modifier
                         .width(250.dp)

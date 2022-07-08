@@ -1,5 +1,14 @@
 <resources>
-    <string name="app_name">Foodemption</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="app_name">MyMapsApps</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="save_places">Save Places</string>
+    <string name="update_places">Update Places</string>
+    <string name="overlay">Overlay</string>
+    <string name="change_map_style">Change Map Style</string>
+    <string name="default_map">Default Map</string>
+    <string name="terrain_map">Terrain Map</string>
+    <string name="satellite_map">Satellite Map</string>
+    <string name="hybrid_map">Hybrid Map</string>
 </resources>

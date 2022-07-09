@@ -4,7 +4,7 @@ import boto3
 from botocore.client import Config
 from flask import request
 from controllers.middleware import authentication_required, donator_only
-from manager.manager import add_food, get_food, get_food_by_donor
+from manager.manager import add_food, get_food, get_food_by_donor, verify_donor
 from botocore.vendored import requests
 
 
@@ -28,6 +28,43 @@ def upload_to_s3(image_base64, file_name):
         object_url = "https://%s.s3-%s.amazonaws.com/%s" % (bucket_name, location, file_name)
 
         return object_url
+
+'''
+request example:
+    {
+        "contact": "000-000-0000",
+        "food_license_number": "LICENSE00000", 
+        "license_documentation_url": "test_url", 
+        "address": 
+            {
+                "city_name": "Waterloo", 
+                "street_name": "University Ave W",
+                "street_number": "116",
+                "postal_code": "N2L3E2",
+                "building_name": "NA"
+            }
+    }
+'''
+
+@donator_only
+def verify(currently_authenticated_user):
+    verification_data = request.get_json()
+    try:
+        contact = verification_data["contact"]
+        food_license_number = verification_data["food_license_number"] 
+        license_documentation_url = verification_data["license_documentation_url"]
+        address = verification_data["address"]
+        donor_uuid = currently_authenticated_user["uuid"]
+
+    except KeyError: 
+        print(verification_data)
+        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+
+    ret = verify_donor(donor_uuid, contact, food_license_number, license_documentation_url, address)
+    if ret == 1:
+        return json.dumps({"status_code": 400, "message": "Verification failed. Duplicate address for donor."}), 400 
+    else:
+        return json.dumps({"status_code": 200}), 200
 
 @donator_only
 def donate_food(currently_authenticated_user):

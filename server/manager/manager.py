@@ -33,7 +33,7 @@ def create_test_customer():
     if user == None:
         return user
     else:
-        verify_customer(user)
+        verify_customer(user.uuid)
         return user
 
 def create_test_donor():
@@ -41,7 +41,7 @@ def create_test_donor():
     if user == None:
         return user
     else:
-        verify_donor(user, "000-000-0000", "LICENSE00000", "test_url", 
+        verify_donor(user.uuid, "000-000-0000", "LICENSE00000", "test_url", 
             {
                 "city_name": "Waterloo", 
                 "street_name": "University Ave W",
@@ -85,7 +85,8 @@ def create_user(name, email, password, device_token, type):
         session.commit()
         return None
 
-def verify_customer(user, license_num, license_url):
+def verify_customer(user_uuid, license_num, license_url):
+    user = get_user_object(user_uuid)
     new_customer = Customers(
         non_profit_license_num=license_num,
         license_documentation_url=license_url,
@@ -99,8 +100,9 @@ def verify_customer(user, license_num, license_url):
 
 # returns 0 if successful 
 # returns 1 if failed (duplicate address)
-def verify_donor(user, phone, license_num, license_url, address):
+def verify_donor(user_uuid, phone, license_num, license_url, address):
     try:
+        user = get_user_object(user_uuid)
         new_donor = Donors(
             address_id = 0,
             contact = phone,

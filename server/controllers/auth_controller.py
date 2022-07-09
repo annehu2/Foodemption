@@ -5,11 +5,6 @@ import json,jwt
 from controllers.middleware import authentication_required
 from manager.manager import *
 
-# Takes email, password and device token from user
-# Peform a look up in the login table. Make sure they match
-# If match, set device_token on this user entity. 
-# Return a jwt token that encodes information (UUID, email, organization_name, type, is_verified)
-
 def signup():
     user_signup_data = request.get_json()
 
@@ -51,7 +46,10 @@ def signup():
         }
     ), 200
 
-
+# Takes email, password and device token from user
+# Peform a look up in the login table. Make sure they match
+# If match, set device_token on this user entity. 
+# Return a jwt token that encodes information (UUID, email, organization_name, type, is_verified)
 def signin(): 
     user_login_data = request.get_json()
     
@@ -59,9 +57,9 @@ def signin():
         email = user_login_data['email']
         password = user_login_data['password']
         device_token = user_login_data['device_token']
-    
+
     except KeyError: 
-        return json.dumps({"status_code":400, "data": {"jwt": "" }, "message": "Missing fields."}), 400
+        return json.dumps({"status_code": 400, "data": {"jwt": "" }, "message": "Fields are missing!"}), 400
 
     login_data = get_login_data(email)
 

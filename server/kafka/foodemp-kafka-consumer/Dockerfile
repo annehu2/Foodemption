@@ -4,7 +4,7 @@ COPY . .
 # WORKDIR /server
 # Install python
 RUN apt-get update && apt-get -y install python3-venv python3.8 python3-pip
-RUN pip install kafka-python
+RUN pip install kafka-python firebase-admin
 # # Set up docker time zone. Or mysql-server install will hang
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 

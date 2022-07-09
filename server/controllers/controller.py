@@ -2,9 +2,9 @@
 import jwt
  
 from flask import request
-
+import json
 from controllers.middleware import authentication_required
-from manager.manager import create_customer, create_donor
+from manager.manager import create_test_customer, create_test_donor
 
 @authentication_required
 def index(data):
@@ -21,9 +21,15 @@ def get_encrypted_data():
 
 
 def test_create_customer():
-    new_customer = create_customer()
-    return new_customer.uuid
+    new_customer = create_test_customer()
+    if new_customer == None:
+        return json.dumps({"status_code": 400, "message": "Tried to create duplicate customer"}), 400
+    else:
+        return json.dumps({"status_code": 200}), 200
 
 def test_create_donor():
-    new_donor = create_donor()
-    return new_donor.uuid
+    new_donor = create_test_donor()
+    if new_donor == None:
+        return json.dumps({"status_code": 400, "message": "Tried to create duplicate donor"}), 400
+    else:
+        return json.dumps({"status_code": 200}), 200

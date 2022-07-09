@@ -28,19 +28,67 @@ def set_user_state_to_logout(user_uuid):
     session.commit()
 
 # Testing purposes
-def create_customer():        
-    user = Users(
-        uuid=str(uuid.uuid4()),
-        organization_name="Food Charities",
-        type=1
-    )
+def create_test_customer():
+    user = create_user("Food Charities", "jack@gmail.com", "password", "12345_android", 1)
+    if user == None:
+        return user
+    else:
+        verify_customer(user)
+        return user
 
-    session.add(user)
-    session.commit()
- 
+def create_test_donor():
+    user = create_user("New Pizza Place", "test_donor@gmail.com", "password", "12345_android", 0)
+    if user == None:
+        return user
+    else:
+        verify_donor(user, "000-000-0000", "LICENSE00000", "test_url", 
+            {
+                "city_name": "Waterloo", 
+                "street_name": "University Ave W",
+                "street_number": "116",
+                "postal_code": "N2L3E2",
+                "building_name": "NA"
+            })
+        return user
+
+def create_user(name, email, password, device_token, type):        
+    try:
+        user = Users(
+            uuid=str(uuid.uuid4()),
+            organization_name=name,
+            type=type
+        )
+
+        session.add(user)
+        session.commit()
+
+        new_login = Login(
+            user_uuid = str(uuid.uuid4()),
+            user_email = email,
+            user_password = password,
+            device_token = device_token,
+            is_logged_in = False
+        )
+
+        session.enable_relationship_loading(new_login)
+        new_login.user_id = user.id
+        new_login.user_uuid = user.uuid
+        session.add(new_login)
+        session.commit()
+
+        return user
+
+    except:
+        print("WARN: Duplicate user. Rolling back...")
+        session.rollback()
+        session.delete(user)
+        session.commit()
+        return None
+
+def verify_customer(user, license_num, license_url):
     new_customer = Customers(
-        non_profit_license_num="IXA-ASD-SD",
-        license_documentation_url="XABC-EFG-HHI",
+        non_profit_license_num=license_num,
+        license_documentation_url=license_url,
         is_verified=True
     )
 
@@ -49,85 +97,45 @@ def create_customer():
     session.add(new_customer)
     session.commit()
 
-    new_login = Login(
-        user_uuid = str(uuid.uuid4()),
-        user_email = "jack@gmail.com",
-        user_password = "password",
-        device_token = "12345_android",
-        is_logged_in = False
-    )
+# returns 0 if successful 
+# returns 1 if failed (duplicate address)
+def verify_donor(user, phone, license_num, license_url, address):
+    try:
+        new_donor = Donors(
+            address_id = 0,
+            contact = phone,
+            food_license_number = license_num,
+            license_documentation_url = license_url,
+            is_verified = True,
+        )
 
-    session.enable_relationship_loading(new_login)
-    new_login.user_id = user.id
-    new_login.user_uuid = user.uuid
-    session.add(new_login)
-    session.commit()
+        session.enable_relationship_loading(new_donor)
+        new_donor.id = user.id
 
-    return user
+        session.add(new_donor)
+        session.commit()
 
+        new_address = Addresses(
+            uuid = str(uuid.uuid4()),
+            city_name = address["city_name"],
+            street_name = address["street_name"],
+            street_number = address["street_number"],
+            postal_code = address["postal_code"],
+            building_name = address["building_name"],
+        )
 
-# todo: adding address will fail if it is a duplicate address (i.e integrity contraint fails)
-# but that means an additional donor is added with address_id = 0 rather than correct id
+        session.enable_relationship_loading(new_address)
+        new_address.donor_id = new_donor.id
+        session.add(new_address)
+        session.commit()
+        return 0
 
-def create_donor():   
-
-    session.rollback() 
-
-    user = Users(
-        uuid=str(uuid.uuid4()),
-        organization_name="New Pizza Place",
-        type=0
-    )
-
-    session.add(user)
-    session.commit()
-
-    new_donor = Donors(
-        address_id = 0,
-        contact = "000-000-0000",
-        food_license_number = "LICENSE00000",
-        license_documentation_url = "test_url",
-        is_verified = True,
-    )
-
-    session.enable_relationship_loading(new_donor)
-    new_donor.id = user.id
-
-    session.add(new_donor)
-    session.commit()
-
-    new_address = Addresses(
-        uuid = str(uuid.uuid4()),
-        city_name = "Waterloo",
-        street_name = "University Ave W",
-        street_number = "116",
-        postal_code = "N2L3E2",
-        building_name = "NA"
-    )
-
-    session.enable_relationship_loading(new_address)
-    new_address.donor_id = new_donor.id
-    session.add(new_address)
-    session.commit()
-
-    session.query(Donors).filter(Donors.id == new_donor.id).update({ Donors.address_id: new_address.id}, synchronize_session = False )
-    session.commit()
-
-    new_login = Login(
-                user_uuid = str(uuid.uuid4()),
-                user_email = "test_donor@gmail.com",
-                user_password = "password",
-                device_token = "12345_android",
-                is_logged_in = False
-    )
-
-    session.enable_relationship_loading(new_login)
-    new_login.user_id = user.id
-    new_login.user_uuid = user.uuid
-    session.add(new_login)
-    session.commit()
-
-    return user
+    except:
+        print("WARN: Duplicate address for donor. Rolling back...")
+        session.rollback()
+        session.delete(new_donor)
+        session.commit()
+        return 1
 
 def get_user_object(uuid):
     return session.query(Users).filter(Users.uuid == uuid).first()

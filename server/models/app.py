@@ -83,7 +83,7 @@ class Login(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_uuid = db.Column(db.String(128))
-    user_email = db.Column(db.String(32))
+    user_email = db.Column(db.String(32), unique=True)
     user_password = db.Column(db.String(32))
     device_token = db.Column(db.String(256))
     is_logged_in = db.Column(db.Boolean, default=False)

@@ -1,3 +1,4 @@
+from this import d
 import uuid
  
 from numpy import imag
@@ -139,11 +140,6 @@ def verify_donor(user_uuid, phone, license_num, license_url, address):
         session.commit()
         return 1
 
-def get_user_object(uuid):
-    return session.query(Users).filter(Users.uuid == uuid).first()
-
-def fetch_customer():
-    return 20
 
 def add_food(title, description, image_url, best_before, donor_uuid):
     donor_id = get_donor_by_uuid(donor_uuid).id
@@ -152,11 +148,26 @@ def add_food(title, description, image_url, best_before, donor_uuid):
                     image_url = image_url,
                     description = description,
                     best_before = best_before,
-                    donor_id = donor_id)
+                    donor_id = donor_id,
+                    customer_uuid = 0,
+                    is_claimed = False)
     session.add(new_food)
     session.commit()
 
     return new_food
+
+def claim_food(donor_uuid, food_uuid, customer_uuid):
+    donor_id = get_donor_by_uuid(donor_uuid).id
+    food = session.query(Foods).filter(Foods.donor_id == donor_id and Foods.uuid == food_uuid)
+    if food != None:
+        food.update({Foods.is_claimed: True, Foods.customer_uuid: customer_uuid}, synchronize_session = False)
+        session.commit()
+        return 0
+    else:
+        return 1
+
+def get_user_object(uuid):
+    return session.query(Users).filter(Users.uuid == uuid).first()
 
 def get_food(uuid):
     return session.query(Foods).filter(Foods.uuid == uuid).first()
@@ -169,3 +180,8 @@ def get_donor_by_uuid(donor_uuid):
     user = session.query(Users).filter(Users.uuid == donor_uuid).first()
     donor = session.query(Donors).filter(Donors.id == user.id).first()
     return donor
+
+def get_claimed_food_by_donor(donor_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    return session.query(Foods).filter(Foods.donor_id == donor.id and Foods.is_claimed == True).all()
+

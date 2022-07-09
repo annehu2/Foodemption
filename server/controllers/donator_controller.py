@@ -4,7 +4,7 @@ import boto3
 from botocore.client import Config
 from flask import request
 from controllers.middleware import authentication_required, donator_only
-from manager.manager import add_food, get_food, get_food_by_donor, verify_donor
+from manager.manager import add_food, get_food_by_donor, verify_donor, get_claimed_food_by_donor, claim_food
 from botocore.vendored import requests
 
 
@@ -29,6 +29,42 @@ def upload_to_s3(image_base64, file_name):
 
         return object_url
 
+@donator_only
+def retrieve_claimed_food(currently_authenticated_user):
+    try:
+        donor_uuid = currently_authenticated_user["uuid"]
+    except KeyError: 
+        return json.dumps({"status_code": 400, "message": "Fields are missing!"})
+
+    donations = get_claimed_food_by_donor(donor_uuid)
+
+    return json.dumps(
+        {
+            "status_code": 200, 
+            "data": [ { "uuid": food.uuid,
+                        "title": food.title,
+                        "image_url": food.image_url,
+                        "description": food.description,
+                        "best_before": food.best_before} for food in donations ]
+        }
+    ), 200
+
+@donator_only
+def accept_food_claim(currently_authenticated_user):
+    food_data = request.get_json()
+    try:
+        customer_uuid = food_data["customer_uuid"]
+        donor_uuid = currently_authenticated_user["uuid"]
+        food_uuid = food_data["food_uuid"]
+    except KeyError: 
+        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+    
+    ret = claim_food(donor_uuid, food_uuid, customer_uuid)
+    if ret == 0:
+        return json.dumps({"status_code": 200}), 200
+    else:
+        return json.dumps({"status_code": 400, "message": "Failed to claim food. Food does not belong to current user."}), 400
+
 '''
 request example:
     {
@@ -45,7 +81,6 @@ request example:
             }
     }
 '''
-
 @donator_only
 def verify(currently_authenticated_user):
     verification_data = request.get_json()
@@ -91,30 +126,6 @@ def donate_food(currently_authenticated_user):
     return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}}), 200
 
 @donator_only
-def retrieve_food(currently_authenticated_user):
-    food_data = request.get_json()
-
-    try:
-        food_uuid = food_data["uuid"]
-    except KeyError: 
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
-
-    food = get_food(food_uuid)
-
-    return json.dumps(
-        {
-            "status_code": 200, 
-            "data": {
-                "uuid": food.uuid,
-                "title": food.title,
-                "image_url": food.image_url,
-                "description": food.description,
-                "best_before": food.best_before,
-            }
-        }
-    )
-
-@donator_only
 def retrieve_all_donations(currently_authenticated_user):
     try:
         donor_uuid = currently_authenticated_user["uuid"]
@@ -130,7 +141,8 @@ def retrieve_all_donations(currently_authenticated_user):
                         "title": food.title,
                         "image_url": food.image_url,
                         "description": food.description,
-                        "best_before": food.best_before} for food in donations ]
+                        "best_before": food.best_before,
+                        "is_claimed": food.is_claimed} for food in donations ]
         }
     ), 200
 '''

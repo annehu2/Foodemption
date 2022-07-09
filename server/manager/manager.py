@@ -181,7 +181,8 @@ def get_donor_by_uuid(donor_uuid):
     donor = session.query(Donors).filter(Donors.id == user.id).first()
     return donor
 
-def get_claimed_food_by_donor(donor_uuid):
-    donor = get_donor_by_uuid(donor_uuid)
-    return session.query(Foods).filter(Foods.donor_id == donor.id and Foods.is_claimed == True).all()
+def get_all_claimed_food():
+    return session.query(Foods).filter(Foods.is_claimed == True).all()
 
+def get_all_available_food():
+    return session.query(Foods).filter(Foods.is_claimed == False).all()

@@ -50,26 +50,6 @@ fun DonorHome(context: Context, name: String) {
         Title("Anne", "Cool Kids Club")
         Spacer(Modifier.size(40.dp))
         HomeListings(context, subTitle = "My Food Listings", 0)
-//        OutlinedButton(
-//            onClick = {
-////                val intent = Intent(context, DonorHome::class.java)
-////                context.startActivity(intent)
-//            },
-//            colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
-//            modifier = Modifier
-//                .width(298.dp)
-//                .height(30.dp)
-//                .clip(
-//                    RoundedCornerShape(
-//                        topStart = 9.dp,
-//                        topEnd = 9.dp,
-//                        bottomStart = 9.dp,
-//                        bottomEnd = 9.dp
-//                    )
-//                )
-//        ) {
-//            Text("View More Details", color = Color.White, fontSize = 14.sp)
-//        }
         Spacer(Modifier.size(40.dp))
         HomeListings(context, subTitle = "My Claimed Food", 1)
         Spacer(Modifier.size(40.dp))

@@ -1,6 +1,7 @@
 package com.example.foodemption.home
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,7 +30,7 @@ import com.example.foodemption.R
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 @Composable
-fun DetailedListing(context: Context, title: String, bestBefore: String, description: String) {
+fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String) {
     Box(
         modifier = Modifier
             .width(300.dp)
@@ -48,9 +49,8 @@ fun DetailedListing(context: Context, title: String, bestBefore: String, descrip
 
     ) {
         Row(Modifier.fillMaxWidth()) {
-            val image: Painter = painterResource(id = R.drawable.food_placeholder)
             Image(
-                painter = image,
+                painter = rememberAsyncImagePainter(photoUrl),
                 contentDescription = "",
                 alignment = Alignment.TopStart,
             )

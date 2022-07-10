@@ -68,6 +68,24 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
+            if (showType == 1) {
+                OutlinedButton(
+                    onClick = { val intent = Intent(context, DetailedListingsPage::class.java)
+                        context.startActivity(intent) },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(170.dp)
+                        .height(30.dp)
+                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopStart,
+                    )
+                }
+            }
         }
         Row(
             modifier = Modifier
@@ -101,22 +119,6 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
                                 .fillMaxWidth()
                         )
                     }
-                }
-                OutlinedButton(
-                    onClick = { val intent = Intent(context, DetailedListingsPage::class.java)
-                        context.startActivity(intent) },
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(30.dp)
-                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                ) {
-                    val image: Painter = painterResource(id = R.drawable.greyarrow)
-                    Image(
-                        painter = image,
-                        contentDescription = "",
-                        alignment = Alignment.TopStart,
-                    )
                 }
             }
         }

@@ -50,7 +50,7 @@ fun donorUploadFood(title: String, description: String, uri: Uri, best_before: S
     val request = Request.Builder()
         .method("POST", requestBody)
         .header("Content-Type", "application/json")
-        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUzNDViNThjLWI0ODAtNDc0Zi1iMjhkLTI3NTcxYWM3MDQyNyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.W8FB4nbbxn6AlpJvuGLPBCAuGXHMlj1JPgZZvuuUfKA")
+        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjA1OWJiZjRiLTExNTQtNDNmMS1hMGI3LWQ0N2RiY2E0NjkyMCIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.2ldETLveiF5SdBGyWbOY-guxw5faYWqRluiubTYGxWc")
         .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donate".toHttpUrl())
         .build()
     okHttpClient.newCall(request).enqueue(object : Callback {

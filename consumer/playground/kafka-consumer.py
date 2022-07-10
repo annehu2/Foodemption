@@ -29,13 +29,29 @@ def dispatch_fcm(msg, device_token):
     return 200
 
 def handle_reminder_event(event):
-    device_token = foodemp_event['payload']['device_token']
-    foodemp_event_msg =  foodemp_event['payload']['message']
+    device_token = event['payload']['device_token']
+    foodemp_event_msg =  event['payload']['message']
     dispatch_fcm(foodemp_event_msg, device_token)
     print("Successfull dispatched a a reminder object to device")    
 
 def handle_donation_event(event):
-    print("got donation event")
+    print("Received new donations")
+    device_to_push_notif = get_all_interested_users(event)
+
+    for device_token in device_to_push_notif:
+        foodemp_event_message = event['payload']['message']
+        dispatch_fcm(foodemp_event_message, device_token)
+
+    print("Donation Notification dispatch complete")
+
+# TODO: Create an end point API side that returns
+#       a list of device tokens from people that are interested in this
+def get_all_interested_users(event):
+    # make an http request to API
+    return ["fpxLT_hHRfCSydZG8wDNM3:APA91bHTkfJYvyKsE8UawEfPk5a4-GwX9STeoQvz0IMwSlnB7p0ChhhBOA7RD_MeuVP7yn4t86asj2C13I-2vtjToP_ykg6l6nuatFPREzxwTIF8reo3kgrfou_-uxS0QOgniXTeq_SE"]
+
+
+
 
 for message in consumer:
     # print(message.value)

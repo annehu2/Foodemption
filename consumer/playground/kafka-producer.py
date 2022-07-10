@@ -34,6 +34,6 @@ new_donation_object = {
 # KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 producer = KafkaProducer(**configs, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 send_to_kafka = f'sending this message to kafka using'
-producer.send('foodemp_test_topic',reminder_object)
+producer.send('foodemp_test_topic',new_donation_object)
 producer.close()
 # return json.dumps({"status_code":200}), 200

@@ -11,7 +11,7 @@ def authentication_required(f):
                 
                 authenticated_user = _get_authenticated_user()
                 if authenticated_user is None:
-                        return json.dumps({"message":"You are not authenticated to use this route.status_code", "status_code":403}), 403
+                        return json.dumps({"message":"You are not authenticated to use this route.", "status_code":403}), 403
 
                 return f(authenticated_user, **kwargs)
         return decorated_function
@@ -22,7 +22,7 @@ def donator_only(f):
     
                 authenticated_user = _get_authenticated_user()
                 if authenticated_user is None or authenticated_user.type == CUSTOMER_TYPE:
-                        return json.dumps({"message":"You are not authenticated to use this route.status_code", "status_code":403}), 403
+                        return json.dumps({"message":"You are not authenticated to use this route.", "status_code":403}), 403
 
                 return f(authenticated_user, **kwargs)
         return decorated_function
@@ -32,7 +32,7 @@ def consumer_only(f):
         def decorated_function(*args, **kwargs):
                 authenticated_user = _get_authenticated_user()
                 if authenticated_user is None or authenticated_user.type == DONOR_TYPE:
-                        return json.dumps({"message":"You are not authenticated to use this route.status_code", "status_code":403}), 403
+                        return json.dumps({"message":"You are not authenticated to use this route.", "status_code":403}), 403
 
                 return f(authenticated_user, **kwargs)
         return decorated_function
@@ -55,7 +55,10 @@ def extract_user_from_token(auth_token):
 
         login_data = get_user_session_data(decoded_payload['uuid'])
         
-        if login_data.is_logged_in is True:
+        if login_data == None:
+                error_code = 400
+                error_msg = "User does not exist."
+        elif login_data.is_logged_in is True:
                 user_object = login_data
         else:
                 error_code = 400

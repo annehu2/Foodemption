@@ -4,7 +4,7 @@ import jwt
 from flask import request
 import json
 from controllers.middleware import authentication_required
-from manager.manager import create_test_customer, create_test_donor, get_food, get_all_claimed_food, get_all_available_food
+from manager.manager import create_test_customer, create_test_donor, get_food, get_all_claimed_food, get_all_available_food, ManagerException
 
 @authentication_required
 def index(data):
@@ -35,7 +35,7 @@ def test_create_donor():
         return json.dumps({"status_code": 200}), 200
 
 @authentication_required
-def retrieve_food():
+def retrieve_food(currently_authenticated_user):
     food_data = request.get_json()
 
     try:
@@ -45,22 +45,26 @@ def retrieve_food():
 
     food = get_food(food_uuid)
 
-    return json.dumps(
-        {
-            "status_code": 200, 
-            "data": {
-                "uuid": food.uuid,
-                "title": food.title,
-                "image_url": food.image_url,
-                "description": food.description,
-                "best_before": food.best_before,
-                "is_claimed": food.is_claimed
+    if food == None:
+        return json.dumps({"status_code": 400, "message": "Food with given uuid does not exist."}), 400
+
+    else:
+        return json.dumps(
+            {
+                "status_code": 200, 
+                "data": {
+                    "uuid": food.uuid,
+                    "title": food.title,
+                    "image_url": food.image_url,
+                    "description": food.description,
+                    "best_before": food.best_before,
+                    "is_claimed": food.is_claimed
+                }
             }
-        }
-    )
+        )
 
 @authentication_required
-def retrieve_all_claimed_food():
+def retrieve_all_claimed_food(currently_authenticated_user):
     donations = get_all_claimed_food()
     return json.dumps(
         {
@@ -75,7 +79,7 @@ def retrieve_all_claimed_food():
     ), 200
 
 @authentication_required
-def retrieve_all_available_food():
+def retrieve_all_available_food(currently_authenticated_user):
     donations = get_all_available_food()
     return json.dumps(
         {

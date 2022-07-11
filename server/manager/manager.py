@@ -5,6 +5,9 @@ from numpy import imag
 from db import session
 from models.app import Customers,Foods,Users,Login,Donors,Addresses
 
+class ManagerException(Exception):
+    pass
+
 # Ideally we'd roll this as a transaction
 
 def get_login_data(email):
@@ -84,7 +87,7 @@ def create_user(name, email, password, device_token, type):
         session.rollback()
         session.delete(user)
         session.commit()
-        return None
+        raise ManagerException("Attempt to signup with duplicate email id.")
 
 def verify_customer(user_uuid, license_num, license_url):
     user = get_user_object(user_uuid)
@@ -99,8 +102,6 @@ def verify_customer(user_uuid, license_num, license_url):
     session.add(new_customer)
     session.commit()
 
-# returns 0 if successful 
-# returns 1 if failed (duplicate address)
 def verify_donor(user_uuid, phone, license_num, license_url, address):
     try:
         user = get_user_object(user_uuid)
@@ -118,6 +119,13 @@ def verify_donor(user_uuid, phone, license_num, license_url, address):
         session.add(new_donor)
         session.commit()
 
+    except:
+        print("WARN: User already verified. Rolling back...")
+        session.rollback()
+        session.commit()
+        raise ManagerException("Verification failed. User already verified.")
+
+    try:
         new_address = Addresses(
             uuid = str(uuid.uuid4()),
             city_name = address["city_name"],
@@ -131,17 +139,19 @@ def verify_donor(user_uuid, phone, license_num, license_url, address):
         new_address.donor_id = new_donor.id
         session.add(new_address)
         session.commit()
-        return 0
 
     except:
         print("WARN: Duplicate address for donor. Rolling back...")
         session.rollback()
         session.delete(new_donor)
         session.commit()
-        return 1
-
+        raise ManagerException("Verification failed. Duplicate address for donor.")
 
 def add_food(title, description, image_url, best_before, donor_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    if donor == None:
+        raise ManagerException("Donor does not exist or user is not verified as donor.")
+    
     donor_id = get_donor_by_uuid(donor_uuid).id
     new_food = Foods(uuid = str(uuid.uuid4()),
                     title = title,
@@ -162,9 +172,8 @@ def claim_food(donor_uuid, food_uuid, customer_uuid):
     if food != None:
         food.update({Foods.is_claimed: True, Foods.customer_uuid: customer_uuid}, synchronize_session = False)
         session.commit()
-        return 0
     else:
-        return 1
+        raise ManagerException("Failed to claim food. Food does not belong to current user.")
 
 def get_user_object(uuid):
     return session.query(Users).filter(Users.uuid == uuid).first()

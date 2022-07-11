@@ -18,10 +18,11 @@ def signup():
     except KeyError: 
         return json.dumps({"status_code":400,"data": {"jwt": "" }}),400
 
-    user = create_user(name, email, password, device_token, type)
+    try:
+        user = create_user(name, email, password, device_token, type)
 
-    if user == None:
-        return json.dumps({"status_code":400, "data": {"jwt": "" }, "message": "Attempt to signup with duplicate email id."}),400
+    except ManagerException as e:
+        return json.dumps({"status_code":400, "data": {"jwt": "" }, "message": str(e)}),400
 
     login_data = get_login_data(email)
     user_data = get_user_object(login_data.user_uuid)

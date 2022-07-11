@@ -95,10 +95,12 @@ class DonateActivity : ComponentActivity() {
                         )
                     }
                     if (openFromGallery.value) {
-                        getPhotoFromGallery(this)
+                        openFromGallery.value = false
+                        getPhotoFromFileOrGallery(this)
                     }
                     if (openFromFile.value) {
-                        getPhotoFromFile(this)
+                        openFromFile.value = false
+                        getPhotoFromFileOrGallery(this)
                     }
                     if (shouldShowPhoto.value) {
                         Box(
@@ -167,8 +169,7 @@ class DonateActivity : ComponentActivity() {
         return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
     }
 
-    private fun getPhotoFromGallery(context: Context) {
-        openFromGallery.value = false
+    private fun getPhotoFromFileOrGallery(context: Context) {
         val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
         startActivityForResult(gallery, pickImage)
 
@@ -180,13 +181,6 @@ class DonateActivity : ComponentActivity() {
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             photoUri = data?.data!!
         }
-    }
-
-    private fun getPhotoFromFile(context: Context) {
-        openFromFile.value = false
-
-        // open folders and get photo
-        shouldShowPhoto.value = true
     }
 
     override fun onDestroy() {

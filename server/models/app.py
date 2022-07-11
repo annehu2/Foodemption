@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from utils.enum import MYSQL_HOST
+from db import session
+    
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:password@{MYSQL_HOST}:3306/foodDemptionDb'
 

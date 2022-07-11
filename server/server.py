@@ -4,6 +4,7 @@ import controllers.donator_controller as donator_controller
 from utils.enum import MYSQL_HOST
 from flask import Flask
 app = Flask(__name__)
+ 
 ## decorator unprotected route
 app.add_url_rule('/cipher',view_func=controller.get_encrypted_data,methods=["GET"])
 app.add_url_rule('/login', view_func=auth_controller.signin, methods=['POST'])

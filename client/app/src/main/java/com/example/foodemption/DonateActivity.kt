@@ -53,7 +53,6 @@ private var openFromFile: MutableState<Boolean> = mutableStateOf(false)
 class DonateActivity : ComponentActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
-//    lateinit var imageView: ImageView
 
     private var shouldShowCamera: MutableState<Boolean> = mutableStateOf(false)
 
@@ -61,7 +60,6 @@ class DonateActivity : ComponentActivity() {
     private var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
 
     private val pickImage = 100
-//    private var imageUri: Uri? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()

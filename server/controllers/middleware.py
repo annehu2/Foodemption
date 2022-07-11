@@ -27,7 +27,7 @@ def donator_only(f):
                 return f(authenticated_user, **kwargs)
         return decorated_function
 
-def consumer_only(f):
+def customer_only(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
                 authenticated_user = _get_authenticated_user()

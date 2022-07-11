@@ -58,7 +58,7 @@ class Foods(db.Model):
     best_before = db.Column(db.String(12)) # Save an unix time stamp
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     is_claimed = db.Column(db.Boolean, unique=False, default=False)
-    customer_uuid = db.Column(db.Integer)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable = True) # claimed by customer with id
     def __repr__(self):
         return '<Food:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 

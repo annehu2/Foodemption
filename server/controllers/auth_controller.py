@@ -16,33 +16,33 @@ def signup():
         type = user_signup_data['type']
 
     except KeyError: 
-        return json.dumps({"status_code":400,"data": {"jwt": "" }}),400
+        return json.dumps({"status_code":400,"data": {"jwt": "", "uuid": ""}}),400
 
     try:
         user = create_user(name, email, password, device_token, type)
 
     except ManagerException as e:
-        return json.dumps({"status_code":400, "data": {"jwt": "" }, "message": str(e)}),400
+        return json.dumps({"status_code":400, "data": {"jwt": "", "uuid": ""}, "message": str(e)}),400
 
     login_data = get_login_data(email)
-    user_data = get_user_object(login_data.user_uuid)
-    
+
     # We can add more data if necessary
     jwt_token = jwt.encode({
         "email": login_data.user_email,
-        "uuid": user_data.uuid,
-        "organization_name": user_data.organization_name,
-        "user_type": user_data.type,
+        "uuid": user.uuid,
+        "organization_name": user.organization_name,
+        "user_type": user.type,
     },"SecretCipher", algorithm="HS256")
 
-    set_user_state_to_login(user_data.uuid, device_token)
+    set_user_state_to_login(user.uuid, device_token)
 
     return json.dumps(
         {
             "status_code": 200, 
             "data": 
             {
-                "jwt": jwt_token
+                "jwt": jwt_token,
+                "uuid": user.uuid
             }
         }
     ), 200
@@ -85,7 +85,8 @@ def signin():
             "status_code": 200, 
             "data": 
             {
-                "jwt": jwt_token
+                "jwt": jwt_token,
+                "uuid": user_data.uuid
             }
         }
     ), 200

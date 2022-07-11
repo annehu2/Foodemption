@@ -90,17 +90,24 @@ def create_user(name, email, password, device_token, type):
         raise ManagerException("Attempt to signup with duplicate email id.")
 
 def verify_customer(user_uuid, license_num, license_url):
-    user = get_user_object(user_uuid)
-    new_customer = Customers(
-        non_profit_license_num=license_num,
-        license_documentation_url=license_url,
-        is_verified=True
-    )
+    try:
+        user = get_user_object(user_uuid)
+        new_customer = Customers(
+            non_profit_license_num=license_num,
+            license_documentation_url=license_url,
+            is_verified=True
+        )
 
-    session.enable_relationship_loading(new_customer)
-    new_customer.id = user.id
-    session.add(new_customer)
-    session.commit()
+        session.enable_relationship_loading(new_customer)
+        new_customer.id = user.id
+        session.add(new_customer)
+        session.commit()
+
+    except:
+        print("WARN: User already verified. Rolling back...")
+        session.rollback()
+        session.commit()
+        raise ManagerException("Verification failed. User already verified.")
 
 def verify_donor(user_uuid, phone, license_num, license_url, address):
     try:
@@ -159,21 +166,29 @@ def add_food(title, description, image_url, best_before, donor_uuid):
                     description = description,
                     best_before = best_before,
                     donor_id = donor_id,
-                    customer_uuid = 0,
                     is_claimed = False)
     session.add(new_food)
     session.commit()
 
     return new_food
 
-def claim_food(donor_uuid, food_uuid, customer_uuid):
-    donor_id = get_donor_by_uuid(donor_uuid).id
+def claim_food(donor_uuid, customer_uuid, food_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    if donor == None:
+        raise ManagerException("Donor does not exist or user is not verified as donor.")
+    donor_id = donor.id
+
+    customer = get_customer_by_uuid(customer_uuid)
+    if customer == None:
+        raise ManagerException("Customer does not exist or user is not verified as customer.")
+    customer_id = customer.id
+
     food = session.query(Foods).filter(Foods.donor_id == donor_id and Foods.uuid == food_uuid)
     if food != None:
-        food.update({Foods.is_claimed: True, Foods.customer_uuid: customer_uuid}, synchronize_session = False)
+        food.update({Foods.is_claimed: True, Foods.customer_id: customer_id}, synchronize_session = False)
         session.commit()
     else:
-        raise ManagerException("Failed to claim food. Food does not belong to current user.")
+        raise ManagerException("Failed to claim food. Food does not belong to current user or food does not exist.")
 
 def get_user_object(uuid):
     return session.query(Users).filter(Users.uuid == uuid).first()
@@ -189,6 +204,11 @@ def get_donor_by_uuid(donor_uuid):
     user = session.query(Users).filter(Users.uuid == donor_uuid).first()
     donor = session.query(Donors).filter(Donors.id == user.id).first()
     return donor
+
+def get_customer_by_uuid(customer_uuid):
+    user = session.query(Users).filter(Users.uuid == customer_uuid).first()
+    customer = session.query(Customers).filter(Customers.id == user.id).first()
+    return customer
 
 def get_all_claimed_food():
     return session.query(Foods).filter(Foods.is_claimed == True).all()

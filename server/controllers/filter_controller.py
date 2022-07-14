@@ -32,6 +32,10 @@ def filter_intersect():
     intersect_filter()
     return "ok"
 
+def get_device_tokens_base_on_food_filters(food_id):
+    print(food_id)
+    return json.dumps({"message": "successful！","device_tokens":["abc"]})
+
 # TODO: Implement check to ensure the food actually belongs to authenticated user
 @donator_only
 def update_food_filter(authenticated_user):

@@ -4,7 +4,7 @@ import jwt,json
 from flask import request
 
 from controllers.middleware import authentication_required
-from manager.manager import apply_change_set_to_customer_filter, create_donor, create_all_filters, intersect_filter
+from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, create_donor, create_all_filters, intersect_filter
 from controllers.middleware import consumer_only, donator_only
 # from server.controllers.middleware import consumer_only
 # from server.manager.manager import intersect_filter
@@ -32,10 +32,15 @@ def filter_intersect():
     intersect_filter()
     return "ok"
 
+# TODO: Implement check to ensure the food actually belongs to authenticated user
 @donator_only
 def update_food_filter(authenticated_user):
     try:
-        print("asd")
+        filter_update_request = request.get_json()
+        change_set = filter_update_request['change_set']
+        food_id = filter_update_request['food_id']
+        food_object = apply_change_set_to_food_filter(food_id, change_set)
+        return json.dumps({"message":"Update succesful", "food": food_object})
     except KeyError:
         return json.dumps({"message":"Unproper structured data"}),400
 
@@ -52,4 +57,3 @@ def update_customer_filter(authenticated_user):
         return json.dumps({"message":"Inpropertly structured data"}),400
     except AssertionError:
         return json.dumps({"message": "The filter cannot be present in both addition and removal changeset"}),400
-    return "ok", 200

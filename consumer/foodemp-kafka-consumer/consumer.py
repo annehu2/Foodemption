@@ -66,7 +66,3 @@ for message in consumer:
             handle_reminder_event(foodemp_event)
     except Exception as e:
         print(e)
-    # print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-    #                                       message.offset, message.key,
-    #                                       message.value))
-

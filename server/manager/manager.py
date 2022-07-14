@@ -3,12 +3,108 @@ import uuid
  
 from numpy import imag
 from db import session
-from models.app import Customers,Foods,Users,Login,Donors,Addresses
+from models.app import Customers,Foods,Users,Login,Donors,Addresses, Filters
 
 class ManagerException(Exception):
     pass
 
 # Ideally we'd roll this as a transaction
+def get_intersection(filterA, filterB):
+
+    return list(set(filterA) & set(filterB))
+
+
+def get_difference(filterA, filterB):
+
+    return list(set(filterA) - set(filterB))
+
+def add_set(listA, listB):
+    return list(set(listA)|  set(listB))
+
+
+def intersect_filter():
+    a_food = session.query(Foods).filter(Foods.id == 1).first()
+    a_customer = session.query(Customers).filter(Customers.id == 1).first()
+    customer_object = a_customer.get()
+    food_object = a_food.get()
+
+    print(get_intersection(customer_object['filters'], food_object['filters']))
+    return 20
+
+def updatec_customer_filter(customer_id):
+    return 20
+
+# TODO: Refactor this logic
+def apply_change_set_to_customer_filter(customer_id, change_set):
+
+    # This lets us avoid the awkward case where we both want to apply and remove an ingrdient filter
+    if len(get_intersection(change_set['add_filter'], change_set['remove_filter'])) != 0 :
+        raise AssertionError
+
+    customer_object = session.query(Customers).filter(Customers.id == customer_id).first()
+    if customer_object is None:
+        return 404
+    customer_dto = customer_object.get()    
+    customer_filters = customer_dto['filters']
+
+    add_filter =  get_difference(change_set['add_filter'], customer_filters)
+    remove_filter = get_intersection(change_set['remove_filter'], customer_filters)
+    filter_object_to_add = session.query(Filters).filter(Filters.id.in_(add_filter)).all()
+    filter_to_remove = session.query(Filters).filter(Filters.id.in_(remove_filter)).all()
+
+    customer_object.filters.extend(filter_object_to_add)
+
+    for f in filter_to_remove:
+        customer_object.filters.remove(f)
+
+    session.commit()
+
+    return customer_object.get()
+
+
+def apply_change_set_to_food_filter(customer_id, change_set):
+
+    # This lets us avoid the awkward case where we both want to apply and remove an ingrdient filter
+    if len(get_intersection(change_set['add_filter'], change_set['remove_filter'])) != 0 :
+        raise AssertionError
+
+    customer_object = session.query( Foods).filter(Customers.id == customer_id).first()
+    if customer_object is None:
+        return 404
+    customer_dto = customer_object.get()    
+    customer_filters = customer_dto['filters']
+
+    add_filter =  get_difference(change_set['add_filter'], customer_filters)
+    remove_filter = get_intersection(change_set['remove_filter'], customer_filters)
+    filter_object_to_add = session.query(Filters).filter(Filters.id.in_(add_filter)).all()
+    filter_to_remove = session.query(Filters).filter(Filters.id.in_(remove_filter)).all()
+
+    customer_object.filters.extend(filter_object_to_add)
+
+    for f in filter_to_remove:
+        customer_object.filters.remove(f)
+
+    session.commit()
+    return customer_object.get()
+
+#TODO instead, we should think about seeding with a .sql script
+def create_all_filters():
+
+    a_filter = session.query(Filters).filter(Filters.id == 1).first()
+    if a_filter is not None:
+        return 200
+
+    a = Filters(id=1, description="ContainPeanuts")
+    b = Filters(id=2, description="ContainShellfish")
+    c = Filters(id=3, description= "ContainGluten")
+    d = Filters(id=4, description="ContainEggs")
+    e = Filters(id=5, description="ContainMilk")
+
+    session.add_all([a,b,c,d,e])
+    session.commit()
+
+    return "ok"
+
 
 def get_login_data(email):
     return session.query(Login).filter(Login.user_email == email).first()

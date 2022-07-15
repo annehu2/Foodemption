@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.TextView
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -22,22 +23,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.foodemption.databinding.ActivityMapsBinding
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.compose.*
 import kotlin.random.Random
-import androidx.core.content.ContextCompat
-import androidx.activity.viewModels
-import com.google.android.gms.location.LocationServices
 
 private const val TAG = "BasicMapActivity"
 
 private val uw = LatLng(43.47302294446692, -80.54628464593662)
-private val uw2 = LatLng(44.47302294446692, -80.54628464593662)
-private val uw3 = LatLng(45.47302294446692, -80.54628464593662)
+private val foodBank = LatLng(43.429002515081564, -80.4770191699787)
+private val communityFridge = LatLng(43.45243501375896, -80.4845722706156)
 
 private val defaultCameraPosition = CameraPosition.fromLatLngZoom(uw, 11f)
 
@@ -108,7 +108,11 @@ class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCl
         mMap.mapType = defaultMaps
         mMap.moveCamera(CameraUpdateFactory.newLatLng(uw))
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(uw,15.0f))
-
+        mMap.addMarker(
+            MarkerOptions()
+                .position(uw)
+                .title("Marker in UW")
+        )
         mMap.setOnMapClickListener(this)
     }
 
@@ -221,15 +225,14 @@ fun GoogleMapView(
     content: @Composable () -> Unit = {}
 ) {
     val uwState = rememberMarkerState(position = uw)
-    val uw2State = rememberMarkerState(position = uw2)
-    val uw3State = rememberMarkerState(position = uw3)
+    val cfState = rememberMarkerState(position = communityFridge)
+    val fbState = rememberMarkerState(position = foodBank)
     var circleCenter by remember { mutableStateOf(uw) }
     if (uwState.dragState == DragState.END) {
         circleCenter = uwState.position
     }
 
-    var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-    var ticker by remember { mutableStateOf(0) }
+    val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
@@ -257,25 +260,28 @@ fun GoogleMapView(
             }
             MarkerInfoWindowContent(
                 state = uwState,
-                title = "Zoom in has been tapped $ticker times.",
+                title = "My Location",
                 onClick = markerClick,
                 draggable = true,
             ) {
                 Text(it.title ?: "Title", color = Color.Red)
             }
             MarkerInfoWindowContent(
-                state = uw2State,
-                title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
+                state = cfState,
+                title = "Community Fridge",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                 onClick = markerClick,
             ) {
                 Text(it.title ?: "Title", color = Color.Blue)
             }
-            Marker(
-                state = uw3State,
-                title = "Marker in uw",
-                onClick = markerClick
-            )
+            MarkerInfoWindowContent(
+                state = fbState,
+                title = "Waterloo Food Bank",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                onClick = markerClick,
+            ) {
+                Text(it.title ?: "Title", color = Color.Blue)
+            }
             Circle(
                 center = circleCenter,
                 fillColor = MaterialTheme.colors.secondary,
@@ -307,7 +313,6 @@ fun GoogleMapView(
                 modifier = Modifier.testTag("toggleMapVisibility"),
             )
         }
-        DebugView(cameraPositionState, uwState)
     }
 }
 

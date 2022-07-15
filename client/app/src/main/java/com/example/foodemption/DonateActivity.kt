@@ -30,11 +30,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.Popup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.compose.rememberImagePainter
 import com.example.foodemption.camera.CameraView
 import com.example.foodemption.home.DonorHome
+import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -42,6 +45,7 @@ import java.util.concurrent.Executors
 
 private var openCamera: MutableState<Boolean> = mutableStateOf(false)
 private lateinit var foodPhotoUri: Uri
+var showUploadDialog = mutableStateOf(false)
 
 // Camera Code Taken from: https://www.kiloloco.com/articles/015-camera-jetpack-compose/
 
@@ -64,6 +68,8 @@ class DonateActivity : ComponentActivity() {
             Log.i("kilo", "Permission denied")
         }
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +108,9 @@ class DonateActivity : ComponentActivity() {
                                     )
                             )
                         }
+                    }
+                    if (showUploadDialog.value) {
+                        UploadOptions()
                     }
                 }
             }
@@ -216,7 +225,7 @@ fun DonatePage(context: Context, orgName: String) {
                     contentDescription = ""
                 )
                 TextButton(onClick = {
-                    openCamera.value = true
+                    showUploadDialog.value = true
                 }) {
                     Text(
                         text = "Add Image",
@@ -225,6 +234,7 @@ fun DonatePage(context: Context, orgName: String) {
                         textAlign = TextAlign.Center
                     )
                 }
+
                 Text(
                     text = "Supported formats: JPEG, PNG, GIF, PDF",
                     color = Color.Gray,
@@ -345,6 +355,107 @@ fun openAlertBox(
         )
     }
     return openDialog
+}
+
+@Composable
+fun UploadOptions() {
+    AlertDialog(
+        onDismissRequest = { showUploadDialog.value = false },
+        title = { Text(text = "Choose Upload Option", fontSize = 24.sp) },
+        buttons = {
+            Column(modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = {
+                        openCamera.value = true
+                        showUploadDialog.value = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Take a Photo", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = { /*TODO*/
+                        showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Upload from Gallery", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = {/*TODO*/
+                        showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Upload from File", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = { showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+            }
+        },
+    )
 }
 
 

@@ -55,7 +55,7 @@ def extract_user_from_token(auth_token):
 
         login_data = get_user_session_data(decoded_payload['uuid'])
         
-        if login_data.is_logged_in is True:
+        if login_data is None or login_data.is_logged_in is True:
                 user_object = login_data
         else:
                 error_code = 400

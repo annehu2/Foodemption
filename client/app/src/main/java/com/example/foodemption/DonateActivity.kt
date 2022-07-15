@@ -1,12 +1,14 @@
 package com.example.foodemption
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -40,6 +43,7 @@ import com.example.foodemption.home.DonorHome
 import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import java.io.File
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -257,15 +261,44 @@ fun DonatePage(context: Context, orgName: String) {
         )
         Box(modifier = Modifier.padding(top = 10.dp))
 
-        var bestBefore = remember { mutableStateOf(TextFieldValue()) }
-        TextField(
-            value = bestBefore.value,
-            onValueChange = { bestBefore.value = it },
-            label = { Text("Best Before of Food") },
+        // Calendar code https://www.geeksforgeeks.org/date-picker-in-android-using-jetpack-compose/
+        val mContext = LocalContext.current
+        val mYear: Int
+        val mMonth: Int
+        val mDay: Int
+        val mCalendar = Calendar.getInstance()
+
+        // Fetching current year, month and day
+        mYear = mCalendar.get(Calendar.YEAR)
+        mMonth = mCalendar.get(Calendar.MONTH)
+        mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+        mCalendar.time = Date()
+        val bestBefore = remember { mutableStateOf("") }
+
+        val mDatePickerDialog = DatePickerDialog(
+            mContext,
+            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                bestBefore.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+            }, mYear, mMonth, mDay
+        )
+        Button(
             modifier = Modifier
                 .width(316.dp)
-                .height(50.dp)
-        )
+                .height(50.dp),
+            onClick = {
+                mDatePickerDialog.show()
+            }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFe0e0e0))
+        ) {
+            Text(
+                text = "Best Before: ${bestBefore.value}",
+                fontSize = 14.sp,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xff757575),
+                textAlign = TextAlign.Left,
+            )
+        }
+
         Box(modifier = Modifier.padding(top = 10.dp))
 
         var descriptionText = remember { mutableStateOf(TextFieldValue()) }
@@ -293,7 +326,7 @@ fun DonatePage(context: Context, orgName: String) {
                     titleText.value.text,
                     descriptionText.value.text,
                     foodPhotoUri,
-                    bestBefore.value.text
+                    bestBefore.value
                 )
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),

@@ -120,9 +120,11 @@ fun LoginPage(context: Context) {
         OutlinedButton(
             onClick = {
                 try {
-                    processLogin(emailText.value.text, passwordText.value.text)
-                    val intent = Intent(context, DonorHome::class.java)
-                    context.startActivity(intent)
+                    val sharedPref = context.getSharedPreferences(R.string.app_shared_pref_key.toString(), Context.MODE_PRIVATE)
+                    val deviceToken = sharedPref.getString(R.string.user_device_token.toString(),"default")
+                    processLogin(emailText.value.text, passwordText.value.text, deviceToken.toString(), context)
+//                    val intent = Intent(context, DonorHome::class.java)
+//                    context.startActivity(intent)
                 } catch (e: Exception) {
                     openDialog.value = false
                 }

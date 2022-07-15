@@ -4,7 +4,7 @@ import jwt,json
 from flask import request
 
 from controllers.middleware import authentication_required
-from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, create_donor, create_all_filters, intersect_filter
+from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers_who_are_loggedin, create_all_filters, intersect_filter
 from controllers.middleware import consumer_only, donator_only
 # from server.controllers.middleware import consumer_only
 # from server.manager.manager import intersect_filter
@@ -32,9 +32,15 @@ def filter_intersect():
     intersect_filter()
     return "ok"
 
+# Get all login data, check if user is customer
 def get_device_tokens_base_on_food_filters(food_id):
-    print(food_id)
-    return json.dumps({"message": "successful！","device_tokens":["abc"]})
+    
+    device_tokens = []
+    loggedin_customers = get_all_customers_who_are_loggedin()
+    for customer in loggedin_customers:
+        device_tokens.append(customer.device_token)
+    
+    return json.dumps({"message": "successful！","device_tokens": device_tokens })
 
 # TODO: Implement check to ensure the food actually belongs to authenticated user
 @donator_only

@@ -27,7 +27,7 @@ new_donation_object = {
           'location': "20",
           'ingridents_filter': [1,2,3,4,5,6]
        },
-       'message': "Your food should be ready for pick up in 5 minutes!"   
+       'message': "There's donation availlable nearby that you might be interested in"   
     }
 }
 

@@ -1,3 +1,4 @@
+from turtle import delay
 from kafka import KafkaConsumer
 import firebase_admin, json
 from firebase_admin import credentials,messaging
@@ -20,6 +21,7 @@ print("Connected to Kafka ready for msgs")
 
 def dispatch_fcm(msg, device_token):
     fcm_msg = messaging.Message(
+        android=messaging.AndroidConfig(priority="high"),
         data={
             'message':msg
         },
@@ -48,7 +50,7 @@ def handle_donation_event(event):
 #       a list of device tokens from people that are interested in this
 def get_all_interested_users(event):
     # make an http request to API
-    return ["fpxLT_hHRfCSydZG8wDNM3:APA91bHTkfJYvyKsE8UawEfPk5a4-GwX9STeoQvz0IMwSlnB7p0ChhhBOA7RD_MeuVP7yn4t86asj2C13I-2vtjToP_ykg6l6nuatFPREzxwTIF8reo3kgrfou_-uxS0QOgniXTeq_SE"]
+    return ["e9l7RTT9Qm-sgS3KW5npSt:APA91bG4b_SRFvMCJTc2eAfZC4LnH1CyfCl4mxbVeha9fqbIUVgRrBhArgHqQf0P-3Ay-lAYX6mQ1nA0Zecm-ikiE_t6IsMEAEWcXkNeRQ9A0iA1LmNNe3p95lJYKcQ7t6IqG3AfIZaZ"]
 
 
 

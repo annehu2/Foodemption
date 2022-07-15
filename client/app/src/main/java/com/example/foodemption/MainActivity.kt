@@ -36,10 +36,15 @@ class MainActivity : ComponentActivity() {
             // Get new FCM registration token
             val token = task.result
 
-            // Log and toast
-            val msg = getString(R.string.msg_token_fmt, token)
-//            Log.d(TAG, msg)
-//            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            val sharedPref =  getSharedPreferences(R.string.app_shared_pref_key.toString(),Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putString(R.string.user_device_token.toString(),token)
+                apply()
+            }
+            // Retrieving tokens from sharedPreference, which we call wit `login` api handler (I think)
+            // val tokesn = sharedPref.getString(R.string.user_device_token.toString(),"default")
+            // print("Saved da token")
+
         });
 
         setContent {

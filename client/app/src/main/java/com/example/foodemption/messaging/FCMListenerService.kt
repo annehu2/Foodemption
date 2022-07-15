@@ -66,11 +66,12 @@ class FCMListenerService : FirebaseMessagingService() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(this,0, intent,PendingIntent.FLAG_IMMUTABLE)
-
+        val notifData = remoteMessage.data
+        val notifMessage = notifData.get("message")
         var builder = NotificationCompat.Builder(this, "NEW_CHAN")
-            .setSmallIcon(R.drawable.verified)
+            .setSmallIcon(R.drawable.logo)
             .setContentTitle(remoteMessage.data.get("title"))
-            .setContentText(remoteMessage.data.get("body"))
+            .setContentText(notifMessage)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
 

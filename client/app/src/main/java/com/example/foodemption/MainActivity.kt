@@ -21,10 +21,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                // Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            val sharedPref =  getSharedPreferences(R.string.app_shared_pref_key.toString(),Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putString(R.string.user_device_token.toString(),token)
+                apply()
+            }
+            // Retrieving tokens from sharedPreference, which we call wit `login` api handler (I think)
+            // val tokesn = sharedPref.getString(R.string.user_device_token.toString(),"default")
+            // print("Saved da token")
+
+        });
+
         setContent {
             FoodemptionTheme {
                 // A surface container using the 'background' color from the theme

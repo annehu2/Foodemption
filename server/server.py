@@ -5,6 +5,7 @@ import controllers.customer_controller as customer_controller
 from utils.enum import MYSQL_HOST
 from flask import Flask
 app = Flask(__name__)
+ 
 ## decorator unprotected route
 app.add_url_rule('/cipher',view_func=controller.get_encrypted_data,methods=["GET"])
 app.add_url_rule('/signup', view_func=auth_controller.signup, methods=['POST'])

@@ -1,8 +1,12 @@
 package com.example.foodemption
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
+import com.example.foodemption.home.DonorHome
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -12,9 +16,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import kotlin.concurrent.thread
 
-fun processLogin(email: String, password: String) {
-    val loginBody = LoginRequestBody(email, password, "NEWDEVICETOKEN")
+fun processLogin(email: String, password: String, deviceToken: String, context: Context) {
+    val loginBody = LoginRequestBody(email, password, deviceToken)
 
     val payload = Json.encodeToString(loginBody)
 
@@ -33,6 +38,20 @@ fun processLogin(email: String, password: String) {
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
             val responseBody = Json.decodeFromString<LoginResponseBody>(json)
+            if (responseBody.status_code == 200)
+            {
+                context.startActivity(Intent(context, DonorHome::class.java))
+            } else {
+
+                // Toast.makeText(context,"Incorrect login info, please try again",Toast.LENGTH_SHORT).show()
+//                LoginActivity::class.run
+//                contex
+//                context..runOnUiThread(java.lang.Runnable {
+//                    progressBar.visibility = View.GONE
+//                })
+
+                print("Yo")
+            }
         }
     })
 }
@@ -44,13 +63,12 @@ fun donorUploadFood(title: String, description: String, uri: Uri, best_before: S
     val foodBody = FoodRequestBody(title, description, encoded, best_before)
 
     val payload = Json.encodeToString(foodBody)
-
     val okHttpClient = OkHttpClient()
     val requestBody = payload.toRequestBody()
     val request = Request.Builder()
         .method("POST", requestBody)
         .header("Content-Type", "application/json")
-        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjUzNDViNThjLWI0ODAtNDc0Zi1iMjhkLTI3NTcxYWM3MDQyNyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.W8FB4nbbxn6AlpJvuGLPBCAuGXHMlj1JPgZZvuuUfKA")
+        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjA1OWJiZjRiLTExNTQtNDNmMS1hMGI3LWQ0N2RiY2E0NjkyMCIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.2ldETLveiF5SdBGyWbOY-guxw5faYWqRluiubTYGxWc")
         .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donate".toHttpUrl())
         .build()
     okHttpClient.newCall(request).enqueue(object : Callback {
@@ -93,3 +111,5 @@ data class FoodRequestBody(
     val image_base64: String,
     val best_before: String,
 )
+
+

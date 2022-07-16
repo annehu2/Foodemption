@@ -1,12 +1,14 @@
 package com.example.foodemption
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,24 +26,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.Popup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.compose.rememberImagePainter
 import com.example.foodemption.camera.CameraView
 import com.example.foodemption.home.DonorHome
+import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import java.io.File
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 private var openCamera: MutableState<Boolean> = mutableStateOf(false)
 private lateinit var foodPhotoUri: Uri
+var showUploadDialog = mutableStateOf(false)
 
 // Camera Code Taken from: https://www.kiloloco.com/articles/015-camera-jetpack-compose/
 
@@ -64,6 +72,8 @@ class DonateActivity : ComponentActivity() {
             Log.i("kilo", "Permission denied")
         }
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +112,9 @@ class DonateActivity : ComponentActivity() {
                                     )
                             )
                         }
+                    }
+                    if (showUploadDialog.value) {
+                        UploadOptions()
                     }
                 }
             }
@@ -216,7 +229,7 @@ fun DonatePage(context: Context, orgName: String) {
                     contentDescription = ""
                 )
                 TextButton(onClick = {
-                    openCamera.value = true
+                    showUploadDialog.value = true
                 }) {
                     Text(
                         text = "Add Image",
@@ -225,6 +238,7 @@ fun DonatePage(context: Context, orgName: String) {
                         textAlign = TextAlign.Center
                     )
                 }
+
                 Text(
                     text = "Supported formats: JPEG, PNG, GIF, PDF",
                     color = Color.Gray,
@@ -247,15 +261,44 @@ fun DonatePage(context: Context, orgName: String) {
         )
         Box(modifier = Modifier.padding(top = 10.dp))
 
-        var bestBefore = remember { mutableStateOf(TextFieldValue()) }
-        TextField(
-            value = bestBefore.value,
-            onValueChange = { bestBefore.value = it },
-            label = { Text("Best Before of Food") },
+        // Calendar code https://www.geeksforgeeks.org/date-picker-in-android-using-jetpack-compose/
+        val mContext = LocalContext.current
+        val mYear: Int
+        val mMonth: Int
+        val mDay: Int
+        val mCalendar = Calendar.getInstance()
+
+        // Fetching current year, month and day
+        mYear = mCalendar.get(Calendar.YEAR)
+        mMonth = mCalendar.get(Calendar.MONTH)
+        mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+        mCalendar.time = Date()
+        val bestBefore = remember { mutableStateOf("") }
+
+        val mDatePickerDialog = DatePickerDialog(
+            mContext,
+            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                bestBefore.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+            }, mYear, mMonth, mDay
+        )
+        Button(
             modifier = Modifier
                 .width(316.dp)
-                .height(50.dp)
-        )
+                .height(50.dp),
+            onClick = {
+                mDatePickerDialog.show()
+            }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFe0e0e0))
+        ) {
+            Text(
+                text = "Best Before: ${bestBefore.value}",
+                fontSize = 14.sp,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xff757575),
+                textAlign = TextAlign.Left,
+            )
+        }
+
         Box(modifier = Modifier.padding(top = 10.dp))
 
         var descriptionText = remember { mutableStateOf(TextFieldValue()) }
@@ -283,7 +326,7 @@ fun DonatePage(context: Context, orgName: String) {
                     titleText.value.text,
                     descriptionText.value.text,
                     foodPhotoUri,
-                    bestBefore.value.text
+                    bestBefore.value
                 )
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
@@ -345,6 +388,107 @@ fun openAlertBox(
         )
     }
     return openDialog
+}
+
+@Composable
+fun UploadOptions() {
+    AlertDialog(
+        onDismissRequest = { showUploadDialog.value = false },
+        title = { Text(text = "Choose Upload Option", fontSize = 24.sp) },
+        buttons = {
+            Column(modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly) {
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = {
+                        openCamera.value = true
+                        showUploadDialog.value = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Take a Photo", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = { /*TODO*/
+                        showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Upload from Gallery", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = {/*TODO*/
+                        showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Upload from File", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                Button(
+                    onClick = { showUploadDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+            }
+        },
+    )
 }
 
 

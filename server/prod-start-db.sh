@@ -1,0 +1,1 @@
+docker-compose -f start-db.yml --env-file production-env-var.txt up -d

@@ -1,8 +1,12 @@
+from this import d
 import uuid
  
 from numpy import imag
 from db import session
 from models.app import Customers,Foods,Users,Login,Donors,Addresses
+
+class ManagerException(Exception):
+    pass
 
 # Ideally we'd roll this as a transaction
 
@@ -28,125 +32,166 @@ def set_user_state_to_logout(user_uuid):
     session.commit()
 
 # Testing purposes
-def create_customer():        
-    user = Users(
-        uuid=str(uuid.uuid4()),
-        organization_name="Food Charities",
-        type=1
-    )
+def create_test_customer():
+    user = create_user("Food Charities", "jack@gmail.com", "password", "12345_android", 1)
+    if user == None:
+        return user
+    else:
+        verify_customer(user.uuid)
+        return user
 
-    session.add(user)
-    session.commit()
- 
-    new_customer = Customers(
-        non_profit_license_num="IXA-ASD-SD",
-        license_documentation_url="XABC-EFG-HHI",
-        is_verified=True
-    )
+def create_test_donor():
+    user = create_user("New Pizza Place", "test_donor@gmail.com", "password", "12345_android", 0)
+    if user == None:
+        return user
+    else:
+        verify_donor(user.uuid, "000-000-0000", "LICENSE00000", "test_url", 
+            {
+                "city_name": "Waterloo", 
+                "street_name": "University Ave W",
+                "street_number": "116",
+                "postal_code": "N2L3E2",
+                "building_name": "NA"
+            })
+        return user
 
-    session.enable_relationship_loading(new_customer)
-    new_customer.id = user.id
-    session.add(new_customer)
-    session.commit()
+def create_user(name, email, password, device_token, type):        
+    try:
+        user = Users(
+            uuid=str(uuid.uuid4()),
+            organization_name=name,
+            type=type
+        )
 
-    new_login = Login(
-        user_uuid = str(uuid.uuid4()),
-        user_email = "jack@gmail.com",
-        user_password = "password",
-        device_token = "12345_android",
-        is_logged_in = False
-    )
+        session.add(user)
+        session.commit()
 
-    session.enable_relationship_loading(new_login)
-    new_login.user_id = user.id
-    new_login.user_uuid = user.uuid
-    session.add(new_login)
-    session.commit()
+        new_login = Login(
+            user_uuid = str(uuid.uuid4()),
+            user_email = email,
+            user_password = password,
+            device_token = device_token,
+            is_logged_in = False
+        )
 
-    return user
+        session.enable_relationship_loading(new_login)
+        new_login.user_id = user.id
+        new_login.user_uuid = user.uuid
+        session.add(new_login)
+        session.commit()
 
+        return user
 
-# todo: adding address will fail if it is a duplicate address (i.e integrity contraint fails)
-# but that means an additional donor is added with address_id = 0 rather than correct id
+    except:
+        print("WARN: Duplicate user. Rolling back...")
+        session.rollback()
+        session.delete(user)
+        session.commit()
+        raise ManagerException("Attempt to signup with duplicate email id.")
 
-def create_donor():   
+def verify_customer(user_uuid, license_num, license_url):
+    try:
+        user = get_user_object(user_uuid)
+        new_customer = Customers(
+            non_profit_license_num=license_num,
+            license_documentation_url=license_url,
+            is_verified=True
+        )
 
-    session.rollback() 
+        session.enable_relationship_loading(new_customer)
+        new_customer.id = user.id
+        session.add(new_customer)
+        session.commit()
 
-    user = Users(
-        uuid=str(uuid.uuid4()),
-        organization_name="New Pizza Place",
-        type=0
-    )
+    except:
+        print("WARN: User already verified. Rolling back...")
+        session.rollback()
+        session.commit()
+        raise ManagerException("Verification failed. User already verified.")
 
-    session.add(user)
-    session.commit()
+def verify_donor(user_uuid, phone, license_num, license_url, address):
+    try:
+        user = get_user_object(user_uuid)
+        new_donor = Donors(
+            address_id = 0,
+            contact = phone,
+            food_license_number = license_num,
+            license_documentation_url = license_url,
+            is_verified = True,
+        )
 
-    new_donor = Donors(
-        address_id = 0,
-        contact = "000-000-0000",
-        food_license_number = "LICENSE00000",
-        license_documentation_url = "test_url",
-        is_verified = True,
-    )
+        session.enable_relationship_loading(new_donor)
+        new_donor.id = user.id
 
-    session.enable_relationship_loading(new_donor)
-    new_donor.id = user.id
+        session.add(new_donor)
+        session.commit()
 
-    session.add(new_donor)
-    session.commit()
+    except:
+        print("WARN: User already verified. Rolling back...")
+        session.rollback()
+        session.commit()
+        raise ManagerException("Verification failed. User already verified.")
 
-    new_address = Addresses(
-        uuid = str(uuid.uuid4()),
-        city_name = "Waterloo",
-        street_name = "University Ave W",
-        street_number = "116",
-        postal_code = "N2L3E2",
-        building_name = "NA"
-    )
+    try:
+        new_address = Addresses(
+            uuid = str(uuid.uuid4()),
+            city_name = address["city_name"],
+            street_name = address["street_name"],
+            street_number = address["street_number"],
+            postal_code = address["postal_code"],
+            building_name = address["building_name"],
+        )
 
-    session.enable_relationship_loading(new_address)
-    new_address.donor_id = new_donor.id
-    session.add(new_address)
-    session.commit()
+        session.enable_relationship_loading(new_address)
+        new_address.donor_id = new_donor.id
+        session.add(new_address)
+        session.commit()
 
-    session.query(Donors).filter(Donors.id == new_donor.id).update({ Donors.address_id: new_address.id}, synchronize_session = False )
-    session.commit()
-
-    new_login = Login(
-                user_uuid = str(uuid.uuid4()),
-                user_email = "test_donor@gmail.com",
-                user_password = "password",
-                device_token = "12345_android",
-                is_logged_in = False
-    )
-
-    session.enable_relationship_loading(new_login)
-    new_login.user_id = user.id
-    new_login.user_uuid = user.uuid
-    session.add(new_login)
-    session.commit()
-
-    return user
-
-def get_user_object(uuid):
-    return session.query(Users).filter(Users.uuid == uuid).first()
-
-def fetch_customer():
-    return 20
+    except:
+        print("WARN: Duplicate address for donor. Rolling back...")
+        session.rollback()
+        session.delete(new_donor)
+        session.commit()
+        raise ManagerException("Verification failed. Duplicate address for donor.")
 
 def add_food(title, description, image_url, best_before, donor_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    if donor == None:
+        raise ManagerException("Donor does not exist or user is not verified as donor.")
+    
     donor_id = get_donor_by_uuid(donor_uuid).id
     new_food = Foods(uuid = str(uuid.uuid4()),
                     title = title,
                     image_url = image_url,
                     description = description,
                     best_before = best_before,
-                    donor_id = donor_id)
+                    donor_id = donor_id,
+                    is_claimed = False)
     session.add(new_food)
     session.commit()
 
     return new_food
+
+def claim_food(donor_uuid, customer_uuid, food_uuid):
+    donor = get_donor_by_uuid(donor_uuid)
+    if donor == None:
+        raise ManagerException("Donor does not exist or user is not verified as donor.")
+    donor_id = donor.id
+
+    customer = get_customer_by_uuid(customer_uuid)
+    if customer == None:
+        raise ManagerException("Customer does not exist or user is not verified as customer.")
+    customer_id = customer.id
+
+    food = session.query(Foods).filter(Foods.donor_id == donor_id and Foods.uuid == food_uuid)
+    if food != None:
+        food.update({Foods.is_claimed: True, Foods.customer_id: customer_id}, synchronize_session = False)
+        session.commit()
+    else:
+        raise ManagerException("Failed to claim food. Food does not belong to current user or food does not exist.")
+
+def get_user_object(uuid):
+    return session.query(Users).filter(Users.uuid == uuid).first()
 
 def get_food(uuid):
     return session.query(Foods).filter(Foods.uuid == uuid).first()
@@ -159,3 +204,14 @@ def get_donor_by_uuid(donor_uuid):
     user = session.query(Users).filter(Users.uuid == donor_uuid).first()
     donor = session.query(Donors).filter(Donors.id == user.id).first()
     return donor
+
+def get_customer_by_uuid(customer_uuid):
+    user = session.query(Users).filter(Users.uuid == customer_uuid).first()
+    customer = session.query(Customers).filter(Customers.id == user.id).first()
+    return customer
+
+def get_all_claimed_food():
+    return session.query(Foods).filter(Foods.is_claimed == True).all()
+
+def get_all_available_food():
+    return session.query(Foods).filter(Foods.is_claimed == False).all()

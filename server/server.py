@@ -1,12 +1,14 @@
 import controllers.controller as controller
 import controllers.auth_controller as auth_controller
 import controllers.donator_controller as donator_controller
+import controllers.customer_controller as customer_controller
 from utils.enum import MYSQL_HOST
 from flask import Flask
 app = Flask(__name__)
  
 ## decorator unprotected route
 app.add_url_rule('/cipher',view_func=controller.get_encrypted_data,methods=["GET"])
+app.add_url_rule('/signup', view_func=auth_controller.signup, methods=['POST'])
 app.add_url_rule('/login', view_func=auth_controller.signin, methods=['POST'])
 app.add_url_rule('/test_create_customer', view_func=controller.test_create_customer, methods=['POST'])
 app.add_url_rule('/test_create_donor', view_func=controller.test_create_donor, methods=['POST'])
@@ -15,8 +17,13 @@ app.add_url_rule('/test_create_donor', view_func=controller.test_create_donor, m
 app.add_url_rule('/',view_func=controller.index)
 app.add_url_rule('/logout', view_func=auth_controller.logout, methods=['POST'])
 app.add_url_rule('/donate', view_func=donator_controller.donate_food, methods=['POST'])
-app.add_url_rule('/food', view_func=donator_controller.retrieve_food, methods=['GET'])
+app.add_url_rule('/food', view_func=controller.retrieve_food, methods=['GET'])
 app.add_url_rule('/donations', view_func=donator_controller.retrieve_all_donations, methods=['GET'])
+app.add_url_rule('/accept_claim', view_func=donator_controller.accept_food_claim, methods=['POST'])
+app.add_url_rule('/verify_donor', view_func=donator_controller.verify_donor, methods=['POST'])
+app.add_url_rule('/verify_customer', view_func=customer_controller.verify_customer, methods=['POST'])
+app.add_url_rule('/claimed_food', view_func=controller.retrieve_all_claimed_food, methods=['GET'])
+app.add_url_rule('/available_food', view_func=controller.retrieve_all_available_food, methods=['GET'])
 
 # TODO: Look into docker's networking model and figure out how this work in another
 #       machine (i.e EC2)

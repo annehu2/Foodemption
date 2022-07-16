@@ -39,14 +39,14 @@ def accept_food_claim(currently_authenticated_user):
         donor_uuid = currently_authenticated_user["uuid"]
         food_uuid = food_data["food_uuid"]
     except KeyError: 
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
 
     try:
         manager.claim_food(donor_uuid, customer_uuid, food_uuid)
     except ManagerException as e:
-        return json.dumps({"status_code": 400, "message": str(e)}), 400
+        return json.dumps({"message": str(e)}), 400
     
-    return json.dumps({"status_code": 200}), 200
+    return "", 200
 
 '''
 request example:
@@ -76,15 +76,15 @@ def verify_donor(currently_authenticated_user):
 
     except KeyError: 
         print(verification_data)
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
 
     try:
         manager.verify_donor(donor_uuid, contact, food_license_number, license_documentation_url, address)
 
     except ManagerException as e:
-        return json.dumps({"status_code": 400, "message": str(e)}), 400
+        return json.dumps({"message": str(e)}), 400
 
-    return json.dumps({"status_code": 200}), 200
+    return "", 200
 
 @donator_only
 def donate_food(currently_authenticated_user):
@@ -101,7 +101,7 @@ def donate_food(currently_authenticated_user):
 
     except KeyError: 
         print(donation_data)
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
     
     # print(title, description, image_base64, best_before, donor_uuid)
 
@@ -110,22 +110,21 @@ def donate_food(currently_authenticated_user):
     try:
         food_data = manager.add_food(title, description, image_url, best_before, donor_uuid)
     except ManagerException as e:
-        return json.dumps({"status_code": 400, "message": str(e)}), 400
+        return json.dumps({"message": str(e)}), 400
 
-    return json.dumps({"status_code":200, "data": {"uuid": food_data.uuid}}), 200
+    return json.dumps({"data": {"uuid": food_data.uuid}}), 200
 
 @donator_only
 def retrieve_all_donations(currently_authenticated_user):
     try:
         donor_uuid = currently_authenticated_user["uuid"]
     except KeyError: 
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"})
+        return json.dumps({"message": "Fields are missing!"})
 
     donations = manager.get_food_by_donor(donor_uuid)
 
     return json.dumps(
         {
-            "status_code": 200, 
             "data": [ { "uuid": food.uuid,
                         "title": food.title,
                         "image_url": food.image_url,

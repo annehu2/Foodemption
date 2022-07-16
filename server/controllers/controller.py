@@ -23,16 +23,16 @@ def get_encrypted_data():
 def test_create_customer():
     new_customer = create_test_customer()
     if new_customer == None:
-        return json.dumps({"status_code": 400, "message": "Tried to create duplicate customer"}), 400
+        return json.dumps({"message": "Tried to create duplicate customer"}), 400
     else:
-        return json.dumps({"status_code": 200}), 200
+        return 200
 
 def test_create_donor():
     new_donor = create_test_donor()
     if new_donor == None:
-        return json.dumps({"status_code": 400, "message": "Tried to create duplicate donor"}), 400
+        return json.dumps({"message": "Tried to create duplicate donor"}), 400
     else:
-        return json.dumps({"status_code": 200}), 200
+        return 200
 
 @authentication_required
 def retrieve_food(currently_authenticated_user):
@@ -41,17 +41,16 @@ def retrieve_food(currently_authenticated_user):
     try:
         food_uuid = food_data["uuid"]
     except KeyError: 
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
 
     food = get_food(food_uuid)
 
     if food == None:
-        return json.dumps({"status_code": 400, "message": "Food with given uuid does not exist."}), 400
+        return json.dumps({"message": "Food with given uuid does not exist."}), 400
 
     else:
         return json.dumps(
             {
-                "status_code": 200, 
                 "data": {
                     "uuid": food.uuid,
                     "title": food.title,
@@ -68,7 +67,6 @@ def retrieve_all_claimed_food(currently_authenticated_user):
     donations = get_all_claimed_food()
     return json.dumps(
         {
-            "status_code": 200, 
             "data": [ { "uuid": food.uuid,
                         "title": food.title,
                         "image_url": food.image_url,
@@ -83,7 +81,6 @@ def retrieve_all_available_food(currently_authenticated_user):
     donations = get_all_available_food()
     return json.dumps(
         {
-            "status_code": 200, 
             "data": [ { "uuid": food.uuid,
                         "title": food.title,
                         "image_url": food.image_url,

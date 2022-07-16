@@ -17,12 +17,12 @@ def verify_customer(currently_authenticated_user):
 
     except KeyError: 
         print(verification_data)
-        return json.dumps({"status_code": 400, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
 
     try:
         manager.verify_customer(customer_uuid, non_profit_license_num, license_documentation_url)
 
     except ManagerException as e:
-        return json.dumps({"status_code": 400, "message": str(e)}), 400
+        return json.dumps({"message": str(e)}), 400
 
-    return json.dumps({"status_code": 200}), 200
+    return "", 200

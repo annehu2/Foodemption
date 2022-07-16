@@ -16,13 +16,13 @@ def signup():
         type = user_signup_data['type']
 
     except KeyError: 
-        return json.dumps({"status_code":400,"data": {"jwt": "", "uuid": ""}}),400
+        return json.dumps({"data": {"jwt": "", "uuid": ""}}),400
 
     try:
         user = create_user(name, email, password, device_token, type)
 
     except ManagerException as e:
-        return json.dumps({"status_code":400, "data": {"jwt": "", "uuid": ""}, "message": str(e)}),400
+        return json.dumps({"data": {"jwt": "", "uuid": ""}, "message": str(e)}),400
 
     login_data = get_login_data(email)
 
@@ -38,7 +38,6 @@ def signup():
 
     return json.dumps(
         {
-            "status_code": 200, 
             "data": 
             {
                 "jwt": jwt_token,
@@ -60,13 +59,13 @@ def signin():
         device_token = user_login_data['device_token']
 
     except KeyError: 
-        return json.dumps({"status_code": 400, "data": {"jwt": "" }, "message": "Fields are missing!"}), 400
+        return json.dumps({"data": {"jwt": "" }, "message": "Fields are missing!"}), 400
 
     login_data = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
-        return json.dumps({"status_code":400, "data": {"jwt": "" }, "message": "Incorrect credentials."}), 400
+        return json.dumps({"data": {"jwt": "" }, "message": "Incorrect credentials."}), 400
 
     user_data = get_user_object(login_data.user_uuid)
     
@@ -82,7 +81,6 @@ def signin():
 
     return json.dumps(
         {
-            "status_code": 200, 
             "data": 
             {
                 "jwt": jwt_token,
@@ -98,4 +96,4 @@ def signin():
 @authentication_required
 def logout(currentUser):
     set_user_state_to_logout(currentUser['uuid'])
-    return json.dumps({"status_code": 200, "message": "successfully logged user out"}), 200
+    return "", 200

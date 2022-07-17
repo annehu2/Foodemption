@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -36,14 +37,7 @@ class MainActivity : ComponentActivity() {
             // Get new FCM registration token
             val token = task.result
 
-            val sharedPref =  getSharedPreferences(R.string.app_shared_pref_key.toString(),Context.MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putString(R.string.user_device_token.toString(),token)
-                apply()
-            }
-            // Retrieving tokens from sharedPreference, which we call wit `login` api handler (I think)
-            // val tokesn = sharedPref.getString(R.string.user_device_token.toString(),"default")
-            // print("Saved da token")
+            SharedPreferenceHelper.setFCMToken(this, token)
 
         });
 

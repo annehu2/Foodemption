@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,11 +121,9 @@ fun LoginPage(context: Context) {
         OutlinedButton(
             onClick = {
                 try {
-                    val sharedPref = context.getSharedPreferences(R.string.app_shared_pref_key.toString(), Context.MODE_PRIVATE)
-                    val deviceToken = sharedPref.getString(R.string.user_device_token.toString(),"default")
-                    processLogin(emailText.value.text, passwordText.value.text, deviceToken.toString(), context)
-//                    val intent = Intent(context, DonorHome::class.java)
-//                    context.startActivity(intent)
+                    val deviceToken = SharedPreferenceHelper.getFCMToken(context)
+                    processLogin(emailText.value.text, passwordText.value.text, deviceToken, context)
+
                 } catch (e: Exception) {
                     openDialog.value = false
                 }

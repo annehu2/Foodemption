@@ -49,11 +49,11 @@ fun DonorHome(context: Context, name: String) {
     ) {
         Title("Anne", "Cool Kids Club")
         Spacer(Modifier.size(40.dp))
-        HomeListings(subTitle = "My Food Listings")
+        HomeListings(context, subTitle = "My Food Listings", 0)
         Spacer(Modifier.size(40.dp))
-        HomeListings(subTitle = "My Claimed Food")
+        HomeListings(context, subTitle = "My Claimed Food", 1)
         Spacer(Modifier.size(40.dp))
-        HomeListings(subTitle = "Closest Organizations")
+        HomeListings(context, subTitle = "Closest Organizations", 2)
         Spacer(Modifier.size(60.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(

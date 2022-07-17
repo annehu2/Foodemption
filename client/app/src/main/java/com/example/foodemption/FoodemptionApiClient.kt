@@ -12,11 +12,28 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttp
+import okhttp3.OkHttpClient
 import java.io.File
 import java.io.IOException
 import java.util.*
+
+fun getAllDonors(context: Context): List<DonationsBodyData> {
+    val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+    val request = Request.Builder()
+        .header("Content-Type", "application/json")
+        .addHeader("Authorization", jwtToken)
+        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donations".toHttpUrl())
+        .build()
+    val response = OkHttpClient().newCall(request).execute()
+
+    val json = response.body.string()
+    val responseBody = Json.decodeFromString<DonationsBody>(json)
+    return responseBody.data
+}
+
 
 fun processLogin(email: String, password: String, deviceToken: String, context: Context) {
     val loginBody = LoginRequestBody(email, password, deviceToken)
@@ -37,8 +54,7 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
 
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
-            if (response.code == 200)
-            {
+            if (response.code == 200) {
                 val responseBody = Json.decodeFromString<LoginResponseBody>(json)
                 val userJwtToken = responseBody.data.jwt
                 SharedPreferenceHelper.setUserJWT(context, userJwtToken)
@@ -50,7 +66,13 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
     })
 }
 
-fun donorUploadFood(title: String, description: String, uri: Uri, best_before: String, context: Context){
+fun donorUploadFood(
+    title: String,
+    description: String,
+    uri: Uri,
+    best_before: String,
+    context: Context
+) {
     val file = File(uri.path)
     val encoded = convertToBase64(file)
 
@@ -109,4 +131,17 @@ data class FoodRequestBody(
     val best_before: String,
 )
 
+@Serializable
+data class DonationsBody(
+    val data: List<DonationsBodyData>
+)
 
+@Serializable
+data class DonationsBodyData(
+    val uuid: String,
+    val title: String,
+    val image_url: String,
+    val description: String,
+    val best_before: String,
+    val is_claimed: Boolean,
+)

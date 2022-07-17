@@ -123,7 +123,6 @@ fun LoginPage(context: Context) {
                 try {
                     val deviceToken = SharedPreferenceHelper.getFCMToken(context)
                     processLogin(emailText.value.text, passwordText.value.text, deviceToken, context)
-
                 } catch (e: Exception) {
                     openDialog.value = false
                 }

@@ -38,8 +38,15 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
             val responseBody = Json.decodeFromString<LoginResponseBody>(json)
-            if (responseBody.status_code == 200)
+            if (response.code == 200)
             {
+                val userJwtToken = responseBody.data.jwt
+                val sharedPref =  context.getSharedPreferences(R.string.app_shared_pref_key.toString(),Context.MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    putString(R.string.user_jwt_token.toString(), userJwtToken)
+                    apply()
+                }
+
                 context.startActivity(Intent(context, DonorHome::class.java))
             } else {
 
@@ -56,7 +63,7 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
     })
 }
 
-fun donorUploadFood(title: String, description: String, uri: Uri, best_before: String){
+fun donorUploadFood(title: String, description: String, uri: Uri, best_before: String, context: Context){
     val file = File(uri.path)
     val encoded = convertToBase64(file)
 
@@ -65,10 +72,14 @@ fun donorUploadFood(title: String, description: String, uri: Uri, best_before: S
     val payload = Json.encodeToString(foodBody)
     val okHttpClient = OkHttpClient()
     val requestBody = payload.toRequestBody()
+
+    val sharedPref = context.getSharedPreferences(R.string.app_shared_pref_key.toString(), Context.MODE_PRIVATE)
+    val jwtToken = sharedPref.getString(R.string.user_jwt_token.toString(),"default").toString()
+
     val request = Request.Builder()
         .method("POST", requestBody)
         .header("Content-Type", "application/json")
-        .addHeader("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6IjA1OWJiZjRiLTExNTQtNDNmMS1hMGI3LWQ0N2RiY2E0NjkyMCIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.2ldETLveiF5SdBGyWbOY-guxw5faYWqRluiubTYGxWc")
+        .addHeader("Authorization", jwtToken)
         .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donate".toHttpUrl())
         .build()
     okHttpClient.newCall(request).enqueue(object : Callback {

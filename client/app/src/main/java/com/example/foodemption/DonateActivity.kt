@@ -326,7 +326,8 @@ fun DonatePage(context: Context, orgName: String) {
                     titleText.value.text,
                     descriptionText.value.text,
                     foodPhotoUri,
-                    bestBefore.value
+                    bestBefore.value,
+                    context
                 )
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),

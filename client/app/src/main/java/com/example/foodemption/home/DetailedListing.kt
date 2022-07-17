@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.foodemption.FoodemptionApiClient
 import com.example.foodemption.R
 import com.example.foodemption.ui.theme.FoodemptionTheme
 

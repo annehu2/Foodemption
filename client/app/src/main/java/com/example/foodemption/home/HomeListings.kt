@@ -93,12 +93,11 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
         ) {
             if (showType == 1) {
                 val donations =
-                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+                    remember { mutableStateOf(emptyList<DonationsBodyData>()) }
 
                 LaunchedEffect(Unit) {
-                    val presenter = FoodemptionApiClient()
                     thread {
-                        donations.value = presenter.getAllDonors()
+                        donations.value = getAllDonors(context)
                     }
                 }
 

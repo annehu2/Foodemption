@@ -20,7 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
-import com.example.foodemption.FoodemptionApiClient
+import com.example.foodemption.DonationsBodyData
+import com.example.foodemption.getAllDonors
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import kotlin.concurrent.thread
 
@@ -53,12 +54,11 @@ fun DetailedListingsPage(context: Context, name: String) {
             .fillMaxHeight()
     ) {
         val donations =
-            remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+            remember { mutableStateOf(emptyList<DonationsBodyData>()) }
 
         LaunchedEffect(Unit) {
-            val presenter = FoodemptionApiClient()
             thread {
-                donations.value = presenter.getAllDonors()
+                donations.value = getAllDonors(context)
             }
         }
         val donationsLen = donations.value.size

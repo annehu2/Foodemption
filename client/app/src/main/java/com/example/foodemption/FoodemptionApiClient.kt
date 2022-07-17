@@ -5,8 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
-import android.widget.Toast
 import com.example.foodemption.home.DonorHome
+import com.example.foodemption.utils.SharedPreferenceHelper
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -16,7 +16,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
-import kotlin.concurrent.thread
 
 fun processLogin(email: String, password: String, deviceToken: String, context: Context) {
     val loginBody = LoginRequestBody(email, password, deviceToken)
@@ -41,23 +40,10 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
             if (response.code == 200)
             {
                 val userJwtToken = responseBody.data.jwt
-                val sharedPref =  context.getSharedPreferences(R.string.app_shared_pref_key.toString(),Context.MODE_PRIVATE)
-                with(sharedPref.edit()) {
-                    putString(R.string.user_jwt_token.toString(), userJwtToken)
-                    apply()
-                }
-
+                SharedPreferenceHelper.setUserJWT(context, userJwtToken)
                 context.startActivity(Intent(context, DonorHome::class.java))
             } else {
 
-                // Toast.makeText(context,"Incorrect login info, please try again",Toast.LENGTH_SHORT).show()
-//                LoginActivity::class.run
-//                contex
-//                context..runOnUiThread(java.lang.Runnable {
-//                    progressBar.visibility = View.GONE
-//                })
-
-                print("Yo")
             }
         }
     })
@@ -73,8 +59,7 @@ fun donorUploadFood(title: String, description: String, uri: Uri, best_before: S
     val okHttpClient = OkHttpClient()
     val requestBody = payload.toRequestBody()
 
-    val sharedPref = context.getSharedPreferences(R.string.app_shared_pref_key.toString(), Context.MODE_PRIVATE)
-    val jwtToken = sharedPref.getString(R.string.user_jwt_token.toString(),"default").toString()
+    val jwtToken = SharedPreferenceHelper.getUserJwt(context)
 
     val request = Request.Builder()
         .method("POST", requestBody)

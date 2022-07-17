@@ -16,6 +16,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 fun processLogin(email: String, password: String, deviceToken: String, context: Context) {
     val loginBody = LoginRequestBody(email, password, deviceToken)
@@ -36,9 +37,9 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
 
         override fun onResponse(call: Call, response: Response) {
             val json = response.body.string()
-            val responseBody = Json.decodeFromString<LoginResponseBody>(json)
             if (response.code == 200)
             {
+                val responseBody = Json.decodeFromString<LoginResponseBody>(json)
                 val userJwtToken = responseBody.data.jwt
                 SharedPreferenceHelper.setUserJWT(context, userJwtToken)
                 context.startActivity(Intent(context, DonorHome::class.java))
@@ -91,13 +92,13 @@ data class LoginRequestBody(
 
 @Serializable
 data class LoginResponseBody(
-    val status_code: Int,
     val data: JwtData,
 )
 
 @Serializable
 data class JwtData(
     val jwt: String,
+    val uuid: String
 )
 
 @Serializable

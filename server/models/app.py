@@ -85,6 +85,7 @@ class Foods(db.Model):
     image_url = db.Column(db.String(512))
     description = db.Column(db.String(64))
     best_before = db.Column(db.String(12)) # Save an unix time stamp
+    is_claimed = db.Column(db.Boolean, unique=False, default=False)
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     filters = db.relationship("Filters", secondary=donation_filter_association)
     def __repr__(self):

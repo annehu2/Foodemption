@@ -5,9 +5,7 @@ from flask import request
 
 from controllers.middleware import authentication_required
 from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers_who_are_loggedin, create_all_filters, intersect_filter
-from controllers.middleware import consumer_only, donator_only
-# from server.controllers.middleware import consumer_only
-# from server.manager.manager import intersect_filter
+from controllers.middleware import customer_only, donator_only
 
 @authentication_required
 def index(data):
@@ -54,7 +52,7 @@ def update_food_filter(authenticated_user):
     except KeyError:
         return json.dumps({"message":"Unproper structured data"}),400
 
-@consumer_only 
+@customer_only
 def update_customer_filter(authenticated_user):
      
     try:

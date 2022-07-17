@@ -1,4 +1,14 @@
 buildscript {
+    repositories {
+        google()
+    }
+
+    dependencies {
+
+        // Add the following line:
+        classpath 'com.google.gms:google-services:4.3.10'  // Google Services plugin
+    }
+
     ext {
         compose_version = '1.1.0-beta01'
     }

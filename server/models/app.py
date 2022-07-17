@@ -2,9 +2,11 @@ from email.policy import default
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from utils.enum import MYSQL_HOST
+from db import session
+    
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@127.0.0.1:3306/foodDemptionDb'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:password@{MYSQL_HOST}:3306/foodDemptionDb'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -57,6 +59,8 @@ class Foods(db.Model):
     description = db.Column(db.String(64))
     best_before = db.Column(db.String(12)) # Save an unix time stamp
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
+    is_claimed = db.Column(db.Boolean, unique=False, default=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable = True) # claimed by customer with id
     def __repr__(self):
         return '<Food:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
 
@@ -83,7 +87,7 @@ class Login(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_uuid = db.Column(db.String(128))
-    user_email = db.Column(db.String(32))
+    user_email = db.Column(db.String(32), unique=True)
     user_password = db.Column(db.String(32))
     device_token = db.Column(db.String(256))
     is_logged_in = db.Column(db.Boolean, default=False)

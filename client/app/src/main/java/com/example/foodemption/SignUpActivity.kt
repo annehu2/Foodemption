@@ -73,6 +73,29 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
+        val selectedValue = remember { mutableStateOf("") }
+        val label1 = "Restaurant"
+        val label2 = "Food Bank"
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedValue.value == label1,
+                onClick = { selectedValue.value = label1 }
+            )
+            Text(
+                text = label1,
+            )
+
+            RadioButton(
+                selected = selectedValue.value == label2,
+                onClick = { selectedValue.value = label2 }
+            )
+            Text(
+                text = label2,
+            )
+        }
+
         var nameText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = nameText.value,

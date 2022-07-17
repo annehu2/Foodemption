@@ -2,14 +2,54 @@ from flask import request
 
 import json,jwt
 
-from controllers.util import authentication_required
-from manager.manager import  get_login_data, get_user_object, set_user_state_to_login, set_user_state_to_logout
+from controllers.middleware import authentication_required
+from manager.manager import *
+
+def signup():
+    user_signup_data = request.get_json()
+
+    try:
+        name = user_signup_data['name']
+        email = user_signup_data['email']
+        password = user_signup_data['password']
+        device_token = user_signup_data['device_token']
+        type = user_signup_data['type']
+
+    except KeyError: 
+        return json.dumps({"data": {"jwt": "", "uuid": ""}}),400
+
+    try:
+        user = create_user(name, email, password, device_token, type)
+
+    except ManagerException as e:
+        return json.dumps({"data": {"jwt": "", "uuid": ""}, "message": str(e)}),400
+
+    login_data = get_login_data(email)
+
+    # We can add more data if necessary
+    jwt_token = jwt.encode({
+        "email": login_data.user_email,
+        "uuid": user.uuid,
+        "organization_name": user.organization_name,
+        "user_type": user.type,
+    },"SecretCipher", algorithm="HS256")
+
+    set_user_state_to_login(user.uuid, device_token)
+
+    return json.dumps(
+        {
+            "data": 
+            {
+                "jwt": jwt_token,
+                "uuid": user.uuid
+            }
+        }
+    ), 200
 
 # Takes email, password and device token from user
 # Peform a look up in the login table. Make sure they match
 # If match, set device_token on this user entity. 
 # Return a jwt token that encodes information (UUID, email, organization_name, type, is_verified)
-
 def signin(): 
     user_login_data = request.get_json()
     
@@ -17,15 +57,15 @@ def signin():
         email = user_login_data['email']
         password = user_login_data['password']
         device_token = user_login_data['device_token']
-    
+
     except KeyError: 
-         return json.dumps({"status_code":400, "message":"Fields are missing!"})
+        return json.dumps({"data": {"jwt": "" }, "message": "Fields are missing!"}), 400
 
     login_data = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
-        return json.dumps({"status_code":403, "message":"Access denied"})
+        return json.dumps({"data": {"jwt": "" }, "message": "Incorrect credentials."}), 400
 
     user_data = get_user_object(login_data.user_uuid)
     
@@ -37,17 +77,17 @@ def signin():
         "user_type": user_data.type,
     },"SecretCipher", algorithm="HS256")
 
-    set_user_state_to_login(user_data.id, device_token)
+    set_user_state_to_login(user_data.uuid, device_token)
 
     return json.dumps(
         {
-            "status_code": 200, 
             "data": 
             {
-                "jwt": jwt_token
+                "jwt": jwt_token,
+                "uuid": user_data.uuid
             }
         }
-    )
+    ), 200
 
 # Not much to do here. Need to remove the device token
 # The currentUser is an UserObject
@@ -55,5 +95,5 @@ def signin():
 # Once they log out their token is invalidated.
 @authentication_required
 def logout(currentUser):
-    set_user_state_to_logout(currentUser['id'])
-    return json.dumps({"message":"successfully logged user out", "status_code":200})
+    set_user_state_to_logout(currentUser['uuid'])
+    return "", 200

@@ -11,18 +11,18 @@ function start_mysql_and_create_db {
 
 function run_db_migrations {
     enter_wkdir;
-    cd ./models && python3 -m flask db migrate && python3 -m flask db upgrade;
+    cd ./models && python3 -m flask db stamp head && python3 -m flask db migrate && python3 -m flask db upgrade;
 }
 
 function run_python_api_server {
     enter_wkdir;
-    python3 server.py;
+    gunicorn --bind 0.0.0.0:8000 server:app;
 }
 
 
 function boot_strap {
     enter_wkdir;
-    start_mysql_and_create_db;
+    # start_mysql_and_create_db;
     run_db_migrations;
     run_python_api_server;
 }

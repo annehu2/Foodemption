@@ -11,3 +11,4 @@
 4. Try to execute `python -m flask db migrate` from `server/model`. We are likely to run into an error complaining bout mysql client. Depends on your OS the solution may be installing `mysqlclient` or something else.
 5. Once the mysql client has been installed, run `python -m flask db migrate && python -m flask db upgrade` from `server/model` again. (Should make sure the database `foodDemptionDb` exists in the db instance on port 3306). 
 6. Run `python server.py` to start the server. It should be running on port 8000.
+7. Note, the `MYSQL_HOST` variable now comes from the .env file. Set it accordingly.

@@ -11,7 +11,7 @@ function start_mysql_and_create_db {
 
 function run_db_migrations {
     enter_wkdir;
-    cd ./models && python3 -m flask db migrate && python3 -m flask db upgrade;
+    cd ./models && python3 -m flask db stamp head && python3 -m flask db migrate && python3 -m flask db upgrade;
 }
 
 function run_python_api_server {
@@ -22,7 +22,7 @@ function run_python_api_server {
 
 function boot_strap {
     enter_wkdir;
-    start_mysql_and_create_db;
+    # start_mysql_and_create_db;
     run_db_migrations;
     run_python_api_server;
 }

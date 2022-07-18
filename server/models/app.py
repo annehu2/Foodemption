@@ -1,8 +1,11 @@
 from email.policy import default
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 from flask_migrate import Migrate
 from utils.enum import MYSQL_HOST
+from db import session
+    
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:password@{MYSQL_HOST}:3306/foodDemptionDb'
 
@@ -13,6 +16,19 @@ migrate = Migrate(app, db)
 # Not possible to set constraint on (customers | donors) <-> Login table
 
 # One to One relationship between donors and address
+
+customer_filter_association = db.Table(
+    "customer_filter",
+    db.Column("customers_id", db.Integer, db.ForeignKey('customers.id')),
+    db.Column("filters_id",db.Integer, db.ForeignKey('filters.id'))
+)
+
+donation_filter_association = db.Table(
+    "donationassoc",  
+    db.Column("donation_id", db.Integer, db.ForeignKey('foods.id')),
+    db.Column("filter_id", db.Integer, db.ForeignKey('filters.id'))
+)
+
 class Customers(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True)
     # uuid = db.Column(db.String(32))
@@ -20,9 +36,22 @@ class Customers(db.Model):
     non_profit_license_num = db.Column(db.String(32))
     license_documentation_url = db.Column(db.String(64)) # Use S3 for this one
     is_verified = db.Column(db.Boolean, unique=False, default=False)
-    
+    filters = db.relationship("Filters", secondary=customer_filter_association)    
     def __repr__(self):
         return '<Customer:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
+    def get(self):
+        return {
+            'id': self.id,
+            'non_profit_license_num': self.non_profit_license_num,
+            'license_documentation_url': self.license_documentation_url,
+            'is_verified': self.is_verified,
+            'filters': [f.id for f in self.filters]
+        }
+
+class Filters(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(64))
+
 
 # one donors should map to many foods
 class Donors(db.Model):
@@ -56,9 +85,16 @@ class Foods(db.Model):
     image_url = db.Column(db.String(512))
     description = db.Column(db.String(64))
     best_before = db.Column(db.String(12)) # Save an unix time stamp
+    is_claimed = db.Column(db.Boolean, unique=False, default=False)
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
+    filters = db.relationship("Filters", secondary=donation_filter_association)
     def __repr__(self):
         return '<Food:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
+    def get(self):
+        return {
+            'id': self.id,
+            'filters': [f.id for f in self.filters]
+        }
 
 class Addresses(db.Model):
     id = db.Column(db.Integer, primary_key=True)

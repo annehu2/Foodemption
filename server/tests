@@ -1,0 +1,256 @@
+---- TESTS ----
+
+signup as donor (type: 0):
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"name": "New Pizza Place", "email": "test_donor@gmail.com", "password": "password", "device_token": "12345_android", "type": "0"}' http://0.0.0.0:8000/signup
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /signup HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 130
+> 
+* upload completely sent off: 130 out of 130 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:02:29 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 324
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY", "uuid": "c1b1703d-ae76-4de5-8efa-bb562e734e67"}}%
+
+or create test user:
+
+curl -v -H "Content-Type: application/json" -X POST http://0.0.0.0:8000/test_create_donor
+
+now we can login with email: test_donor@gmail.com, password: password
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"email": "test_donor@gmail.com", "password": "password", "device_token": "12345_android"}' http://0.0.0.0:8000/login
+
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /login HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 90
+> 
+* upload completely sent off: 90 out of 90 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:03:11 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 324
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY", "uuid": "c1b1703d-ae76-4de5-8efa-bb562e734e67"}}%
+
+using other email like tanavya@gmail.com will fail
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"email": "tanavya@gmail.com", "password": "password", "device_token": "12345_android"}' http://0.0.0.0:8000/login
+
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /login HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 87
+> 
+* upload completely sent off: 87 out of 87 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Wed, 22 Jun 2022 13:19:33 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 48
+< Connection: close
+< 
+* Closing connection 0
+{"status_code": 403, "message": "Access denied"}%
+
+or incorrect password will also fail
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"email": "tanavya@gmail.com", "password": "password", "device_token": "12345_android"}' http://0.0.0.0:8000/login
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /login HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 87
+> 
+* upload completely sent off: 87 out of 87 bytes
+< HTTP/1.1 400 BAD REQUEST
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:03:48 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 58
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"jwt": ""}, "message": "Incorrect credentials."}%
+
+test add food will fail because user is not verified as donor
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X POST -d '{"title": "pizza", "description": "large margherita pizza", "best_before":"1656084484", "image_base64": "test"}' http://0.0.0.0:8000/donate
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /donate HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY
+> Content-Length: 111
+> 
+* upload completely sent off: 111 out of 111 bytes
+< HTTP/1.1 400 BAD REQUEST
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:05:20 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 69
+< Connection: close
+< 
+* Closing connection 0
+{"message": "Donor does not exist or user is not verified as donor."}%
+
+verify donor as user
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X POST -d \
+    '{ "contact": "000-000-0000", "food_license_number": "LICENSE00000", "license_documentation_url": "test_url", "address": { "city_name": "Waterloo", "street_name": "University Ave W", "street_number": "116", "postal_code": "N2L3E2", "building_name": "NA" } }' \
+    http://0.0.0.0:8000/verify_donor
+
+test add food again
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X POST -d '{"title": "pizza", "description": "large margherita pizza", "best_before":"1656084484", "image_base64": "test"}' http://0.0.0.0:8000/donate
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /donate HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY
+> Content-Length: 111
+> 
+* upload completely sent off: 111 out of 111 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:09:26 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 58
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc"}}%
+
+test retrieve food
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X GET -d '{"uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc"}' http://0.0.0.0:8000/food
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> GET /food HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY
+> Content-Length: 48
+> 
+* upload completely sent off: 48 out of 48 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:09:55 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 196
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc", "title": "pizza", "image_url": "www.test.url", "description": "large margherita pizza", "best_before": "1656084484", "is_claimed": false}}%
+
+test retrieve all donations
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X GET http://0.0.0.0:8000/donations
+
+retrieve all claimed food
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X GET http://0.0.0.0:8000/claimed_food
+
+retrieve all available food
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X GET http://0.0.0.0:8000/available_food
+
+signup as customer (type: 1)
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"name": "Food Charities", "email": "jack@gmail.com", "password": "password", "device_token": "12345_android", "type": "1"}' http://0.0.0.0:8000/signup
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /signup HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 123
+> 
+* upload completely sent off: 123 out of 123 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Fri, 15 Jul 2022 06:10:21 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 314
+< Connection: close
+< 
+* Closing connection 0
+{"data": {"jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphY2tAZ21haWwuY29tIiwidXVpZCI6ImJkMjBiMWI2LWJkZWQtNGExMi1iOTk2LTlmZmUzM2I0ZDEwYyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiRm9vZCBDaGFyaXRpZXMiLCJ1c2VyX3R5cGUiOjF9.oFCp-ApaXDlnWdRjxuDmft-dynXIdD9Q_JwSWdaJ-4Q", "uuid": "bd20b1b6-bded-4a12-b996-9ffe33b4d10c"}}%
+
+verify user as customer
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphY2tAZ21haWwuY29tIiwidXVpZCI6ImJkMjBiMWI2LWJkZWQtNGExMi1iOTk2LTlmZmUzM2I0ZDEwYyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiRm9vZCBDaGFyaXRpZXMiLCJ1c2VyX3R5cGUiOjF9.oFCp-ApaXDlnWdRjxuDmft-dynXIdD9Q_JwSWdaJ-4Q" -X POST -d '{ "non_profit_license_num": "000-000-0000", "license_documentation_url": "test_url" }' http://0.0.0.0:8000/verify_customer
+Note: Unnecessary use of -X or --request, POST is already inferred.
+*   Trying 0.0.0.0...
+* TCP_NODELAY set
+* Connected to 0.0.0.0 (127.0.0.1) port 8000 (#0)
+> POST /verify_customer HTTP/1.1
+> Host: 0.0.0.0:8000
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Content-Type: application/json
+> Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphY2tAZ21haWwuY29tIiwidXVpZCI6IjJlNWE4ZWM0LTk4N2QtNDFjMC04ZDcxLTdkZWZiZDlkZTIyMSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiRm9vZCBDaGFyaXRpZXMiLCJ1c2VyX3R5cGUiOjF9.kCc-JVIGqk-cz8b4kbJqvkJnulDTGbD-rQmLGpUXVbg
+> Content-Length: 85
+> 
+* upload completely sent off: 85 out of 85 bytes
+< HTTP/1.1 200 OK
+< Server: Werkzeug/2.1.2 Python/3.9.7
+< Date: Mon, 11 Jul 2022 02:43:07 GMT
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 20
+< Connection: close
+< 
+* Closing connection 0
+
+mark food as claimed
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X POST -d '{"customer_uuid": "bd20b1b6-bded-4a12-b996-9ffe33b4d10c", "food_uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc"}' http://0.0.0.0:8000/accept_claim

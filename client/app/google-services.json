@@ -1,40 +1,39 @@
 {
-  "project_info": {
-    "project_number": "1037975576053",
-    "firebase_url": "https://foodemption-3e1e0-default-rtdb.firebaseio.com",
-    "project_id": "foodemption-3e1e0",
-    "storage_bucket": "foodemption-3e1e0.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1037975576053:android:c5d4a17b979605317214bc",
-        "android_client_info": {
-          "package_name": "com.coba.mymapsapps"
+    "project_info": {
+      "project_number": "466397967350",
+      "project_id": "cs446-notification-project",
+      "storage_bucket": "cs446-notification-project.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:466397967350:android:222e205c2f478ef40a4dd7",
+          "android_client_info": {
+            "package_name": "com.example.foodemption"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "466397967350-iocisopeiailb4redc6ipkvcnpel1evh.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBJuZ30VYVAfq0cvbyamRrZOGcXMY7hElE"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "466397967350-iocisopeiailb4redc6ipkvcnpel1evh.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1037975576053-2q1o25ps5aqrmsgm0co83v2mpfm4hfse.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA6jG6-ibHo7LYAnijVYtUjz4unt0fZQMI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1037975576053-2q1o25ps5aqrmsgm0co83v2mpfm4hfse.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:1037975576053:android:77ec2c75b95a26de7214bc",
@@ -64,6 +63,6 @@
         }
       }
     }
-  ],
-  "configuration_version": "1"
-}
+    ],
+    "configuration_version": "1"
+  }

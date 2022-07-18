@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">MyMapsApps</string>
+    <string name="app_name">Foodemption</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="msg_token_fmt" translatable="false">FCM registration Token: %s</string>
+    <string name="app_shared_pref_key">foodemp_shared_pref</string>
+    <string name="user_device_token">user_device_token</string>
+    <string name="user_jwt_token">user_jwt_token</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>

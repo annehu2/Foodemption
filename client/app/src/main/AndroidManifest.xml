@@ -35,6 +35,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <activity android:name=".home.ConsumerHome">
+        </activity>
         <activity android:name=".DonateActivity">
         </activity>
         <activity android:name=".LoginActivity">

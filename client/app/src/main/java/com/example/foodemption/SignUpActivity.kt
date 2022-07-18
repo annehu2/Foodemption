@@ -26,8 +26,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.home.ConsumerHome
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import java.util.function.Consumer
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,7 +137,7 @@ fun SignUpPage(context: Context) {
         Box(modifier = Modifier.padding(top = 20.dp))
 
         OutlinedButton(
-            onClick = { val intent = Intent(context, DonorHome::class.java)
+            onClick = { val intent = Intent(context, ConsumerHome::class.java)
                 context.startActivity(intent) },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier

@@ -65,6 +65,7 @@ fun DetailedListingsPage(context: Context, name: String) {
         for (i in (donationsLen - 1) downTo 0) {
             Spacer(Modifier.size(40.dp))
             DetailedListing(context, donations.value[i].image_url,donations.value[i].title, donations.value[i].best_before, donations.value[i].description)
+
         }
         Spacer(Modifier.size(60.dp))
     }

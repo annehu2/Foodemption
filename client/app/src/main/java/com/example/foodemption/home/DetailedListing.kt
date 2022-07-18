@@ -1,12 +1,16 @@
 package com.example.foodemption.home
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -25,8 +29,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.foodemption.DonateActivity
 import com.example.foodemption.R
+import com.example.foodemption.SchedulePickUpActivity
+import com.example.foodemption.processLogin
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 
 @Composable
 fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String) {
@@ -77,7 +85,27 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                     modifier = Modifier
                         .width(150.dp)
                 )
-
+                Spacer(Modifier.size(5.dp))
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, SchedulePickUpActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(40.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 9.dp,
+                                topEnd = 9.dp,
+                                bottomStart = 9.dp,
+                                bottomEnd = 9.dp
+                            )
+                        )
+                ) {
+                    Text("Schedule PickUp", color = Color.White)
+                }
             }
         }
     }

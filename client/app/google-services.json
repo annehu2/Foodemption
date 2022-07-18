@@ -33,7 +33,36 @@
             ]
           }
         }
+      },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037975576053:android:77ec2c75b95a26de7214bc",
+        "android_client_info": {
+          "package_name": "com.example.foodemption"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037975576053-2q1o25ps5aqrmsgm0co83v2mpfm4hfse.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6jG6-ibHo7LYAnijVYtUjz4unt0fZQMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037975576053-2q1o25ps5aqrmsgm0co83v2mpfm4hfse.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
       }
+    }
     ],
     "configuration_version": "1"
   }

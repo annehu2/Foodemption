@@ -13,10 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
+import com.example.foodemption.SplashScreenActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
 class DonorHome : ComponentActivity() {
@@ -53,8 +53,27 @@ fun DonorHome(context: Context, name: String) {
         Spacer(Modifier.size(40.dp))
         HomeListings(context, subTitle = "My Claimed Food", 1)
         Spacer(Modifier.size(40.dp))
-        HomeListings(context, subTitle = "Closest Organizations", 2)
-        Spacer(Modifier.size(60.dp))
+        Box(Modifier.padding(), Alignment.BottomCenter) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, SplashScreenActivity::class.java)
+                    context.startActivity(intent) },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF9A1B11)),
+                modifier = Modifier
+                    .width(297.dp)
+                    .height(48.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 9.dp,
+                            topEnd = 9.dp,
+                            bottomStart = 9.dp,
+                            bottomEnd = 9.dp
+                        )
+                    )
+            ) {
+                Text("View Nearby Food Banks", color = Color.White, fontSize = 20.sp,)
+            }
+        }
+        Spacer(Modifier.size(30.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, DonateActivity::class.java)

@@ -76,7 +76,8 @@ fun DonorHome(context: Context, name: String) {
         Spacer(Modifier.size(30.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
-                onClick = { /* TODO lead to maps */ },
+                onClick = { val intent = Intent(context, SplashScreenActivity::class.java)
+                    context.startActivity(intent) },
                 colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                 modifier = Modifier
                     .width(298.dp)

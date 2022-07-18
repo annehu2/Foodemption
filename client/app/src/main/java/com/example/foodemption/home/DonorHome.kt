@@ -76,6 +76,26 @@ fun DonorHome(context: Context, name: String) {
         Spacer(Modifier.size(30.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
+                onClick = { /* TODO lead to maps */ },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                modifier = Modifier
+                    .width(298.dp)
+                    .height(48.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 9.dp,
+                            topEnd = 9.dp,
+                            bottomStart = 9.dp,
+                            bottomEnd = 9.dp
+                        )
+                    )
+            ) {
+                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
+            }
+        }
+        Spacer(Modifier.size(20.dp))
+        Box(Modifier.padding(), Alignment.BottomCenter) {
+            OutlinedButton(
                 onClick = { val intent = Intent(context, DonateActivity::class.java)
                     context.startActivity(intent) },
                 colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),

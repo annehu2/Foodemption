@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import com.example.foodemption.home.ConsumerHome
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.utils.SharedPreferenceHelper
 import kotlinx.serialization.Serializable
@@ -57,8 +58,12 @@ fun processLogin(email: String, password: String, deviceToken: String, context: 
             if (response.code == 200) {
                 val responseBody = Json.decodeFromString<LoginResponseBody>(json)
                 val userJwtToken = responseBody.data.jwt
+                print(userJwtToken)
                 SharedPreferenceHelper.setUserJWT(context, userJwtToken)
-                context.startActivity(Intent(context, DonorHome::class.java))
+                if (false)
+                    context.startActivity(Intent(context, DonorHome::class.java))
+                else
+                    context.startActivity(Intent(context, ConsumerHome::class.java))
             } else {
 
             }

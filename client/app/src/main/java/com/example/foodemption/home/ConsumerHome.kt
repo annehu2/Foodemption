@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
 
-class DonorHome : ComponentActivity() {
+class ConsumerHome : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -30,7 +30,7 @@ class DonorHome : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DonorHome(this, "Anne")
+                    ConsumerHome(this, "Anne")
                 }
             }
         }
@@ -38,7 +38,7 @@ class DonorHome : ComponentActivity() {
 }
 
 @Composable
-fun DonorHome(context: Context, name: String) {
+fun ConsumerHome(context: Context, name: String) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,16 +49,13 @@ fun DonorHome(context: Context, name: String) {
     ) {
         Title("Anne", "Cool Kids Club")
         Spacer(Modifier.size(40.dp))
-        DonorHomeListings(context, subTitle = "My Food Listings", 0)
+        ConsumerHomeListings(context, subTitle = "Available Food Listings", 0)
         Spacer(Modifier.size(40.dp))
-        DonorHomeListings(context, subTitle = "My Claimed Food", 1)
-        Spacer(Modifier.size(40.dp))
-        DonorHomeListings(context, subTitle = "Closest Organizations", 2)
+        ConsumerHomeListings(context, subTitle = "My Claimed Food", 1)
         Spacer(Modifier.size(60.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
-                onClick = { val intent = Intent(context, DonateActivity::class.java)
-                    context.startActivity(intent) },
+                onClick = { /* TODO */ },
                 colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                 modifier = Modifier
                     .width(298.dp)
@@ -72,7 +69,7 @@ fun DonorHome(context: Context, name: String) {
                         )
                     )
             ) {
-                Text("Donate Food", color = Color.White, fontSize = 20.sp,)
+                Text("View Closest Donors", color = Color.White, fontSize = 18.sp,)
             }
         }
     }

@@ -37,7 +37,7 @@ import com.example.foodemption.ui.theme.FoodemptionTheme
 import kotlin.concurrent.thread
 
 @Composable
-fun HomeListings(context: Context, subTitle: String, showType: Int) {
+fun DonorHomeListings(context: Context, subTitle: String, showType: Int) {
 // showType 1 - my claimed food - donor side
     Box(
         modifier = Modifier

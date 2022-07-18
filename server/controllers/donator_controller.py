@@ -7,7 +7,8 @@ from controllers.middleware import authentication_required, donator_only
 from manager.manager import ManagerException
 from kafka import KafkaProducer
 import manager.manager as manager
-from botocore.vendored import requests
+from utils.kafka_producer import sendMessageToKafka
+from utils.enum import KAFKA_TOPIC
 
 def upload_to_s3(image_base64, file_name):
         print(os.getenv('ACCESS_KEY_ID'))
@@ -32,14 +33,6 @@ def upload_to_s3(image_base64, file_name):
 
 
 def new_donate():
-    configs = {
-       "bootstrap_servers":"pkc-ymrq7.us-east-2.aws.confluent.cloud:9092",
-       "security_protocol":"SASL_SSL",
-       "sasl_mechanism":"PLAIN",
-       "sasl_plain_username":"HE4UYYYMJXI3TQIL",
-       "sasl_plain_password":"gnm8lEq6qSR3p6XBtyOXGpOudznDchigH1X7vs5Z3JWstjxMtIwDexVKLEX/Inh4"
-    }
-    producer = KafkaProducer(**configs,  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     new_donation_object = {
     'message_type': 'Donations',
     'payload':{
@@ -51,7 +44,9 @@ def new_donate():
        'message': "Your food should be ready for pick up in 5 minutes!"   
     }
     }
-    producer.send('foodemp_notif_pipe', new_donation_object)
+    new_donation_object = json.dumps(new_donation_object)
+    sendMessageToKafka(KAFKA_TOPIC, [new_donation_object])
+    
     return json.dumps({"status_code":200}), 200
 
 # only donors can mark a food as claimed because they own the food
@@ -114,8 +109,6 @@ def verify_donor(currently_authenticated_user):
 @donator_only
 def donate_food(currently_authenticated_user):
     donation_data = request.get_json()
-    # print(currently_authenticated_user)
-    # print(donation_data)
 
     try:
         title = donation_data["title"]
@@ -134,6 +127,23 @@ def donate_food(currently_authenticated_user):
 
     try:
         food_data = manager.add_food(title, description, image_url, best_before, donor_uuid)
+
+        # TODO integrate the ingriedient filter coming from the frontend
+        new_donation_object = {
+            'message_type': 'Donations',
+            'payload':{
+            'food_id': food_data.id,
+            'filters':{
+            'location': "20",
+            'ingridents_filter': [1,2,3,4,5,6]
+            },
+            'message': "Your food should be ready for pick up in 5 minutes!"   
+        }
+        }
+        new_donation_object = json.dumps(new_donation_object)
+        print("reading from kafka topic...", KAFKA_TOPIC)
+        sendMessageToKafka(KAFKA_TOPIC, [ new_donation_object])
+
     except ManagerException as e:
         return json.dumps({"message": str(e)}), 400
 

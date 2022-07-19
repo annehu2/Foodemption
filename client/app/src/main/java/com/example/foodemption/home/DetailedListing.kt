@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +37,7 @@ import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
 
 @Composable
-fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String) {
+fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String, pageCode: Int) {
     Box(
         modifier = Modifier
             .width(300.dp)
@@ -85,25 +86,36 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                         .width(150.dp)
                 )
                 Spacer(Modifier.size(5.dp))
-                OutlinedButton(
-                    onClick = {
-                        val intent = Intent(context, SchedulePickUpActivity::class.java)
-                        context.startActivity(intent)
-                    },
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(40.dp)
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 9.dp,
-                                topEnd = 9.dp,
-                                bottomStart = 9.dp,
-                                bottomEnd = 9.dp
+                if (pageCode != 0) {
+                    var buttonText = ""
+                    var intent: Intent
+                    if (pageCode == 1) {
+                        buttonText = "Schedule PickUp"
+                        intent = Intent(context, SchedulePickUpActivity::class.java)
+                    }
+                    else {
+                        buttonText = "Confirm PickUp"
+                        intent = Intent(context, ConfirmPickUpActivity::class.java)
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            context.startActivity(intent)
+                        },
+                        colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(40.dp)
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = 9.dp,
+                                    topEnd = 9.dp,
+                                    bottomStart = 9.dp,
+                                    bottomEnd = 9.dp
+                                )
                             )
-                        )
-                ) {
-                    Text("Schedule PickUp", color = Color.White)
+                    ) {
+                        Text(buttonText, color = Color.White)
+                    }
                 }
             }
         }

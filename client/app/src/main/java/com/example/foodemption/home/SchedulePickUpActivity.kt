@@ -73,7 +73,7 @@ fun SchedulePickUp(context: Context, orgName: String) {
                     .padding(start = 10.dp)
             ) {
                 Text(
-                    "Schedule PickUp",
+                    "Schedule Pick Up",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -215,7 +215,9 @@ fun SchedulePickUp(context: Context, orgName: String) {
                     )
                 )
         ) {
-            Text("Schedule Pick Up", color = Color.White)
+            Text("Schedule Pick Up",
+                color = Color.White,
+                fontSize = 20.sp)
         }
     }
 }

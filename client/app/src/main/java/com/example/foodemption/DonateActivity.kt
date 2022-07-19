@@ -331,13 +331,20 @@ fun DonatePage(context: Context, orgName: String) {
         Box(modifier = Modifier.padding(top = 10.dp))
 
         var descriptionText = remember { mutableStateOf(TextFieldValue()) }
+        val maxChar = 60
         TextField(
             value = descriptionText.value,
-            onValueChange = { descriptionText.value = it },
+            onValueChange = { if (it.text.length <= maxChar) descriptionText.value = it },
             label = { Text("Add Food Description") },
             modifier = Modifier
                 .width(316.dp)
                 .height(100.dp)
+        )
+        Text(
+            text = "${descriptionText.value.text.length} / $maxChar",
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
         )
 
         TextButton(onClick = { /* TODO */ }) {

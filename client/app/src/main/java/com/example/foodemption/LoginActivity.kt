@@ -133,13 +133,12 @@ fun LoginPage(context: Context) {
                         FoodemptionApiClient.processLogin(
                             emailText.value.text.trim(),
                             passwordText.value.text.trim(),
-                            deviceToken,
-                            context
+                            deviceToken
                         )
                     }
                     catch(e: Exception) {
                         Log.d("ERROR", e.message.toString())
-                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                        FoodemptionApiClient.Result.Error(Exception("Could not login."))
                     }
                     when (result) {
                         is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {

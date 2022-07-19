@@ -32,7 +32,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.foodemption.DonateActivity
 import com.example.foodemption.R
 import com.example.foodemption.SchedulePickUpActivity
-import com.example.foodemption.processLogin
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
 

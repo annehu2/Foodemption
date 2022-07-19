@@ -166,11 +166,11 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
             }
             else if (showType == 0) {
                 val donations =
-                    remember { mutableStateOf(emptyList<DonationsBodyData>()) }
+                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
                 LaunchedEffect(Unit) {
                     thread {
-                        donations.value = getAllDonations(context)
+                        donations.value = FoodemptionApiClient.getAllDonations(context)
                     }
                 }
                 val donationsLen = donations.value.size
@@ -197,11 +197,11 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
             // get all available food
             else if (showType == 3) {
                 val donations =
-                    remember { mutableStateOf(emptyList<DonationsBodyData>()) }
+                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
                 LaunchedEffect(Unit) {
                     thread {
-                        donations.value = getAllAvailableFood(context)
+                        donations.value = FoodemptionApiClient.getAllAvailableFood(context)
                     }
                 }
                 val donationsLen = donations.value.size

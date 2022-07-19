@@ -55,11 +55,11 @@ fun DetailedAvailableFoodsPage(context: Context) {
             .verticalScroll(rememberScrollState())
     ) {
         val donations =
-            remember { mutableStateOf(emptyList<DonationsBodyData>()) }
+            remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
         LaunchedEffect(Unit) {
             thread {
-                donations.value = getAllAvailableFood(context)
+                donations.value = FoodemptionApiClient.getAllAvailableFood(context)
             }
         }
         val donationsLen = donations.value.size

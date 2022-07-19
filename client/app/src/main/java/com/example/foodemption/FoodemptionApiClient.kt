@@ -41,7 +41,7 @@ object FoodemptionApiClient {
     val request = Request.Builder()
         .header("Content-Type", "application/json")
         .addHeader("Authorization", jwtToken)
-        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/available_food".toHttpUrl())
+        .url("$backendUrl/available_food".toHttpUrl())
         .build()
     val response = OkHttpClient().newCall(request).execute()
 
@@ -55,7 +55,7 @@ object FoodemptionApiClient {
         val request = Request.Builder()
             .header("Content-Type", "application/json")
             .addHeader("Authorization", jwtToken)
-            .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/claimed_food".toHttpUrl())
+            .url("$backendUrl/claimed_food".toHttpUrl())
             .build()
         val response = okHttpClient.newCall(request).execute()
 

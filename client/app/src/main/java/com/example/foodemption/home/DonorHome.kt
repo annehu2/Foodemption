@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
 import com.example.foodemption.SplashScreenActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 
 class DonorHome : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +31,7 @@ class DonorHome : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DonorHome(this, "Anne")
+                    DonorHome(this)
                 }
             }
         }
@@ -38,7 +39,7 @@ class DonorHome : ComponentActivity() {
 }
 
 @Composable
-fun DonorHome(context: Context, name: String) {
+fun DonorHome(context: Context) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -47,7 +48,8 @@ fun DonorHome(context: Context, name: String) {
             .fillMaxSize()
             .fillMaxHeight()
     ) {
-        Title("Anne", "Cool Kids Club")
+        val orgName = SharedPreferenceHelper.getOrgName(context)
+        Title("Donor", orgName)
         Spacer(Modifier.size(40.dp))
         HomeListingsActive(context, subTitle = "My Active Food Listings")
         Spacer(Modifier.size(40.dp))

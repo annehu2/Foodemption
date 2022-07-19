@@ -19,13 +19,13 @@ def signup():
         type = user_signup_data['type']
 
     except KeyError: 
-        return json.dumps({"data": {"jwt": "", "uuid": ""}}),400
+        return json.dumps({"message": "Fields are missin!" }),400
 
     try:
         user = create_user(name, email, password, device_token, type)
 
     except ManagerException as e:
-        return json.dumps({"data": {"jwt": "", "uuid": ""}, "message": str(e)}),400
+        return json.dumps({ "message": str(e)}),400
 
     login_data = get_login_data(email)
 
@@ -62,13 +62,13 @@ def signin():
         device_token = user_login_data['device_token']
 
     except KeyError: 
-        return json.dumps({"data": {"jwt": "" }, "message": "Fields are missing!"}), 400
+        return json.dumps({"message": "Fields are missing!"}), 400
 
     login_data : Login = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
-        return json.dumps({"data": {"jwt": "" }, "message": "Incorrect credentials."}), 400
+        return json.dumps({"message": "Incorrect user names or password"}), 400
 
     user_data: Users = get_user_object(login_data.user_uuid)
     

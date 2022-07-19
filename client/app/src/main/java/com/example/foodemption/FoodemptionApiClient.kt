@@ -20,7 +20,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-fun getAllDonors(context: Context): List<DonationsBodyData> {
+fun getAllDonations(context: Context): List<DonationsBodyData> {
     val jwtToken = SharedPreferenceHelper.getUserJwt(context)
     val request = Request.Builder()
         .header("Content-Type", "application/json")
@@ -34,6 +34,19 @@ fun getAllDonors(context: Context): List<DonationsBodyData> {
     return responseBody.data
 }
 
+fun getClaimedFood(context: Context): List<DonationsBodyData> {
+    val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+    val request = Request.Builder()
+        .header("Content-Type", "application/json")
+        .addHeader("Authorization", jwtToken)
+        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/claimed_food".toHttpUrl())
+        .build()
+    val response = OkHttpClient().newCall(request).execute()
+
+    val json = response.body.string()
+    val responseBody = Json.decodeFromString<DonationsBody>(json)
+    return responseBody.data
+}
 
 fun processLogin(email: String, password: String, deviceToken: String, context: Context) {
     val loginBody = LoginRequestBody(email, password, deviceToken)

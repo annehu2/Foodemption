@@ -48,7 +48,7 @@ fun ConsumerHome(context: Context, name: String) {
             .fillMaxSize()
             .fillMaxHeight()
     ) {
-        Title("Consumer", "Food Bank")
+        Title("Consumer", "ConsumerName")
         Spacer(Modifier.size(40.dp))
         HomeListingsAvailableFood(context, subTitle = "Available Food")
         Spacer(Modifier.size(40.dp))

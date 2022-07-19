@@ -47,7 +47,7 @@ fun DonorHome(context: Context, name: String) {
             .fillMaxSize()
             .fillMaxHeight()
     ) {
-        Title("Anne", "Cool Kids Club")
+        Title("Donor", "DonorName")
         Spacer(Modifier.size(40.dp))
         HomeListingsActive(context, subTitle = "My Active Food Listings")
         Spacer(Modifier.size(40.dp))
@@ -70,7 +70,7 @@ fun DonorHome(context: Context, name: String) {
                         )
                     )
             ) {
-                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
+                Text("View Closest Organizations", color = Color.White, fontSize = 18.sp,)
             }
         }
         Spacer(Modifier.size(20.dp))

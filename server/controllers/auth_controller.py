@@ -64,13 +64,13 @@ def signin():
     except KeyError: 
         return json.dumps({"data": {"jwt": "" }, "message": "Fields are missing!"}), 400
 
-    login_data = get_login_data(email)
+    login_data : Login = get_login_data(email)
 
     # TODO: Implement password hashing. For now this will do
     if login_data is None or login_data.user_password != password:
         return json.dumps({"data": {"jwt": "" }, "message": "Incorrect credentials."}), 400
 
-    user_data = get_user_object(login_data.user_uuid)
+    user_data: Users = get_user_object(login_data.user_uuid)
     
     buffered_notification = fetch_notification_msgs(login_data.user_uuid)
     print("notifications to deliver ", buffered_notification)
@@ -89,6 +89,9 @@ def signin():
         {
             "data": 
             {
+                "email": login_data.user_email,
+                "user_type": user_data.type,
+                "org": user_data.organization_name,
                 "jwt": jwt_token,
                 "uuid": user_data.uuid
             }

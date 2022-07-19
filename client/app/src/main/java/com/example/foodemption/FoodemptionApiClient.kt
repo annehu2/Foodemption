@@ -20,6 +20,20 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
+fun getAllAvailableFood(context: Context): List<DonationsBodyData> {
+    val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+    val request = Request.Builder()
+        .header("Content-Type", "application/json")
+        .addHeader("Authorization", jwtToken)
+        .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/available_food".toHttpUrl())
+        .build()
+    val response = OkHttpClient().newCall(request).execute()
+
+    val json = response.body.string()
+    val responseBody = Json.decodeFromString<DonationsBody>(json)
+    return responseBody.data
+}
+
 fun getAllDonations(context: Context): List<DonationsBodyData> {
     val jwtToken = SharedPreferenceHelper.getUserJwt(context)
     val request = Request.Builder()

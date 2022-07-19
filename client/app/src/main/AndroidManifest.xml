@@ -49,9 +49,13 @@
         </activity>
         <activity android:name=".home.DonorHome">
         </activity>
+        <activity android:name=".home.ConsumerHome">
+        </activity>
         <activity android:name=".home.DetailedClaimedFoodListingsPage">
         </activity>
         <activity android:name=".home.DetailedActiveFoodListingsPage">
+        </activity>
+        <activity android:name=".home.DetailedAvailableFoodsPage">
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"

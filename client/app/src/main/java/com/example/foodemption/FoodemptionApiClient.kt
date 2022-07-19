@@ -16,6 +16,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.io.StringBufferInputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
@@ -301,11 +302,11 @@ object FoodemptionApiClient {
 
     @Serializable
     data class JwtData(
-        val jwt: String,
-        val uuid: String,
         val email: String,
         val user_type: Int,
-        val org: String
+        val org: String,
+        val jwt: String,
+        val uuid: String,
     )
 
     @Serializable

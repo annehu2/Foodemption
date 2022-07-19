@@ -6,10 +6,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +32,13 @@ import com.example.foodemption.home.ConsumerHome
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import java.util.function.Consumer
+import com.example.foodemption.utils.SharedPreferenceHelper
+import android.util.Log
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +59,14 @@ class SignUpActivity : ComponentActivity() {
 
 @Composable
 fun SignUpPage(context: Context) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+//    var scrollableState: ScrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+//            .verticalScroll(scrollableState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val image: Painter = painterResource(id = R.drawable.logo)
         Image(
             painter = image,
@@ -107,7 +122,7 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var emailText = remember { mutableStateOf(TextFieldValue()) }
+        val emailText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = emailText.value,
             onValueChange = { emailText.value = it },
@@ -116,29 +131,73 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var passwordText = remember { mutableStateOf(TextFieldValue()) }
+        val passwordText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = passwordText.value,
             onValueChange = { passwordText.value = it },
             label = { Text("Enter password") },
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        var passwordConfirmText = remember { mutableStateOf(TextFieldValue()) }
+        val passwordConfirmText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = passwordConfirmText.value,
             onValueChange = { passwordConfirmText.value = it },
             label = { Text("Re-enter password") },
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
+        val coroutineScope = rememberCoroutineScope()
+
         OutlinedButton(
-            onClick = { val intent = Intent(context, ConsumerHome::class.java)
-                context.startActivity(intent) },
+            onClick = {
+                coroutineScope.launch {
+                    val deviceToken = SharedPreferenceHelper.getFCMToken(context)
+                    var type = "0"
+                    if (selectedValue.value == "Restaurant") {
+                        type = "0"
+                    } else if (selectedValue.value == "Food Bank") {
+                        type = "1"
+                    }
+                    val result = try {
+                        FoodemptionApiClient.processSignup(
+                            type,
+                            nameText.value.text,
+                            emailText.value.text,
+                            passwordText.value.text,
+                            deviceToken,
+                            context
+                        )
+                    } catch(e: Exception) {
+                        Log.d("ERROR", e.message.toString())
+                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                    }
+                    when (result) {
+                        is FoodemptionApiClient.Result.Success<FoodemptionApiClient.SignupResponseBody> -> {
+                            Log.d("INFO", "HERE")
+                            val userJwtToken = result.data.data.jwt
+                            SharedPreferenceHelper.setUserJWT(context, userJwtToken)
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, "Signup successful.")
+                            }
+                            context.startActivity(Intent(context, VerificationActivity::class.java))
+                        }
+                        is FoodemptionApiClient.Result.Error -> {
+                            val errorMessage = result.exception.message.toString()
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, errorMessage)
+                            }
+                        }
+                    }
+                }
+
+            },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
                 .width(298.dp)
@@ -152,7 +211,7 @@ fun SignUpPage(context: Context) {
                     )
                 )
         ) {
-            Text("Sign Up", color = Color.White, fontSize = 20.sp,)
+            Text("Sign Up", color = Color.White, fontSize = 20.sp)
         }
     }
 }

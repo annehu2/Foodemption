@@ -48,13 +48,13 @@ fun ConsumerHome(context: Context, name: String) {
             .fillMaxSize()
             .fillMaxHeight()
     ) {
-        Title("Anne", "Cool Kids Club")
+        Title("Consumer", "Food Bank")
         Spacer(Modifier.size(40.dp))
-        HomeListings(context, subTitle = "Available Food", 0)
+        HomeListingsAvailableFood(context, subTitle = "Available Food")
         Spacer(Modifier.size(40.dp))
-        HomeListings(context, subTitle = "Previously Claimed Food", 0)
+        //HomeListings(context, subTitle = "Previously Claimed Food", 4)
         Spacer(Modifier.size(40.dp))
-        HomeListings(context, subTitle = "Closest Organizations", 0)
+        //HomeListings(context, subTitle = "Closest Organizations", 4)
         Spacer(Modifier.size(60.dp))
     }
 }

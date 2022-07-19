@@ -6,4 +6,15 @@
     <string name="app_shared_pref_key">foodemp_shared_pref</string>
     <string name="user_device_token">user_device_token</string>
     <string name="user_jwt_token">user_jwt_token</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="save_places">Save Places</string>
+    <string name="update_places">Update Places</string>
+    <string name="overlay">Overlay</string>
+    <string name="change_map_style">Change Map Style</string>
+    <string name="default_map">Default Map</string>
+    <string name="terrain_map">Terrain Map</string>
+    <string name="satellite_map">Satellite Map</string>
+    <string name="hybrid_map">Hybrid Map</string>
 </resources>

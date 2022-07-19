@@ -4,6 +4,9 @@ import json,jwt
 
 from controllers.middleware import authentication_required
 from manager.manager import *
+from utils.enum import KAFKA_TOPIC
+from utils.kafka_producer import sendMessageToKafka
+from utils.redis_accecssor import fetch_notification_msgs
 
 def signup():
     user_signup_data = request.get_json()
@@ -69,7 +72,10 @@ def signin():
 
     user_data = get_user_object(login_data.user_uuid)
     
-    # We can add more data if necessary
+    buffered_notification = fetch_notification_msgs(login_data.user_uuid)
+    print("notifications to deliver ", buffered_notification)
+    sendMessageToKafka(KAFKA_TOPIC,  buffered_notification)
+
     jwt_token = jwt.encode({
         "email": login_data.user_email,
         "uuid": user_data.uuid,

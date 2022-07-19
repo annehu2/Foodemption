@@ -117,6 +117,9 @@ def get_customer_data(userId):
 def get_user_session_data(user_uuid):
     return session.query(*Users.__table__.columns, *Login.__table__.columns).select_from(Users).join(Login, (Users.uuid == user_uuid) & (Users.id == Login.user_id )).first()
 
+def get_all_customers():
+    return session.query(*Users.__table__.columns, *Login.__table__.columns).select_from(Users).join(Login, (Users.type == CUSTOMER_TYPE) & (Users.id == Login.user_id )).all()
+
 def get_all_customers_who_are_loggedin():
     return session.query(*Users.__table__.columns, *Login.__table__.columns).select_from(Users).join(Login, (Users.type == CUSTOMER_TYPE) & (Users.id == Login.user_id ) & (Login.is_logged_in == True)).all()
 # Needs to flip login_data's device token to be "device_token"

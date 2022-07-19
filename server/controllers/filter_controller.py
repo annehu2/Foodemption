@@ -4,8 +4,9 @@ import jwt,json
 from flask import request
 
 from controllers.middleware import authentication_required
-from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers_who_are_loggedin, create_all_filters, intersect_filter
+from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers, create_all_filters, intersect_filter
 from controllers.middleware import customer_only, donator_only
+from utils.redis_accecssor import buffer_notification_msgs
 
 @authentication_required
 def index(data):
@@ -34,11 +35,31 @@ def filter_intersect():
 def get_device_tokens_base_on_food_filters(food_id):
     
     device_tokens = []
-    loggedin_customers = get_all_customers_who_are_loggedin()
+    loggedin_customers = get_all_customers()
     for customer in loggedin_customers:
-        device_tokens.append(customer.device_token)
-    
+        if customer.is_logged_in:
+            device_tokens.append(customer.device_token)
+        else:
+            buffer_donation_object = get_kafka_message_for_donations(food_id)
+            buffer_notification_msgs(customer.user_uuid, json.dumps(buffer_donation_object))
+        
     return json.dumps({"message": "successful！","device_tokens": device_tokens })
+
+
+# TODO Implement it such that information regarding filters comes form backend
+def get_kafka_message_for_donations(food_id):
+    new_donation_object = {
+    'message_type': 'Donations',
+    'payload':{
+       'food_id': food_id,
+       'filters':{
+          'location': "20",
+          'ingridents_filter': [1,2]
+       },
+       'message': "You have a pending donation in your area!"   
+    }
+    }
+    return new_donation_object
 
 # TODO: Implement check to ensure the food actually belongs to authenticated user
 @donator_only

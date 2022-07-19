@@ -49,6 +49,8 @@
         </activity>
         <activity android:name=".home.DonorHome">
         </activity>
+        <activity android:name="SchedulePickUpActivity">
+        </activity>
         <activity android:name=".home.ConsumerHome">
         </activity>
         <activity android:name=".home.DetailedClaimedFoodListingsPage">

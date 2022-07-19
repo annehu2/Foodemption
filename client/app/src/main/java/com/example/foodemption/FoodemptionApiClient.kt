@@ -94,7 +94,7 @@ object FoodemptionApiClient {
                 Result.Success(responseBody.data)
             }
             else {
-                Result.Error(Exception("Could not retrieve donations."))
+                Result.Error(Exception("Error"))
             }
         }
     }

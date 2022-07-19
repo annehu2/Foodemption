@@ -347,10 +347,6 @@ fun DonatePage(context: Context, orgName: String) {
             modifier = Modifier.fillMaxWidth().padding(end = 40.dp)
         )
 
-        TextButton(onClick = { /* TODO */ }) {
-            Text("Import Saved Food Description", color = Color.Blue)
-        }
-
         val openDialog = remember { mutableStateOf(false) }
 
         OutlinedButton(

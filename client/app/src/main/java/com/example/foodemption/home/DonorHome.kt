@@ -51,7 +51,7 @@ fun DonorHome(context: Context, name: String) {
         Spacer(Modifier.size(40.dp))
         HomeListingsActive(context, subTitle = "My Active Food Listings")
         Spacer(Modifier.size(40.dp))
-        HomeListingsClaimed(context, subTitle = "My Claimed Food")
+        HomeListingsClaimed(context, subTitle = "Previously Claimed Food")
         Spacer(Modifier.size(40.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(

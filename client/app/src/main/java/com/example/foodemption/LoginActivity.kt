@@ -147,7 +147,7 @@ fun LoginPage(context: Context) {
                             val userType = result.data.data.user_type
                             SharedPreferenceHelper.setUserJWT(context, userJwtToken)
                             SharedPreferenceHelper.setOrgName(context, userOrgName)
-                            SharedPreferenceHelper.setUserType(context, userType)
+                            SharedPreferenceHelper.setUserType(context, userType.toString())
                             context.startActivity(Intent(context, DonorHome::class.java))
                         }
                         is FoodemptionApiClient.Result.Error -> {

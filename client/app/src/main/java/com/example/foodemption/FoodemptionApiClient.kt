@@ -303,7 +303,7 @@ object FoodemptionApiClient {
     @Serializable
     data class JwtData(
         val email: String,
-        val user_type: String,
+        val user_type: Int,
         val org: String,
         val jwt: String,
         val uuid: String,

@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
 import com.example.foodemption.DonationsBodyData
-import com.example.foodemption.getAllDonors
+import com.example.foodemption.getAllDonations
+import com.example.foodemption.getClaimedFood
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import kotlin.concurrent.thread
 
-class DetailedListingsPage : ComponentActivity() {
+class DetailedActiveFoodListingsPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,7 +39,7 @@ class DetailedListingsPage : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DetailedListingsPage(this, "Anne")
+                    DetailedActiveFoodListingsPage(this)
                 }
             }
         }
@@ -44,7 +47,7 @@ class DetailedListingsPage : ComponentActivity() {
 }
 
 @Composable
-fun DetailedListingsPage(context: Context, name: String) {
+fun DetailedActiveFoodListingsPage(context: Context) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,19 +55,28 @@ fun DetailedListingsPage(context: Context, name: String) {
         modifier = Modifier
             .fillMaxSize()
             .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
     ) {
         val donations =
             remember { mutableStateOf(emptyList<DonationsBodyData>()) }
 
         LaunchedEffect(Unit) {
             thread {
-                donations.value = getAllDonors(context)
+                donations.value = getAllDonations(context)
             }
         }
         val donationsLen = donations.value.size
         for (i in (donationsLen - 1) downTo 0) {
-            Spacer(Modifier.size(40.dp))
-            DetailedListing(context, donations.value[i].image_url,donations.value[i].title, donations.value[i].best_before, donations.value[i].description)
+            if (!donations.value[i].is_claimed) {
+                Spacer(Modifier.size(40.dp))
+                DetailedListing(
+                    context,
+                    donations.value[i].image_url,
+                    donations.value[i].title,
+                    donations.value[i].best_before,
+                    donations.value[i].description
+                )
+            }
         }
         Spacer(Modifier.size(60.dp))
     }

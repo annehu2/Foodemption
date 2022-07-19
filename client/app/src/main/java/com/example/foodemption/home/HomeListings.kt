@@ -38,6 +38,7 @@ import kotlin.concurrent.thread
 
 @Composable
 fun HomeListings(context: Context, subTitle: String, showType: Int) {
+// showType 0 - my active food listings - donor side
 // showType 1 - my claimed food - donor side
     Box(
         modifier = Modifier
@@ -70,7 +71,25 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
             )
             if (showType == 1) {
                 OutlinedButton(
-                    onClick = { val intent = Intent(context, DetailedListingsPage::class.java)
+                    onClick = { val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
+                        context.startActivity(intent) },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(170.dp)
+                        .height(30.dp)
+                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopStart,
+                    )
+                }
+            }
+            else if (showType == 0) {
+                OutlinedButton(
+                    onClick = { val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
                         context.startActivity(intent) },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
                     modifier = Modifier
@@ -91,32 +110,55 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (showType == 1) {
-                val donations =
-                    remember { mutableStateOf(emptyList<DonationsBodyData>()) }
+            val donations =
+                remember { mutableStateOf(emptyList<DonationsBodyData>()) }
 
-                LaunchedEffect(Unit) {
-                    thread {
-                        donations.value = getAllDonors(context)
-                    }
+            LaunchedEffect(Unit) {
+                thread {
+                    donations.value = getAllDonations(context)
                 }
-
+            }
+            if (showType == 1) {
                 val donationsLen = donations.value.size
                 for (i in (donationsLen - 1) downTo 0) {
-                    Box(
-                        modifier = Modifier
-                            .width(112.dp)
-                            .height(115.dp)
-                            .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
-
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(donations.value[i].image_url),
-                            contentDescription = "",
-                            alignment = Alignment.TopStart,
+                    if (donations.value[i].is_claimed) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                        )
+                                .width(112.dp)
+                                .height(115.dp)
+                                .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(donations.value[i].image_url),
+                                contentDescription = "",
+                                alignment = Alignment.TopStart,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
+            else if (showType == 0) {
+                val donationsLen = donations.value.size
+                for (i in (donationsLen - 1) downTo 0) {
+                    if (!donations.value[i].is_claimed) {
+                        Box(
+                            modifier = Modifier
+                                .width(112.dp)
+                                .height(115.dp)
+                                .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(donations.value[i].image_url),
+                                contentDescription = "",
+                                alignment = Alignment.TopStart,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }

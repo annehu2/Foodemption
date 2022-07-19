@@ -49,7 +49,7 @@ fun DonorHome(context: Context, name: String) {
     ) {
         Title("Anne", "Cool Kids Club")
         Spacer(Modifier.size(40.dp))
-        HomeListings(context, subTitle = "My Food Listings", 0)
+        HomeListings(context, subTitle = "My Active Food Listings", 0)
         Spacer(Modifier.size(40.dp))
         HomeListings(context, subTitle = "My Claimed Food", 1)
         Spacer(Modifier.size(40.dp))

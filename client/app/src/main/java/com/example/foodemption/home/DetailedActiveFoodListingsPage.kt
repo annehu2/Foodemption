@@ -22,9 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
-import com.example.foodemption.DonationsBodyData
-import com.example.foodemption.getAllDonations
-import com.example.foodemption.getClaimedFood
+import com.example.foodemption.FoodemptionApiClient
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import kotlin.concurrent.thread
 
@@ -58,11 +56,11 @@ fun DetailedActiveFoodListingsPage(context: Context) {
             .verticalScroll(rememberScrollState())
     ) {
         val donations =
-            remember { mutableStateOf(emptyList<DonationsBodyData>()) }
+            remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
         LaunchedEffect(Unit) {
             thread {
-                donations.value = getAllDonations(context)
+                donations.value = FoodemptionApiClient.getAllDonations(context)
             }
         }
         val donationsLen = donations.value.size

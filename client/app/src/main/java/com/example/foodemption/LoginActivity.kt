@@ -3,6 +3,8 @@ package com.example.foodemption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -10,10 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,6 +32,12 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,14 +121,37 @@ fun LoginPage(context: Context) {
         Box(modifier = Modifier.padding(top = 20.dp))
 
         val openDialog = remember { mutableStateOf(false) }
+        val dialogMessage = remember { mutableStateOf("") }
 
+        val coroutineScope = rememberCoroutineScope()
         OutlinedButton(
             onClick = {
-                try {
+                coroutineScope.launch {
                     val deviceToken = SharedPreferenceHelper.getFCMToken(context)
-                    processLogin(emailText.value.text, passwordText.value.text, deviceToken, context)
-                } catch (e: Exception) {
-                    openDialog.value = false
+                    val result = try {
+                        FoodemptionApiClient.processLogin(
+                            emailText.value.text,
+                            passwordText.value.text,
+                            deviceToken,
+                            context
+                        )
+                    } catch(e: Exception) {
+                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                    }
+                    when (result) {
+                        is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {
+                            val userJwtToken = result.data.data.jwt
+                            SharedPreferenceHelper.setUserJWT(context, userJwtToken)
+                            context.startActivity(Intent(context, DonorHome::class.java))
+                        }
+                        is FoodemptionApiClient.Result.Error -> {
+//                            openDialog.value = true
+                            dialogMessage.value = result.exception.message.toString()
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, dialogMessage.value)
+                            }
+                        }
+                    }
                 }
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
@@ -141,9 +169,13 @@ fun LoginPage(context: Context) {
         ) {
             Text("Login", color = Color.White, fontSize = 20.sp)
         }
-        openAlertLoginFailBox(openDialog, "Login Fail", "Incorrect Username or Password")
+//        openAlertLoginFailBox(openDialog, "Login Fail", dialogMessage.value)
     }
 
+}
+
+fun showMessage(context: Context, message:String){
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 @Composable

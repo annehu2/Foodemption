@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
@@ -35,23 +36,23 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.Popup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.compose.rememberImagePainter
 import com.example.foodemption.camera.CameraView
 import com.example.foodemption.home.DonorHome
-import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 private var openCamera: MutableState<Boolean> = mutableStateOf(false)
 private lateinit var foodPhotoUri: Uri
-var showUploadDialog = mutableStateOf(false)
+var showUploadDialog: MutableState<Boolean> = mutableStateOf(false)
+private var openFromGallery: MutableState<Boolean> = mutableStateOf(false)
+private var openFromFile: MutableState<Boolean> = mutableStateOf(false)
 
 // Camera Code Taken from: https://www.kiloloco.com/articles/015-camera-jetpack-compose/
 
@@ -63,6 +64,8 @@ class DonateActivity : ComponentActivity() {
 
     private lateinit var photoUri: Uri
     private var shouldShowPhoto: MutableState<Boolean> = mutableStateOf(false)
+
+    private val pickImage = 100
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -94,6 +97,14 @@ class DonateActivity : ComponentActivity() {
                             onImageCaptured = ::handleImageCapture,
                             onError = { Log.e("kilo", "View error:", it) }
                         )
+                    }
+                    if (openFromGallery.value) {
+                        openFromGallery.value = false
+                        getPhotoFromFileOrGallery(this)
+                    }
+                    if (openFromFile.value) {
+                        openFromFile.value = false
+                        getPhotoFromFileOrGallery(this)
                     }
                     if (shouldShowPhoto.value) {
                         Box(
@@ -162,11 +173,26 @@ class DonateActivity : ComponentActivity() {
         return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
     }
 
+    private fun getPhotoFromFileOrGallery(context: Context) {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, pickImage)
+
+        shouldShowPhoto.value = true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == pickImage) {
+            photoUri = data?.data!!
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         openCamera.value = false
         cameraExecutor.shutdown()
     }
+
 }
 
 @Composable
@@ -430,7 +456,8 @@ fun UploadOptions() {
                 Spacer(modifier = Modifier.padding(10.dp))
 
                 Button(
-                    onClick = { /*TODO*/
+                    onClick = {
+                        openFromGallery.value = true
                         showUploadDialog.value = false },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                     modifier = Modifier
@@ -451,7 +478,8 @@ fun UploadOptions() {
                 Spacer(modifier = Modifier.padding(10.dp))
 
                 Button(
-                    onClick = {/*TODO*/
+                    onClick = {
+                        openFromFile.value = true
                         showUploadDialog.value = false },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                     modifier = Modifier

@@ -40,7 +40,7 @@ def customer_only(f):
 def _get_authenticated_user():
         auth_tokens = request.headers.get("Authorization")
         if auth_tokens is None :
-                return None
+                return None, None
 
         decoded_user_data, error_msg = extract_user_from_token(auth_tokens)
         return decoded_user_data, error_msg

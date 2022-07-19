@@ -45,7 +45,7 @@ object FoodemptionApiClient {
             val request = Request.Builder()
                 .header("Content-Type", "application/json")
                 .addHeader("Authorization", jwtToken)
-                .url("$backendUrl/donations".toHttpUrl())
+                .url("$backendUrl/available_food".toHttpUrl())
                 .build()
             val response = okHttpClient.newCall(request).execute()
             if (response.code == 200) {
@@ -78,7 +78,7 @@ object FoodemptionApiClient {
             val request = Request.Builder()
                 .header("Content-Type", "application/json")
                 .addHeader("Authorization", jwtToken)
-                .url("$backendUrl/donations".toHttpUrl())
+                .url("$backendUrl/claimed_food".toHttpUrl())
                 .build()
             val response = okHttpClient.newCall(request).execute()
             if (response.code == 200) {

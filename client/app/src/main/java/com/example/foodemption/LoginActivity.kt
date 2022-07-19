@@ -86,8 +86,8 @@ fun LoginPage(context: Context) {
         val emailText = remember { mutableStateOf(TextFieldValue()) }
         TextField(
             value = emailText.value,
-            onValueChange = { emailText.value = it },
-            label = { Text("Enter email") }
+            onValueChange = { emailText.value = it},
+            label = { Text("Enter email") },
         )
 
         Box(modifier = Modifier.padding(top = 20.dp))
@@ -130,8 +130,8 @@ fun LoginPage(context: Context) {
                     val deviceToken = SharedPreferenceHelper.getFCMToken(context)
                     val result = try {
                         FoodemptionApiClient.processLogin(
-                            emailText.value.text,
-                            passwordText.value.text,
+                            emailText.value.text.trim(),
+                            passwordText.value.text.trim(),
                             deviceToken,
                             context
                         )

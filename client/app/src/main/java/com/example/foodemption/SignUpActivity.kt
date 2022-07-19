@@ -165,7 +165,8 @@ fun SignUpPage(context: Context) {
                     } else if (selectedValue.value == "Food Bank") {
                         type = "1"
                     }
-                    val result = try {
+                    val result =
+                    try {
                         FoodemptionApiClient.processSignup(
                             type,
                             nameText.value.text,
@@ -174,7 +175,8 @@ fun SignUpPage(context: Context) {
                             deviceToken,
                             context
                         )
-                    } catch(e: Exception) {
+                    }
+                    catch(e: Exception) {
                         Log.d("ERROR", e.message.toString())
                         FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                     }

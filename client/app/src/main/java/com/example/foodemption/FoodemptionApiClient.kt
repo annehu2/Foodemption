@@ -16,7 +16,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 // Singleton design pattern
 object FoodemptionApiClient {
@@ -27,6 +30,8 @@ object FoodemptionApiClient {
             val request = chain.request().newBuilder().addHeader("Connection", "close").build()
             chain.proceed(request)
         })
+        .connectTimeout(1, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     sealed class Result<out R> {
@@ -34,54 +39,67 @@ object FoodemptionApiClient {
         data class Error(val exception: Exception) : Result<Nothing>()
     }
 
-    fun getAllAvailableFood(context: Context): List<DonationsBodyData> {
-        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
-        val request = Request.Builder()
-            .header("Content-Type", "application/json")
-            .addHeader("Authorization", jwtToken)
-            .url("$backendUrl/available_food".toHttpUrl())
-            .build()
-        val response = OkHttpClient().newCall(request).execute()
-
-        val json = response.body.string()
-        val responseBody = Json.decodeFromString<DonationsBody>(json)
-        return responseBody.data
+    suspend fun getAllAvailableFood(context: Context): Result<List<DonationsBodyData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/claimed_food".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                val json = response.body.string()
+                val responseBody = Json.decodeFromString<DonationsBody>(json)
+                Result.Success(responseBody.data)
+            }
+            else {
+                Result.Error(Exception("Could not retrieve donations."))
+            }
+        }
     }
 
-    fun getClaimedFood(context: Context): List<DonationsBodyData> {
-        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
-        val request = Request.Builder()
-            .header("Content-Type", "application/json")
-            .addHeader("Authorization", jwtToken)
-            .url("$backendUrl/claimed_food".toHttpUrl())
-            .build()
-        val response = okHttpClient.newCall(request).execute()
-
-        val json = response.body.string()
-        val responseBody = Json.decodeFromString<DonationsBody>(json)
-        return responseBody.data
+    suspend fun getClaimedFood(context: Context): Result<List<DonationsBodyData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/claimed_food".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                val json = response.body.string()
+                val responseBody = Json.decodeFromString<DonationsBody>(json)
+                Result.Success(responseBody.data)
+            }
+            else {
+                Result.Error(Exception("Could not retrieve donations."))
+            }
+        }
     }
 
-    fun getAllDonations(context: Context): List<DonationsBodyData> {
-        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
-        val request = Request.Builder()
-            .header("Content-Type", "application/json")
-            .addHeader("Authorization", jwtToken)
-            .url("$backendUrl/donations".toHttpUrl())
-            .build()
-
-        val response = okHttpClient.newCall(request).execute()
-        val json = response.body.string()
-        val responseBody = Json.decodeFromString<DonationsBody>(json)
-        return responseBody.data
+    suspend fun getAllDonations(context: Context): Result<List<DonationsBodyData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/donations".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                val json = response.body.string()
+                val responseBody = Json.decodeFromString<DonationsBody>(json)
+                Result.Success(responseBody.data)
+            }
+            else {
+                Result.Error(Exception("Could not retrieve donations."))
+            }
+        }
     }
 
-    suspend fun processLogin(
-        email: String,
-        password: String,
-        deviceToken: String,
-        context: Context
-    ): Result<LoginResponseBody> {
+    suspend fun processLogin(email: String, password: String, deviceToken: String, context: Context): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
             val payload = Json.encodeToString(loginBody)
@@ -95,9 +113,10 @@ object FoodemptionApiClient {
             val response = okHttpClient.newCall(request).execute()
             val json = response.body.string()
             Log.d("INFO", "Response received.")
+
             if (response.code == 200) {
                 val responseBody = Json.decodeFromString<LoginResponseBody>(json)
-                Log.d("INFO", "Login successful.")
+                Log.d("INFO", "Login successful. $responseBody")
                 Result.Success(responseBody)
             } else if (response.code == 400) {
                 Result.Error(Exception("Incorrect username or password."))
@@ -106,7 +125,6 @@ object FoodemptionApiClient {
             }
         }
     }
-
 
     suspend fun processSignup(
         type: String,

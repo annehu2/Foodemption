@@ -172,16 +172,26 @@ fun SignUpPage(context: Context) {
                             nameText.value.text,
                             emailText.value.text,
                             passwordText.value.text,
-                            deviceToken,
-                            context
+                            deviceToken
                         )
                     }
                     catch(e: Exception) {
                         Log.d("ERROR", e.message.toString())
-                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                        // silently ignore since this usually happens due to okhttp issue and login instead
+                        try {
+                            FoodemptionApiClient.processLogin(
+                                emailText.value.text.trim(),
+                                passwordText.value.text.trim(),
+                                deviceToken
+                            )
+                        }
+                        catch(e: Exception) {
+                            Log.d("ERROR", e.message.toString())
+                            FoodemptionApiClient.Result.Error(Exception("Could not login."))
+                        }
                     }
                     when (result) {
-                        is FoodemptionApiClient.Result.Success<FoodemptionApiClient.SignupResponseBody> -> {
+                        is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {
                             Log.d("INFO", "HERE")
                             val userJwtToken = result.data.data.jwt
                             SharedPreferenceHelper.setUserJWT(context, userJwtToken)

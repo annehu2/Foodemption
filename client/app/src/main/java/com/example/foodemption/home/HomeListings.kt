@@ -37,11 +37,7 @@ import com.example.foodemption.ui.theme.FoodemptionTheme
 import kotlin.concurrent.thread
 
 @Composable
-fun HomeListings(context: Context, subTitle: String, showType: Int) {
-// this is super scuffed but this removes the need for copy and pasted composable code
-// showType 0 - my active food listings - donor side
-// showType 1 - my claimed food - donor side
-// showType 3 - all available food - consumer side
+fun HomeListingsActive(context: Context, subTitle: String) {
     Box(
         modifier = Modifier
             .width(300.dp)
@@ -71,141 +67,40 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            if (showType == 1) {
-                OutlinedButton(
-                    onClick = {
-                        val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
-                        context.startActivity(intent)
-                    },
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(30.dp)
-                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                ) {
-                    val image: Painter = painterResource(id = R.drawable.greyarrow)
-                    Image(
-                        painter = image,
-                        contentDescription = "",
-                        alignment = Alignment.TopStart,
-                    )
-                }
-            } else if (showType == 0) {
-                OutlinedButton(
-                    onClick = {
-                        val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
-                        context.startActivity(intent)
-                    },
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(30.dp)
-                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                ) {
-                    val image: Painter = painterResource(id = R.drawable.greyarrow)
-                    Image(
-                        painter = image,
-                        contentDescription = "",
-                        alignment = Alignment.TopStart,
-                    )
-                }
-            } else if (showType == 3) {
-                OutlinedButton(
-                    onClick = {
-                        val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
-                        context.startActivity(intent)
-                    },
-                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                    modifier = Modifier
-                        .width(170.dp)
-                        .height(30.dp)
-                        .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                ) {
-                    val image: Painter = painterResource(id = R.drawable.greyarrow)
-                    Image(
-                        painter = image,
-                        contentDescription = "",
-                        alignment = Alignment.TopStart,
-                    )
-                }
+            OutlinedButton(
+                onClick = {
+                    val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(30.dp)
+                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            ) {
+                val image: Painter = painterResource(id = R.drawable.greyarrow)
+                Image(
+                    painter = image,
+                    contentDescription = "",
+                    alignment = Alignment.TopStart,
+                )
             }
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (showType == 1) {
-                val donations =
-                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+            val donations =
+                remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
-                LaunchedEffect(Unit) {
-                    thread {
-                        donations.value = FoodemptionApiClient.getAllDonations(context)
-                    }
-                }
-                val donationsLen = donations.value.size
-                for (i in (donationsLen - 1) downTo 0) {
-                    if (donations.value[i].is_claimed) {
-                        Box(
-                            modifier = Modifier
-                                .width(112.dp)
-                                .height(115.dp)
-                                .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
-
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(donations.value[i].image_url),
-                                contentDescription = "",
-                                alignment = Alignment.TopStart,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                        }
-                    }
+            LaunchedEffect(Unit) {
+                thread {
+                    donations.value = FoodemptionApiClient.getAllDonations(context)
                 }
             }
-            else if (showType == 0) {
-                val donations =
-                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
-
-                LaunchedEffect(Unit) {
-                    thread {
-                        donations.value = FoodemptionApiClient.getAllDonations(context)
-                    }
-                }
-                val donationsLen = donations.value.size
-                for (i in (donationsLen - 1) downTo 0) {
-                    if (!donations.value[i].is_claimed) {
-                        Box(
-                            modifier = Modifier
-                                .width(112.dp)
-                                .height(115.dp)
-                                .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
-
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(donations.value[i].image_url),
-                                contentDescription = "",
-                                alignment = Alignment.TopStart,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                        }
-                    }
-                }
-            }
-            // get all available food
-            else if (showType == 3) {
-                val donations =
-                    remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
-
-                LaunchedEffect(Unit) {
-                    thread {
-                        donations.value = FoodemptionApiClient.getAllAvailableFood(context)
-                    }
-                }
-                val donationsLen = donations.value.size
-                for (i in (donationsLen - 1) downTo 0) {
+            val donationsLen = donations.value.size
+            for (i in (donationsLen - 1) downTo 0) {
+                if (!donations.value[i].is_claimed) {
                     Box(
                         modifier = Modifier
                             .width(112.dp)
@@ -221,6 +116,177 @@ fun HomeListings(context: Context, subTitle: String, showType: Int) {
                                 .fillMaxWidth()
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun HomeListingsClaimed(context: Context, subTitle: String) {
+    Box(
+        modifier = Modifier
+            .width(300.dp)
+            .height(119.dp)
+            .clip(
+                RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                )
+            )
+            .background(Color(red = 1f, green = 1f, blue = 1f, alpha = 1f))
+            .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            .alpha(1f)
+
+    ) {
+        Row() {
+            Text(
+                text = subTitle,
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                textDecoration = TextDecoration.None,
+                letterSpacing = 0.sp,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .alpha(1f),
+                color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
+            )
+            OutlinedButton(
+                onClick = {
+                    val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(30.dp)
+                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            ) {
+                val image: Painter = painterResource(id = R.drawable.greyarrow)
+                Image(
+                    painter = image,
+                    contentDescription = "",
+                    alignment = Alignment.TopStart,
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            val donations =
+                remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+
+            LaunchedEffect(Unit) {
+                thread {
+                    donations.value = FoodemptionApiClient.getAllDonations(context)
+                }
+            }
+            val donationsLen = donations.value.size
+            for (i in (donationsLen - 1) downTo 0) {
+                if (donations.value[i].is_claimed) {
+                    Box(
+                        modifier = Modifier
+                            .width(112.dp)
+                            .height(115.dp)
+                            .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(donations.value[i].image_url),
+                            contentDescription = "",
+                            alignment = Alignment.TopStart,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeListingsAvailableFood(context: Context, subTitle: String) {
+    Box(
+        modifier = Modifier
+            .width(300.dp)
+            .height(119.dp)
+            .clip(
+                RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                )
+            )
+            .background(Color(red = 1f, green = 1f, blue = 1f, alpha = 1f))
+            .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            .alpha(1f)
+
+    ) {
+        Row() {
+            Text(
+                text = subTitle,
+                textAlign = TextAlign.Start,
+                fontSize = 14.sp,
+                textDecoration = TextDecoration.None,
+                letterSpacing = 0.sp,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .alpha(1f),
+                color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
+            )
+            OutlinedButton(
+                onClick = {
+                    val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                modifier = Modifier
+                    .width(170.dp)
+                    .height(30.dp)
+                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            ) {
+                val image: Painter = painterResource(id = R.drawable.greyarrow)
+                Image(
+                    painter = image,
+                    contentDescription = "",
+                    alignment = Alignment.TopStart,
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            val donations =
+                remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+
+            LaunchedEffect(Unit) {
+                thread {
+                    donations.value = FoodemptionApiClient.getAllAvailableFood(context)
+                }
+            }
+            val donationsLen = donations.value.size
+            for (i in (donationsLen - 1) downTo 0) {
+                Box(
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(115.dp)
+                        .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(donations.value[i].image_url),
+                        contentDescription = "",
+                        alignment = Alignment.TopStart,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
                 }
             }
         }

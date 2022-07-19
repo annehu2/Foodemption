@@ -57,9 +57,9 @@ fun DonorHome(context: Context, name: String) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, SplashScreenActivity::class.java)
                     context.startActivity(intent) },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF9A1B11)),
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                 modifier = Modifier
-                    .width(297.dp)
+                    .width(298.dp)
                     .height(48.dp)
                     .clip(
                         RoundedCornerShape(
@@ -70,10 +70,10 @@ fun DonorHome(context: Context, name: String) {
                         )
                     )
             ) {
-                Text("View Nearby Food Banks", color = Color.White, fontSize = 20.sp,)
+                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
             }
         }
-        Spacer(Modifier.size(30.dp))
+        Spacer(Modifier.size(20.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, DonateActivity::class.java)

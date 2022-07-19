@@ -144,7 +144,11 @@ fun LoginPage(context: Context) {
                     when (result) {
                         is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {
                             val userJwtToken = result.data.data.jwt
+                            val userOrgName = result.data.data.org
+                            val userType = result.data.data.user_type
                             SharedPreferenceHelper.setUserJWT(context, userJwtToken)
+                            SharedPreferenceHelper.setOrgName(context, userOrgName)
+                            SharedPreferenceHelper.setUserType(context, userType)
                             context.startActivity(Intent(context, DonorHome::class.java))
                         }
                         is FoodemptionApiClient.Result.Error -> {

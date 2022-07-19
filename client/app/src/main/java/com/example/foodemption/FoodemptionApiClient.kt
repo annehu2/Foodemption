@@ -1,11 +1,9 @@
 package com.example.foodemption
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
-import com.example.foodemption.home.DonorHome
 import com.example.foodemption.utils.SharedPreferenceHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,20 +33,20 @@ object FoodemptionApiClient {
         data class Success<out T>(val data: T) : Result<T>()
         data class Error(val exception: Exception) : Result<Nothing>()
     }
-    
-    fun getAllAvailableFood(context: Context): List<DonationsBodyData> {
-    val jwtToken = SharedPreferenceHelper.getUserJwt(context)
-    val request = Request.Builder()
-        .header("Content-Type", "application/json")
-        .addHeader("Authorization", jwtToken)
-        .url("$backendUrl/available_food".toHttpUrl())
-        .build()
-    val response = OkHttpClient().newCall(request).execute()
 
-    val json = response.body.string()
-    val responseBody = Json.decodeFromString<DonationsBody>(json)
-    return responseBody.data
-}
+    fun getAllAvailableFood(context: Context): List<DonationsBodyData> {
+        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+        val request = Request.Builder()
+            .header("Content-Type", "application/json")
+            .addHeader("Authorization", jwtToken)
+            .url("$backendUrl/available_food".toHttpUrl())
+            .build()
+        val response = OkHttpClient().newCall(request).execute()
+
+        val json = response.body.string()
+        val responseBody = Json.decodeFromString<DonationsBody>(json)
+        return responseBody.data
+    }
 
     fun getClaimedFood(context: Context): List<DonationsBodyData> {
         val jwtToken = SharedPreferenceHelper.getUserJwt(context)
@@ -71,14 +69,19 @@ object FoodemptionApiClient {
             .addHeader("Authorization", jwtToken)
             .url("$backendUrl/donations".toHttpUrl())
             .build()
-        val response = okHttpClient.newCall(request).execute()
 
+        val response = okHttpClient.newCall(request).execute()
         val json = response.body.string()
         val responseBody = Json.decodeFromString<DonationsBody>(json)
         return responseBody.data
     }
 
-    suspend fun processLogin(email: String, password: String, deviceToken: String, context: Context): Result<LoginResponseBody> {
+    suspend fun processLogin(
+        email: String,
+        password: String,
+        deviceToken: String,
+        context: Context
+    ): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
             val payload = Json.encodeToString(loginBody)
@@ -89,7 +92,7 @@ object FoodemptionApiClient {
                 .url("$backendUrl/login".toHttpUrl())
                 .build()
             Log.d("INFO", "Making request.")
-            val response =  okHttpClient .newCall(request).execute()
+            val response = okHttpClient.newCall(request).execute()
             val json = response.body.string()
             Log.d("INFO", "Response received.")
             if (response.code == 200) {
@@ -105,7 +108,14 @@ object FoodemptionApiClient {
     }
 
 
-    suspend fun processSignup(type: String, name: String, email: String, password: String, deviceToken: String, context: Context): Result<SignupResponseBody> {
+    suspend fun processSignup(
+        type: String,
+        name: String,
+        email: String,
+        password: String,
+        deviceToken: String,
+        context: Context
+    ): Result<SignupResponseBody> {
         return withContext(Dispatchers.IO) {
             val signupBody = SignupRequestBody(type, email, password, deviceToken, name)
             val payload = Json.encodeToString(signupBody)
@@ -151,7 +161,36 @@ object FoodemptionApiClient {
             .method("POST", requestBody)
             .header("Content-Type", "application/json")
             .addHeader("Authorization", jwtToken)
-            .url("http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/donate".toHttpUrl())
+            .url("$backendUrl/donate".toHttpUrl())
+            .build()
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i("Failure", "fail")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.i("Success", "Success")
+            }
+        })
+    }
+
+    fun donorAcceptFood(
+        customer_id: String,
+        food_id: String,
+        context: Context
+    ) {
+        val foodBody = AcceptFoodBody(customer_id, food_id)
+
+        val payload = Json.encodeToString(foodBody)
+        val requestBody = payload.toRequestBody()
+
+        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+
+        val request = Request.Builder()
+            .method("POST", requestBody)
+            .header("Content-Type", "application/json")
+            .addHeader("Authorization", jwtToken)
+            .url("$backendUrl/accept_claim".toHttpUrl())
             .build()
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -167,6 +206,12 @@ object FoodemptionApiClient {
     fun convertToBase64(attachment: File): String {
         return Base64.encodeToString(attachment.readBytes(), Base64.DEFAULT)
     }
+
+    @Serializable
+    data class AcceptFoodBody(
+        val customer_uuid: String,
+        val food_uuid: String,
+    )
 
     @Serializable
     data class LoginRequestBody(

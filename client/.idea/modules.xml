@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Foodemption.iml" filepath="$PROJECT_DIR$/.idea/modules/Foodemption.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Foodemption.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Foodemption.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Foodemption.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Foodemption.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Foodemption.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Foodemption.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Foodemption.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Foodemption.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client.Foodemption.iml" filepath="$PROJECT_DIR$/.idea/modules/client.Foodemption.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.androidTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.androidTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.unitTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/client.Foodemption.app.unitTest~1.iml" />
     </modules>
   </component>
 </project>

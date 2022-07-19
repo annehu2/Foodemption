@@ -134,15 +134,15 @@ def set_user_state_to_logout(user_uuid):
 
 # Testing purposes
 def create_test_customer():
-    user = create_user("Food Charities", "jack@gmail.com", "password", "12345_android", 1)
+    user = create_user("Food Charities", "janer@gmail.com", "password", "12345_android", 1)
     if user == None:
         return user
     else:
-        verify_customer(user.uuid)
-        return user
+        verify_customer(user.uuid,"LICS_TO_CHARITY", "www.google.com")
+        return  user
 
 def create_test_donor():
-    user = create_user("New Pizza Place", "test_donor@gmail.com", "password", "12345_android", 0)
+    user = create_user("New Pizza Place", "test2_donor@gmail.com", "password", "12345_android", 0)
     if user == None:
         return user
     else:
@@ -193,14 +193,15 @@ def create_user(name, email, password, device_token, type):
 def verify_customer(user_uuid, license_num, license_url):
     try:
         user = get_user_object(user_uuid)
+        user.is_verified = True
         new_customer = Customers(
             non_profit_license_num=license_num,
-            license_documentation_url=license_url,
-            is_verified=True
+            license_documentation_url=license_url
         )
 
         session.enable_relationship_loading(new_customer)
         new_customer.id = user.id
+        session.add(user)
         session.add(new_customer)
         session.commit()
 
@@ -213,17 +214,17 @@ def verify_customer(user_uuid, license_num, license_url):
 def verify_donor(user_uuid, phone, license_num, license_url, address):
     try:
         user = get_user_object(user_uuid)
+        user.is_verified = True
         new_donor = Donors(
             address_id = 0,
             contact = phone,
             food_license_number = license_num,
             license_documentation_url = license_url,
-            is_verified = True,
         )
 
         session.enable_relationship_loading(new_donor)
         new_donor.id = user.id
-
+        session.add(user)
         session.add(new_donor)
         session.commit()
 

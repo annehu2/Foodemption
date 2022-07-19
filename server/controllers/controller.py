@@ -25,14 +25,14 @@ def test_create_customer():
     if new_customer == None:
         return json.dumps({"message": "Tried to create duplicate customer"}), 400
     else:
-        return 200
+        return json.dumps({ "message": "Successfully created the customer"}), 200
 
 def test_create_donor():
     new_donor = create_test_donor()
     if new_donor == None:
         return json.dumps({"message": "Tried to create duplicate donor"}), 400
     else:
-        return 200
+        return json.dumps({ "message": "Successfully created the donor"}), 200
 
 @authentication_required
 def retrieve_food(currently_authenticated_user):

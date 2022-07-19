@@ -35,7 +35,6 @@ class Customers(db.Model):
     # organization_name = db.Column(db.String(32))
     non_profit_license_num = db.Column(db.String(32))
     license_documentation_url = db.Column(db.String(64)) # Use S3 for this one
-    is_verified = db.Column(db.Boolean, unique=False, default=False)
     filters = db.relationship("Filters", secondary=customer_filter_association)    
     def __repr__(self):
         return '<Customer:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
@@ -44,7 +43,6 @@ class Customers(db.Model):
             'id': self.id,
             'non_profit_license_num': self.non_profit_license_num,
             'license_documentation_url': self.license_documentation_url,
-            'is_verified': self.is_verified,
             'filters': [f.id for f in self.filters]
         }
 
@@ -62,7 +60,6 @@ class Donors(db.Model):
     contact = db.Column(db.String(32))
     food_license_number = db.Column(db.String(32))
     license_documentation_url = db.Column(db.String(64)) # Using s3 for this
-    is_verified = db.Column(db.Boolean, unique=False, default=False)
     address = db.relationship("Addresses",back_populates="donor", uselist=False)
     donations = db.relationship("Foods")
 
@@ -74,6 +71,7 @@ class Users(db.Model):
     uuid = db.Column(db.String(128))
     organization_name = db.Column(db.String(32))
     type = db.Column(db.Integer) # 1 stands for customer, 0 stands for donors
+    is_verified = db.Column(db.Boolean, unique=False, nullable=False, default=False)
 
     def __repr__(self):
         return '<User:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))

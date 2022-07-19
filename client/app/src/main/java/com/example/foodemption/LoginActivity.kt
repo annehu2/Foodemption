@@ -3,7 +3,7 @@ package com.example.foodemption
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,11 +33,9 @@ import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +47,7 @@ class LoginActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     LoginPage(this)
+
                 }
             }
         }
@@ -128,14 +127,16 @@ fun LoginPage(context: Context) {
             onClick = {
                 coroutineScope.launch {
                     val deviceToken = SharedPreferenceHelper.getFCMToken(context)
-                    val result = try {
+                    val result =
+                    try {
                         FoodemptionApiClient.processLogin(
                             emailText.value.text.trim(),
                             passwordText.value.text.trim(),
                             deviceToken,
                             context
                         )
-                    } catch(e: Exception) {
+                    }
+                    catch(e: Exception) {
                         FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                     }
                     when (result) {

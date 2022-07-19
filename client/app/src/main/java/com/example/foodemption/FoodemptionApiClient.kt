@@ -17,6 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 // Singleton design pattern
 object FoodemptionApiClient {
@@ -27,6 +28,8 @@ object FoodemptionApiClient {
             val request = chain.request().newBuilder().addHeader("Connection", "close").build()
             chain.proceed(request)
         })
+        .connectTimeout(1, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     sealed class Result<out R> {
@@ -48,7 +51,7 @@ object FoodemptionApiClient {
         return responseBody.data
     }
 
-    fun getClaimedFood(context: Context): List<DonationsBodyData> {
+    fun getClaimedFoodOld(context: Context): List<DonationsBodyData> {
         val jwtToken = SharedPreferenceHelper.getUserJwt(context)
         val request = Request.Builder()
             .header("Content-Type", "application/json")
@@ -62,7 +65,7 @@ object FoodemptionApiClient {
         return responseBody.data
     }
 
-    fun getAllDonations(context: Context): List<DonationsBodyData> {
+    fun getAllDonationsOld(context: Context): List<DonationsBodyData> {
         val jwtToken = SharedPreferenceHelper.getUserJwt(context)
         val request = Request.Builder()
             .header("Content-Type", "application/json")
@@ -76,12 +79,47 @@ object FoodemptionApiClient {
         return responseBody.data
     }
 
-    suspend fun processLogin(
-        email: String,
-        password: String,
-        deviceToken: String,
-        context: Context
-    ): Result<LoginResponseBody> {
+    suspend fun getClaimedFood(context: Context): Result<List<DonationsBodyData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/claimed_food".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                val json = response.body.string()
+                val responseBody = Json.decodeFromString<DonationsBody>(json)
+                Result.Success(responseBody.data)
+            }
+            else {
+                Result.Error(Exception("Error"))
+            }
+        }
+    }
+
+    suspend fun getAllDonations(context: Context): Result<List<DonationsBodyData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/donations".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                val json = response.body.string()
+                val responseBody = Json.decodeFromString<DonationsBody>(json)
+                Result.Success(responseBody.data)
+            }
+            else {
+                Result.Error(Exception("Error"))
+            }
+        }
+    }
+
+    suspend fun processLogin(email: String, password: String, deviceToken: String, context: Context): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
             val payload = Json.encodeToString(loginBody)
@@ -106,7 +144,6 @@ object FoodemptionApiClient {
             }
         }
     }
-
 
     suspend fun processSignup(
         type: String,

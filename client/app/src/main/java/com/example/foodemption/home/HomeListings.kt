@@ -11,10 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +31,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.foodemption.*
 import com.example.foodemption.R
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 
 @Composable
@@ -93,9 +93,28 @@ fun HomeListingsActive(context: Context, subTitle: String) {
             val donations =
                 remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
+            val coroutineScope = rememberCoroutineScope()
             LaunchedEffect(Unit) {
-                thread {
-                    donations.value = FoodemptionApiClient.getAllDonations(context)
+                coroutineScope.launch {
+                    val result =
+                        try {
+                            FoodemptionApiClient.getAllDonations(context)
+                        }
+                        catch(e: Exception) {
+                            Log.d("ERROR", e.message.toString())
+                            FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                        }
+                    when (result) {
+                        is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
+                            donations.value = result.data
+                        }
+                        is FoodemptionApiClient.Result.Error -> {
+                            val errorMessage = result.exception.message.toString()
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, errorMessage)
+                            }
+                        }
+                    }
                 }
             }
             val donationsLen = donations.value.size
@@ -180,9 +199,28 @@ fun HomeListingsClaimed(context: Context, subTitle: String) {
             val donations =
                 remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
+            val coroutineScope = rememberCoroutineScope()
             LaunchedEffect(Unit) {
-                thread {
-                    donations.value = FoodemptionApiClient.getAllDonations(context)
+                coroutineScope.launch {
+                    val result =
+                        try {
+                            FoodemptionApiClient.getAllDonations(context)
+                        }
+                        catch(e: Exception) {
+                            Log.d("ERROR", e.message.toString())
+                            FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                        }
+                    when (result) {
+                        is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
+                            donations.value = result.data
+                        }
+                        is FoodemptionApiClient.Result.Error -> {
+                            val errorMessage = result.exception.message.toString()
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, errorMessage)
+                            }
+                        }
+                    }
                 }
             }
             val donationsLen = donations.value.size

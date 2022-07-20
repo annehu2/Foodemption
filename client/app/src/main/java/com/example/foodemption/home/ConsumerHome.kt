@@ -61,7 +61,7 @@ fun ConsumerHome(context: Context) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, MapsConsumerActivity::class.java)
                     context.startActivity(intent) },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF00a79c)),
                 modifier = Modifier
                     .width(298.dp)
                     .height(48.dp)
@@ -74,7 +74,7 @@ fun ConsumerHome(context: Context) {
                         )
                     )
             ) {
-                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
+                Text("View Closest Organizations", color = Color.White, fontSize = 18.sp,)
             }
         }
         Spacer(Modifier.size(60.dp))

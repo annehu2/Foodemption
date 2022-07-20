@@ -254,3 +254,37 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 mark food as claimed
 
 curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImMxYjE3MDNkLWFlNzYtNGRlNS04ZWZhLWJiNTYyZTczNGU2NyIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.6oEaqfmNNOeIlpqE8TdOnO8J-G0R2qQxLQcgCEDzDTY" -X POST -d '{"customer_uuid": "bd20b1b6-bded-4a12-b996-9ffe33b4d10c", "food_uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc"}' http://0.0.0.0:8000/accept_claim
+
+TESTS FOR CLAIMING FOOD
+
+login as customer
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"email": "janer@gmail.com", "password": "password", "device_token": "12345_android"}' http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/login
+
+{"data": {"email": "janer@gmail.com", "user_type": 1, "org": "Food Charities", "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphbmVyQGdtYWlsLmNvbSIsInV1aWQiOiI4MTdjNWVmYi1iNmEyLTQ0NzYtODNmYy0zMTQ4MDJhMzhjN2YiLCJvcmdhbml6YXRpb25fbmFtZSI6IkZvb2QgQ2hhcml0aWVzIiwidXNlcl90eXBlIjoxfQ.f1wbtIMXNZOCSE1sGBFXLdG_VucajeIRigshzc9VJdU", "uuid": "817c5efb-b6a2-4476-83fc-314802a38c7f"}}
+
+get available food
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphbmVyQGdtYWlsLmNvbSIsInV1aWQiOiI4MTdjNWVmYi1iNmEyLTQ0NzYtODNmYy0zMTQ4MDJhMzhjN2YiLCJvcmdhbml6YXRpb25fbmFtZSI6IkZvb2QgQ2hhcml0aWVzIiwidXNlcl90eXBlIjoxfQ.f1wbtIMXNZOCSE1sGBFXLdG_VucajeIRigshzc9VJdU" -X GET http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/available_food
+
+{"data": [{"uuid": "1d1a7c15-29d2-40a0-993f-6d3192fc67cb", "title": "123", "image_url": "https://foodemptionimages.s3-us-east-2.amazonaws.com/123", "description": "123\n", "best_before": "29/7/2022", "is_claimed": false}, {"uuid": "c4099bc7-cafb-4679-8a48-2a26679c3d27", "title": "yummy food", "image_url": "https://foodemptionimages.s3-us-east-2.amazonaws.com/yummy food", "description": "Delicious food", "best_before": "20/7/2022", "is_claimed": false}, {"uuid": "9954d857-4c09-471a-b392-8c368f7e22eb", "title": "asd", "image_url": "https://foodemptionimages.s3-us-east-2.amazonaws.com/asd", "description": "asd", "best_before": "28/7/2022", "is_claimed": false}, {"uuid": "9e8e72b1-e955-4d7c-a0f4-97d1be6b731e", "title": "asd", "image_url": "https://foodemptionimages.s3-us-east-2.amazonaws.com/asd", "description": "asd", "best_before": "28/7/2022", "is_claimed": false}, {"uuid": "28e45d8a-8e80-4277-b00f-9304174e4561", "title": "bras", "image_url": "https://foodemptionimages.s3-us-east-2.amazonaws.com/bras", "description": "asd", "best_before": "28/7/2022", "is_claimed": false}]}
+
+make a claim food request
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImphbmVyQGdtYWlsLmNvbSIsInV1aWQiOiI4MTdjNWVmYi1iNmEyLTQ0NzYtODNmYy0zMTQ4MDJhMzhjN2YiLCJvcmdhbml6YXRpb25fbmFtZSI6IkZvb2QgQ2hhcml0aWVzIiwidXNlcl90eXBlIjoxfQ.f1wbtIMXNZOCSE1sGBFXLdG_VucajeIRigshzc9VJdU" -X POST -d '{"pickup_time": "TOMORROW 9PM", "food_uuid": "28e45d8a-8e80-4277-b00f-9304174e4561"}' http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/make_claim
+
+login as donor
+
+curl -v -H "Content-Type: application/json" -X POST -d '{"email": "test_donor@gmail.com", "password": "password", "device_token": "12345_android"}' http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/login
+
+{"data": {"email": "test_donor@gmail.com", "user_type": 0, "org": "New Pizza Place", "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImE4MmVhMmQyLTE5NGYtNDFiYS04ZmRjLWZiMjE4ZDZjYWM1OSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.c0OZvrWViAfTQLDcWBuEKPgNmCpGNWWiDlkcq8fnr4g", "uuid": "a82ea2d2-194f-41ba-8fdc-fb218d6cac59"}}
+
+get pending claims
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImE4MmVhMmQyLTE5NGYtNDFiYS04ZmRjLWZiMjE4ZDZjYWM1OSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.c0OZvrWViAfTQLDcWBuEKPgNmCpGNWWiDlkcq8fnr4g" -X GET http://ec2-3-128-157-187.us-east-2.compute.amazonaws.com:8000/get_pending_claims?food_uuid=28e45d8a-8e80-4277-b00f-9304174e4561
+
+{"data": [{"pickup_time": "TOMORROW 9PM", "food_uuid": "28e45d8a-8e80-4277-b00f-9304174e4561", "customer_uuid": "817c5efb-b6a2-4476-83fc-314802a38c7f"}, {"pickup_time": "TOMORROW 9PM", "food_uuid": "28e45d8a-8e80-4277-b00f-9304174e4561", "customer_uuid": "817c5efb-b6a2-4476-83fc-314802a38c7f"}, {"pickup_time": "MutableState(value=21/7/2022)@203815100 at MutableState(value=4:14)@2940559", "food_uuid": "28e45d8a-8e80-4277-b00f-9304174e4561", "customer_uuid": "817c5efb-b6a2-4476-83fc-314802a38c7f"}]}
+
+accept claim
+
+curl -v -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RfZG9ub3JAZ21haWwuY29tIiwidXVpZCI6ImE4MmVhMmQyLTE5NGYtNDFiYS04ZmRjLWZiMjE4ZDZjYWM1OSIsIm9yZ2FuaXphdGlvbl9uYW1lIjoiTmV3IFBpenphIFBsYWNlIiwidXNlcl90eXBlIjowfQ.c0OZvrWViAfTQLDcWBuEKPgNmCpGNWWiDlkcq8fnr4g" -X POST -d '{"customer_uuid": "bd20b1b6-bded-4a12-b996-9ffe33b4d10c", "food_uuid": "48b17302-74a0-42fd-80b5-6e26f37e6bcc"}' http://0.0.0.0:8000/accept_claim

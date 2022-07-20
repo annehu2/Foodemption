@@ -20,11 +20,12 @@ KAFKA_TOPIC = "foodemp_notif_pipe"
 consumer = KafkaConsumer(KAFKA_TOPIC, **kafka_configs, value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 print("Connected to Kafka broker! ready for msgs")
 
-def dispatch_fcm(msg, device_token):
+def dispatch_fcm(msg, device_token, event_type):
     fcm_msg = messaging.Message(
         android=messaging.AndroidConfig(priority="high"),
         data={
-            'message':msg
+            'message':msg,
+            'event_type': event_type
         },
         token=device_token
     )
@@ -35,7 +36,7 @@ def handle_reminder_event(event):
     print("received reminder event")
     device_token = event['payload']['device_token']
     foodemp_event_msg =  event['payload']['message']
-    dispatch_fcm(foodemp_event_msg, device_token)
+    dispatch_fcm(foodemp_event_msg, device_token, "Reminder")
     print("Successfull dispatched a a reminder object to device")    
 
 def handle_donation_event(event):
@@ -44,7 +45,7 @@ def handle_donation_event(event):
 
     for device_token in device_to_push_notif:
         foodemp_event_message = event['payload']['message']
-        dispatch_fcm(foodemp_event_message, device_token)
+        dispatch_fcm(foodemp_event_message, device_token, "Donation")
 
     print("Donation Notification dispatch complete")
 
@@ -56,7 +57,7 @@ def handle_claim_event(event):
 
     for device_token in device_tokens:
         foodemp_event_message = message
-        dispatch_fcm(foodemp_event_message, device_token)
+        dispatch_fcm(foodemp_event_message, device_token, "Request")
 
     print("Notification has been dispatched")
     return event

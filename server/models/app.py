@@ -86,6 +86,7 @@ class Foods(db.Model):
     is_claimed = db.Column(db.Boolean, unique=False, default=False)
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.id'), nullable = False)
     filters = db.relationship("Filters", secondary=donation_filter_association)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable = True) # claimed by customer with id
     def __repr__(self):
         return '<Food:{}>'.format(', '.join("%s: %s" % item for item in vars(self).items()))
     def get(self):

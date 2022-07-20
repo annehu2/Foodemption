@@ -1,5 +1,6 @@
 import json, os
 import base64
+from turtle import pen
 import boto3
 from botocore.client import Config
 from flask import request
@@ -7,6 +8,7 @@ from controllers.middleware import authentication_required, donator_only
 from manager.manager import ManagerException
 from kafka import KafkaProducer
 import manager.manager as manager
+from utils.redis_accecssor import list_pending_messages
 from utils.kafka_producer import sendMessageToKafka
 from utils.enum import KAFKA_TOPIC
 
@@ -124,7 +126,7 @@ def donate_food(currently_authenticated_user):
     # print(title, description, image_base64, best_before, donor_uuid)
 
     image_url = upload_to_s3(image_base64, title)
-
+    # image_url ="google.com"
     try:
         food_data = manager.add_food(title, description, image_url, best_before, donor_uuid)
 
@@ -168,3 +170,18 @@ def retrieve_all_donations(currently_authenticated_user):
                         "is_claimed": food.is_claimed} for food in donations ]
         }
     ), 200
+
+
+@donator_only
+def retrieve_all_pending_claims(current_authenticated_user):
+    food_uuid = request.args.get("food_uuid")
+    pending_claims = list_pending_messages(food_uuid)
+    pending_claims = [ json.loads(pending_claim)['payload'] for pending_claim in pending_claims]
+    
+    return json.dumps({
+        "data":[{
+            "pickup_time": pending_claim['pickup_time'],
+            "food_uuid": pending_claim['food_uuid'],
+            "customer_uuid": pending_claim['customer_uuid']
+        } for pending_claim in pending_claims]
+    })

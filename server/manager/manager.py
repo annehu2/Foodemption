@@ -302,6 +302,9 @@ def get_food_by_donor(donor_uuid):
     donor = get_donor_by_uuid(donor_uuid)
     return session.query(Foods).filter(Foods.donor_id == donor.id).all()
 
+def get_donor(donor_id):
+        return session.query(*Users.__table__.columns, *Donors.__table__.columns).select_from(Users).join(Donors, (Users.id == donor_id) & (Users.id == Donors.id )).first()
+
 def get_donor_by_uuid(donor_uuid):
     user = session.query(Users).filter(Users.uuid == donor_uuid).first()
     donor = session.query(Donors).filter(Donors.id == user.id).first()

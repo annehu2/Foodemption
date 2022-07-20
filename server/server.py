@@ -26,12 +26,17 @@ app.add_url_rule('/verify_donor', view_func=donator_controller.verify_donor, met
 app.add_url_rule('/verify_customer', view_func=customer_controller.verify_customer, methods=['POST'])
 app.add_url_rule('/claimed_food', view_func=controller.retrieve_all_claimed_food, methods=['GET'])
 app.add_url_rule('/available_food', view_func=controller.retrieve_all_available_food, methods=['GET'])
+app.add_url_rule('/make_claim', view_func=customer_controller.make_food_claim, methods=['POST'])
+app.add_url_rule('/get_pending_claims',view_func=donator_controller.retrieve_all_pending_claims, methods=['GET'])
 
 app.add_url_rule('/filters_bulk_create', view_func=filter_controller.create_filters, methods=['GET'])
 app.add_url_rule('/filter_intersect', view_func=filter_controller.filter_intersect)
 app.add_url_rule('/customer_filter_update', view_func=filter_controller.update_customer_filter, methods=['PUT'])
 app.add_url_rule('/food_filter_update', view_func=filter_controller.update_food_filter, methods=['PUT'])
+
+# Kafka end points
 app.add_url_rule('/kafka/food/filter/<food_id>', '/kafka/food/filter/<food_id>', filter_controller.get_device_tokens_base_on_food_filters, methods=['GET'])
+app.add_url_rule('/kafka/food/<food_uuid>/donor_info','/kafka/food/<food_uuid>/donor_info',filter_controller.get_donor_info_given_food, methods=['GET'])
 # TODO: Look into docker's networking model and figure out how this work in another
 #       machine (i.e EC2)
 if __name__ == '__main__':

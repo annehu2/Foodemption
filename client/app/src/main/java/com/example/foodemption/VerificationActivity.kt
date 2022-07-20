@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 
 class VerificationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +60,8 @@ fun VerificationPage(context: Context) {
             .fillMaxHeight()
     ) {
         Spacer(Modifier.size(40.dp))
-        Title("Anne", "Cool Kids Club")
+        val orgName = SharedPreferenceHelper.getOrgName(context)
+        Title("Welcome Donor", orgName)
         Spacer(Modifier.size(40.dp))
         Column(Modifier.padding(), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {

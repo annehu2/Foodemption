@@ -16,6 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.FoodemptionApiClient
+import com.example.foodemption.MainActivity
 import com.example.foodemption.maps.MapsConsumerActivity
 import com.example.foodemption.maps.SplashScreenActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
@@ -77,5 +79,20 @@ fun ConsumerHome(context: Context) {
             }
         }
         Spacer(Modifier.size(60.dp))
+    }
+    Spacer(Modifier.size(20.dp))
+
+    Box(Modifier.padding(), Alignment.CenterStart) {
+        OutlinedButton(
+            onClick = { val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+                FoodemptionApiClient.logout(context)},
+            colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
+            modifier = Modifier
+                .width(100.dp)
+                .height(40.dp)
+        ) {
+            Text("Logout", color = Color.Red, fontSize = 15.sp,)
+        }
     }
 }

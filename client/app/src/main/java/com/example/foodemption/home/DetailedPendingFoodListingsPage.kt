@@ -91,6 +91,19 @@ fun DetailedPendingFoodListingsPage(context: Context) {
             }
         }
 
+        Box(Modifier.padding(), Alignment.CenterStart) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, DonorHome::class.java)
+                    context.startActivity(intent) },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(40.dp)
+            ) {
+                Text("Back", color = Color.Blue, fontSize = 15.sp,)
+            }
+        }
+
         val requests =
             remember { mutableStateOf(emptyList<FoodemptionApiClient.PendingFoodData>()) }
 

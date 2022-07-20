@@ -27,6 +27,7 @@ import com.example.foodemption.DonateActivity
 import com.example.foodemption.FoodemptionApiClient
 import com.example.foodemption.R
 import com.example.foodemption.VerificationActivity
+import com.example.foodemption.maps.MapsConsumerActivity
 import com.example.foodemption.showMessage
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
@@ -88,6 +89,18 @@ fun DetailedActiveFoodListingsPage(context: Context) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 10.dp)
                 )
+            }
+        }
+        Box(Modifier.padding(), Alignment.CenterStart) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, DonorHome::class.java)
+                    context.startActivity(intent) },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(40.dp)
+            ) {
+                Text("Back", color = Color.Blue, fontSize = 15.sp,)
             }
         }
 

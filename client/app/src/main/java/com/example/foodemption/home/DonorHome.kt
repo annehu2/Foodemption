@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodemption.DonateActivity
+import com.example.foodemption.FoodemptionApiClient
+import com.example.foodemption.MainActivity
 import com.example.foodemption.maps.SplashScreenActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
@@ -56,7 +58,7 @@ fun DonorHome(context: Context) {
         HomeListingsActive(context, subTitle = "My Active Food Listings")
         Spacer(Modifier.size(40.dp))
         HomeListingsClaimed(context, subTitle = "Previously Claimed Food")
-        Spacer(Modifier.size(40.dp))
+        Spacer(Modifier.size(20.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, SplashScreenActivity::class.java)
@@ -77,7 +79,7 @@ fun DonorHome(context: Context) {
                 Text("View Closest Organizations", color = Color.White, fontSize = 18.sp,)
             }
         }
-        Spacer(Modifier.size(20.dp))
+        Spacer(Modifier.size(10.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, DonateActivity::class.java)
@@ -96,6 +98,22 @@ fun DonorHome(context: Context) {
                     )
             ) {
                 Text("Donate Food", color = Color.White, fontSize = 20.sp,)
+            }
+        }
+
+        Spacer(Modifier.size(10.dp))
+
+        Box(Modifier.padding(), Alignment.CenterStart) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                    FoodemptionApiClient.logout(context)},
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(40.dp)
+            ) {
+                Text("Logout", color = Color.Red, fontSize = 15.sp,)
             }
         }
     }

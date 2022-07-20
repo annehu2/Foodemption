@@ -40,7 +40,10 @@ object FoodemptionApiClient {
         data class Error(val exception: Exception) : Result<Nothing>()
     }
 
-    suspend fun getAllAvailableFood(context: Context, numRetries: Int = 5): Result<List<DonationsBodyData>> {
+    suspend fun getAllAvailableFood(
+        context: Context,
+        numRetries: Int = 5
+    ): Result<List<DonationsBodyData>> {
         return withContext(Dispatchers.IO) {
             val jwtToken = SharedPreferenceHelper.getUserJwt(context)
             val request = Request.Builder()
@@ -54,26 +57,26 @@ object FoodemptionApiClient {
                     val json = response.body.string()
                     val responseBody = Json.decodeFromString<DonationsBody>(json)
                     Result.Success(responseBody.data)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        getAllAvailableFood(context, numRetries-1)
-                    }
-                    else {
+                        getAllAvailableFood(context, numRetries - 1)
+                    } else {
                         throw e
                     }
                 }
-            }
-            else {
+            } else {
                 Result.Error(Exception("User not verified."))
             }
         }
     }
 
 
-    suspend fun getClaimedFood(context: Context, numRetries: Int = 5): Result<List<DonationsBodyData>> {
+    suspend fun getClaimedFood(
+        context: Context,
+        numRetries: Int = 5
+    ): Result<List<DonationsBodyData>> {
         return withContext(Dispatchers.IO) {
             val jwtToken = SharedPreferenceHelper.getUserJwt(context)
             val request = Request.Builder()
@@ -87,25 +90,25 @@ object FoodemptionApiClient {
                     val json = response.body.string()
                     val responseBody = Json.decodeFromString<DonationsBody>(json)
                     Result.Success(responseBody.data)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        getClaimedFood(context, numRetries-1)
-                    }
-                    else {
+                        getClaimedFood(context, numRetries - 1)
+                    } else {
                         throw e
                     }
                 }
-            }
-            else {
+            } else {
                 Result.Error(Exception("User not verified."))
             }
         }
     }
 
-    suspend fun getAllDonations(context: Context, numRetries: Int = 5): Result<List<DonationsBodyData>> {
+    suspend fun getAllDonations(
+        context: Context,
+        numRetries: Int = 5
+    ): Result<List<DonationsBodyData>> {
         return withContext(Dispatchers.IO) {
             val jwtToken = SharedPreferenceHelper.getUserJwt(context)
             val request = Request.Builder()
@@ -119,25 +122,25 @@ object FoodemptionApiClient {
                     val json = response.body.string()
                     val responseBody = Json.decodeFromString<DonationsBody>(json)
                     Result.Success(responseBody.data)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        getAllDonations(context, numRetries-1)
-                    }
-                    else {
+                        getAllDonations(context, numRetries - 1)
+                    } else {
                         throw e
                     }
                 }
-            }
-            else {
+            } else {
                 Result.Error(Exception("User not verified."))
             }
         }
     }
 
-    suspend fun getPendingRequestsForFoodUuid(context: Context, numRetries: Int = 5): Result<List<PendingFoodData>> {
+    suspend fun getPendingRequestsForFoodUuid(
+        context: Context,
+        numRetries: Int = 5
+    ): Result<List<PendingFoodData>> {
         return withContext(Dispatchers.IO) {
             val jwtToken = SharedPreferenceHelper.getUserJwt(context)
             val request = Request.Builder()
@@ -151,25 +154,27 @@ object FoodemptionApiClient {
                     val json = response.body.string()
                     val responseBody = Json.decodeFromString<PendingFoodBody>(json)
                     Result.Success(responseBody.data)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        getPendingRequestsForFoodUuid(context, numRetries-1)
-                    }
-                    else {
+                        getPendingRequestsForFoodUuid(context, numRetries - 1)
+                    } else {
                         throw e
                     }
                 }
-            }
-            else {
+            } else {
                 Result.Error(Exception("User not verified."))
             }
         }
     }
 
-    suspend fun processLogin(email: String, password: String, deviceToken: String, numRetries: Int = 5): Result<LoginResponseBody> {
+    suspend fun processLogin(
+        email: String,
+        password: String,
+        deviceToken: String,
+        numRetries: Int = 5
+    ): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
             val payload = Json.encodeToString(loginBody)
@@ -188,14 +193,12 @@ object FoodemptionApiClient {
                     val responseBody = Json.decodeFromString<LoginResponseBody>(json)
                     Log.d("INFO", "Login successful. $responseBody")
                     Result.Success(responseBody)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        processLogin(email, password, deviceToken, numRetries-1)
-                    }
-                    else {
+                        processLogin(email, password, deviceToken, numRetries - 1)
+                    } else {
                         throw e
                     }
                 }
@@ -318,6 +321,26 @@ object FoodemptionApiClient {
             .header("Content-Type", "application/json")
             .addHeader("Authorization", jwtToken)
             .url("$backendUrl/accept_claim".toHttpUrl())
+            .build()
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i("Failure", "fail")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.i("Success", "Success")
+            }
+        })
+    }
+
+    fun logout(context: Context) {
+        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+
+        val request = Request.Builder()
+            .method("POST", null)
+            .header("Content-Type", "application/json")
+            .addHeader("Authorization", jwtToken)
+            .url("$backendUrl/logout".toHttpUrl())
             .build()
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {

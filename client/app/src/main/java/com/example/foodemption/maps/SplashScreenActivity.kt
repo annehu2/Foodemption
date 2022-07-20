@@ -1,10 +1,11 @@
-package com.example.foodemption
+package com.example.foodemption.maps
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import com.example.foodemption.R
 
 class SplashScreenActivity : AppCompatActivity() {
     private val times = 1000L

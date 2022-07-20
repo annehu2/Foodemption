@@ -14,10 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.foodemption.DonateActivity
+import com.example.foodemption.maps.MapsConsumerActivity
+import com.example.foodemption.maps.SplashScreenActivity
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
 
@@ -57,6 +57,26 @@ fun ConsumerHome(context: Context) {
         //HomeListings(context, subTitle = "Previously Claimed Food", 4)
         Spacer(Modifier.size(40.dp))
         //HomeListings(context, subTitle = "Closest Organizations", 4)
+        Box(Modifier.padding(), Alignment.BottomCenter) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, MapsConsumerActivity::class.java)
+                    context.startActivity(intent) },
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                modifier = Modifier
+                    .width(298.dp)
+                    .height(48.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 9.dp,
+                            topEnd = 9.dp,
+                            bottomStart = 9.dp,
+                            bottomEnd = 9.dp
+                        )
+                    )
+            ) {
+                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
+            }
+        }
         Spacer(Modifier.size(60.dp))
     }
 }

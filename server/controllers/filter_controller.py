@@ -81,7 +81,7 @@ def get_kafka_message_for_donations(food_id):
           'location': "20",
           'ingridents_filter': [1,2]
        },
-       'message': "You have a pending donation in your area!"   
+       'message': "Someone has made a new donation made in your area"   
     }
     }
     return new_donation_object

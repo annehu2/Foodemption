@@ -17,6 +17,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.foodemption.MainActivity
 import com.example.foodemption.R
+import com.example.foodemption.home.ConsumerHome
+import com.example.foodemption.home.DonorHome
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -56,18 +58,62 @@ class FCMListenerService : FirebaseMessagingService() {
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
     }
+    private fun getPendingIntentGivenEventType(event_type: String): PendingIntent {
 
+        if(event_type == "Donation") {
+            val intent = Intent(this, ConsumerHome::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            return PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+        } else if(event_type == "Request") {
+            val intent = Intent(this, DonorHome::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            return PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+        }else {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            return PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+        }
+    }
     private fun sendNotification(remoteMessage: RemoteMessage) {
         // This sets the notification content
 
         // notification should respond to a tap.
         // Must specify a content intent defined with a pendingIntent and pass it to setContentIntent
-        val intent = Intent(this, MainActivity::class.java).apply {
+        var intent = Intent(this, ConsumerHome::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,0, intent,PendingIntent.FLAG_IMMUTABLE)
+
         val notifData = remoteMessage.data
         val notifMessage = notifData.get("message")
+        val message_type = notifData.get("event_type")
+        if (message_type == "Donation") {
+            intent = Intent(this, ConsumerHome::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        } else if(message_type == "Request") {
+            intent = Intent(this, DonorHome::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,0, intent,PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         var builder = NotificationCompat.Builder(this, "NEW_CHAN")
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(remoteMessage.data.get("title"))

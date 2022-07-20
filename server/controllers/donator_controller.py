@@ -1,12 +1,10 @@
 import json, os
 import base64
-from turtle import pen
 import boto3
 from botocore.client import Config
 from flask import request
 from controllers.middleware import authentication_required, donator_only
 from manager.manager import ManagerException
-from kafka import KafkaProducer
 import manager.manager as manager
 from utils.redis_accecssor import list_pending_messages
 from utils.kafka_producer import sendMessageToKafka
@@ -174,8 +172,8 @@ def retrieve_all_donations(currently_authenticated_user):
 
 @donator_only
 def retrieve_all_pending_claims(current_authenticated_user):
-     try:
-        donor_uuid = currently_authenticated_user["uuid"]
+    try:
+        donor_uuid =  current_authenticated_user["uuid"]
     except KeyError: 
         return json.dumps({"message": "Fields are missing!"})
 

@@ -1,6 +1,4 @@
 import json, os
-import base64
-import boto3
 from botocore.client import Config
 from flask import request
 from controllers.middleware import customer_only
@@ -36,7 +34,7 @@ def get_kafka_message_for_requests(customer_uuid, organization_name, pickup_time
         'message_type': 'Requests',
         'payload':{
             'food_uuid': food_uuid, 
-            'data': food_data
+            'data': food_data,
             'customer_uuid': customer_uuid,
             'organization_name': organization_name,
             'pickup_time': pickup_time,
@@ -57,7 +55,7 @@ def make_food_claim(currently_authenticated_user):
         return json.dumps({"message": "Fields are missing!"}), 400
 
     try:
-        food = get_food(food_uuid)
+        food =  manager.get_food(food_uuid)
         if food == None:
             return json.dumps({"message": "Food with given uuid doesn't exist."}), 400
         organization_name = manager.get_user_object(customer_uuid).organization_name

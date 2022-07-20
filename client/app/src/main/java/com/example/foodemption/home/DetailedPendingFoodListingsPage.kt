@@ -92,7 +92,7 @@ fun DetailedPendingFoodListingsPage(context: Context) {
         }
 
         val requests =
-            remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+            remember { mutableStateOf(emptyList<FoodemptionApiClient.PendingFoodData>()) }
 
         val coroutineScope = rememberCoroutineScope()
 
@@ -100,14 +100,14 @@ fun DetailedPendingFoodListingsPage(context: Context) {
             coroutineScope.launch {
                 val result =
                     try {
-                        FoodemptionApiClient.getAllDonations(context)
+                        FoodemptionApiClient.getPendingRequestsForFoodUuid(context)
                     }
                     catch(e: Exception) {
                         Log.d("ERROR", e.message.toString())
                         FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                     }
                 when (result) {
-                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
+                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.PendingFoodData>> -> {
                         Log.d("INFO", "HERE")
                         requests.value = result.data
                     }
@@ -121,22 +121,20 @@ fun DetailedPendingFoodListingsPage(context: Context) {
             }
         }
 
-        val donationsLen = requests.value.size
-        for (i in (donationsLen - 1) downTo 0) {
-            if (!requests.value[i].is_claimed) {
-                Spacer(Modifier.size(40.dp))
-                DetailedRequest(
-                    context,
-                    "Fake PickUp Time",
-                    requests.value[i].image_url,
-                    requests.value[i].title,
-                    requests.value[i].best_before,
-                    requests.value[i].description,
-                    requests.value[i].uuid,
-                    "817c5efb-b6a2-4476-83fc-314802a38c7f",
-                    "org name"
-                )
-            }
+        val requestsLen = requests.value.size
+        for (i in (requestsLen - 1) downTo 0) {
+            Spacer(Modifier.size(40.dp))
+            DetailedRequest(
+                context,
+                requests.value[i].pickup_time,
+                requests.value[i].data.image_url,
+                requests.value[i].data.title,
+                requests.value[i].data.best_before,
+                requests.value[i].data.description,
+                requests.value[i].data.uuid,
+                requests.value[i].customer_uuid,
+                requests.value[i].organization_name,
+            )
         }
         Spacer(Modifier.size(60.dp))
     }

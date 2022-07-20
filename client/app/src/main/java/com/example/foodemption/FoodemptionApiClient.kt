@@ -137,13 +137,13 @@ object FoodemptionApiClient {
         }
     }
 
-    suspend fun getPendingRequestsForFoodUuid(context: Context, food_uuid: String, numRetries: Int = 5): Result<List<PendingFoodData>> {
+    suspend fun getPendingRequestsForFoodUuid(context: Context, numRetries: Int = 5): Result<List<PendingFoodData>> {
         return withContext(Dispatchers.IO) {
             val jwtToken = SharedPreferenceHelper.getUserJwt(context)
             val request = Request.Builder()
                 .header("Content-Type", "application/json")
                 .addHeader("Authorization", jwtToken)
-                .url("$backendUrl/get_pending_claims?food_uuid=$food_uuid".toHttpUrl())
+                .url("$backendUrl/get_pending_claims".toHttpUrl())
                 .build()
             val response = okHttpClient.newCall(request).execute()
             if (response.code == 200) {
@@ -156,7 +156,7 @@ object FoodemptionApiClient {
                     if (numRetries > 0) {
                         val message = e.toString()
                         Log.d("INFO", "Failed with $message. Retrying...")
-                        getPendingRequestsForFoodUuid(context, food_uuid, numRetries-1)
+                        getPendingRequestsForFoodUuid(context, numRetries-1)
                     }
                     else {
                         throw e

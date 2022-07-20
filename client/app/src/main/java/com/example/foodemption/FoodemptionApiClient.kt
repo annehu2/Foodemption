@@ -240,6 +240,35 @@ object FoodemptionApiClient {
         })
     }
 
+    fun consumerMakeRequest(
+        pickUpTime: String,
+        food_uuid: String,
+        context: Context
+    ) {
+        val foodBody = MakeRequestBody(pickUpTime, food_uuid)
+
+        val payload = Json.encodeToString(foodBody)
+        val requestBody = payload.toRequestBody()
+
+        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+
+        val request = Request.Builder()
+            .method("POST", requestBody)
+            .header("Content-Type", "application/json")
+            .addHeader("Authorization", jwtToken)
+            .url("$backendUrl/make_claim".toHttpUrl())
+            .build()
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i("Failure", "fail")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.i("Success", "Success")
+            }
+        })
+    }
+
     fun donorAcceptFood(
         customer_id: String,
         food_id: String,
@@ -276,6 +305,12 @@ object FoodemptionApiClient {
     @Serializable
     data class AcceptFoodBody(
         val customer_uuid: String,
+        val food_uuid: String,
+    )
+
+    @Serializable
+    data class MakeRequestBody(
+        val pickup_time: String,
         val food_uuid: String,
     )
 

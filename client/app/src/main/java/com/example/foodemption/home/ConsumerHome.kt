@@ -52,11 +52,10 @@ fun ConsumerHome(context: Context) {
         val orgName = SharedPreferenceHelper.getOrgName(context)
         Title("Welcome", orgName)
         Spacer(Modifier.size(40.dp))
-        HomeListingsAvailableFood(context, subTitle = "Available Food")
+        HomeListingsAvailableFood(context, subTitle = "Available Food Listings")
         Spacer(Modifier.size(40.dp))
-        //HomeListings(context, subTitle = "Previously Claimed Food", 4)
+        HomeListingsClaimed(context, subTitle = "Previously Claimed Food")
         Spacer(Modifier.size(40.dp))
-        //HomeListings(context, subTitle = "Closest Organizations", 4)
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(
                 onClick = { val intent = Intent(context, MapsConsumerActivity::class.java)

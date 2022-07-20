@@ -100,12 +100,7 @@ fun ConfirmPickUp(context: Context, photoUri: String, title: String, description
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            var pickUpDate = "Proposed Pick Up Date"
-            Text(pickUpDate, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-
-            Spacer(modifier = Modifier.size(20.dp))
-
-            var pickUpTime = "Proposed Pick Up Time"
+            var pickUpDate = "Proposed Pick Up Time"
             Text(pickUpDate, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))

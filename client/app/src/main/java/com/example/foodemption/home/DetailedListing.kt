@@ -24,7 +24,7 @@ import com.example.foodemption.SchedulePickUpActivity
 
 
 @Composable
-fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String, pageCode: Int) {
+fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String, food_uuid: String, pageCode: Int) {
     Box(
         modifier = Modifier
             .width(300.dp)
@@ -85,6 +85,7 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                         intent.putExtra("description", description)
                         intent.putExtra("photoUri", photoUrl)
                         intent.putExtra("title", title)
+                        intent.putExtra("food_uuid", food_uuid)
                     }
                     else {
                         buttonText = "Confirm Pick Up"

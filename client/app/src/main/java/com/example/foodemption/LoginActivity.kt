@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodemption.home.ConsumerHome
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
@@ -143,8 +144,16 @@ fun LoginPage(context: Context) {
                     when (result) {
                         is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {
                             val userJwtToken = result.data.data.jwt
+                            val userOrgName = result.data.data.org
+                            val userType = result.data.data.user_type
                             SharedPreferenceHelper.setUserJWT(context, userJwtToken)
-                            context.startActivity(Intent(context, DonorHome::class.java))
+                            SharedPreferenceHelper.setOrgName(context, userOrgName)
+                            SharedPreferenceHelper.setUserType(context, userType.toString())
+                            if (result.data.data.user_type == 1) {
+                                context.startActivity(Intent(context, ConsumerHome::class.java))
+                            } else {
+                                context.startActivity(Intent(context, DonorHome::class.java))
+                            }
                         }
                         is FoodemptionApiClient.Result.Error -> {
 //                            openDialog.value = true

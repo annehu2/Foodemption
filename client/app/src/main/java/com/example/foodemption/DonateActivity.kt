@@ -42,6 +42,7 @@ import coil.compose.rememberImagePainter
 import com.example.foodemption.camera.CameraView
 import com.example.foodemption.home.DonorHome
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -89,7 +90,7 @@ class DonateActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DonatePage(this, "org name")
+                    DonatePage(this)
                     if (openCamera.value && shouldShowCamera.value) {
                         CameraView(
                             outputDirectory = outputDirectory,
@@ -196,7 +197,7 @@ class DonateActivity : ComponentActivity() {
 }
 
 @Composable
-fun DonatePage(context: Context, orgName: String) {
+fun DonatePage(context: Context) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -219,6 +220,7 @@ fun DonatePage(context: Context, orgName: String) {
                 modifier = Modifier
                     .padding(start = 10.dp)
             ) {
+                val orgName = SharedPreferenceHelper.getOrgName(context)
                 Text(
                     "Donate",
                     fontSize = 36.sp,

@@ -90,7 +90,7 @@ fun SignUpPage(context: Context) {
 
         Box(modifier = Modifier.padding(top = 20.dp))
 
-        val selectedValue = remember { mutableStateOf("") }
+        val selectedValue = remember { mutableStateOf("Restaurant") }
         val label1 = "Restaurant"
         val label2 = "Food Bank"
         Row(
@@ -194,7 +194,11 @@ fun SignUpPage(context: Context) {
                         is FoodemptionApiClient.Result.Success<FoodemptionApiClient.LoginResponseBody> -> {
                             Log.d("INFO", "HERE")
                             val userJwtToken = result.data.data.jwt
+                            val userOrgName = result.data.data.org
+                            val userType = result.data.data.user_type
                             SharedPreferenceHelper.setUserJWT(context, userJwtToken)
+                            SharedPreferenceHelper.setOrgName(context, userOrgName)
+                            SharedPreferenceHelper.setUserType(context, userType.toString())
                             withContext(Dispatchers.Main) {
                                 showMessage(context, "Signup successful.")
                             }

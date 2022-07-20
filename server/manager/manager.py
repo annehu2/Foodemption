@@ -285,7 +285,7 @@ def claim_food(donor_uuid, customer_uuid, food_uuid):
         raise ManagerException("Customer does not exist or user is not verified as customer.")
     customer_id = customer.id
 
-    food = session.query(Foods).filter(Foods.donor_id == donor_id and Foods.uuid == food_uuid)
+    food = session.query(Foods).filter(Foods.donor_id == donor_id and Foods.uuid == food_uuid).first()
     if food != None:
         food.update({Foods.is_claimed: True, Foods.customer_id: customer_id}, synchronize_session = False)
         session.commit()

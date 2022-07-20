@@ -78,21 +78,21 @@ fun ConsumerHome(context: Context) {
                 Text("View Closest Organizations", color = Color.White, fontSize = 18.sp,)
             }
         }
-        Spacer(Modifier.size(60.dp))
-    }
-    Spacer(Modifier.size(20.dp))
+        Spacer(Modifier.size(20.dp))
 
-    Box(Modifier.padding(), Alignment.CenterStart) {
-        OutlinedButton(
-            onClick = { val intent = Intent(context, MainActivity::class.java)
-                context.startActivity(intent)
-                FoodemptionApiClient.logout(context)},
-            colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
-            modifier = Modifier
-                .width(100.dp)
-                .height(40.dp)
-        ) {
-            Text("Logout", color = Color.Red, fontSize = 15.sp,)
+        Box(Modifier.padding(), Alignment.CenterStart) {
+            OutlinedButton(
+                onClick = { val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                    FoodemptionApiClient.logout(context)},
+                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFFFFFFFF)),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(40.dp)
+            ) {
+                Text("Logout", color = Color.Red, fontSize = 15.sp,)
+            }
         }
+        Spacer(Modifier.size(40.dp))
     }
 }

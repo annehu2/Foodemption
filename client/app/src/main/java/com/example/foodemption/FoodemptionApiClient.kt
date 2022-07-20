@@ -336,8 +336,10 @@ object FoodemptionApiClient {
     fun logout(context: Context) {
         val jwtToken = SharedPreferenceHelper.getUserJwt(context)
 
+        val emptyBody = RequestBody.create(null, ByteArray(0))
+
         val request = Request.Builder()
-            .method("POST", null)
+            .method("POST", emptyBody)
             .header("Content-Type", "application/json")
             .addHeader("Authorization", jwtToken)
             .url("$backendUrl/logout".toHttpUrl())

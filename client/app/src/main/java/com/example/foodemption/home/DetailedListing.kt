@@ -75,9 +75,11 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                 Spacer(Modifier.size(5.dp))
                 if (pageCode != 0) {
                     var buttonText = ""
+                    var buttonColor = 0xFF2A3B92
                     var intent: Intent
                     if (pageCode == 1) {
                         buttonText = "Schedule Pick Up"
+                        buttonColor = 0xFF00a79c
                         intent = Intent(context, SchedulePickUpActivity::class.java)
                         intent.putExtra("bestBefore", bestBefore)
                         intent.putExtra("description", description)
@@ -86,6 +88,7 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                     }
                     else {
                         buttonText = "Confirm Pick Up"
+                        buttonColor = 0xFF2A3B92
                         intent = Intent(context, ConfirmPickUpActivity::class.java)
                         intent.putExtra("bestBefore", bestBefore)
                         intent.putExtra("description", description)
@@ -97,7 +100,7 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                         onClick = {
                             context.startActivity(intent)
                         },
-                        colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
+                        colors = ButtonDefaults.textButtonColors(backgroundColor = Color(buttonColor)),
                         modifier = Modifier
                             .width(200.dp)
                             .height(40.dp)

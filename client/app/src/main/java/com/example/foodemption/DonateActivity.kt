@@ -177,14 +177,13 @@ class DonateActivity : ComponentActivity() {
     private fun getPhotoFromFileOrGallery(context: Context) {
         val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
         startActivityForResult(gallery, pickImage)
-
-        shouldShowPhoto.value = true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             photoUri = data?.data!!
+            shouldShowPhoto.value = true
         }
     }
 
@@ -222,7 +221,7 @@ fun DonatePage(context: Context) {
             ) {
                 val orgName = SharedPreferenceHelper.getOrgName(context)
                 Text(
-                    "Donate",
+                    "Donate Food",
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -348,10 +347,6 @@ fun DonatePage(context: Context) {
             style = MaterialTheme.typography.caption,
             modifier = Modifier.fillMaxWidth().padding(end = 40.dp)
         )
-
-        TextButton(onClick = { /* TODO */ }) {
-            Text("Import Saved Food Description", color = Color.Blue)
-        }
 
         val openDialog = remember { mutableStateOf(false) }
 

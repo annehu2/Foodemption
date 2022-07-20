@@ -174,14 +174,24 @@ def retrieve_all_donations(currently_authenticated_user):
 
 @donator_only
 def retrieve_all_pending_claims(current_authenticated_user):
-    food_uuid = request.args.get("food_uuid")
-    pending_claims = list_pending_messages(food_uuid)
-    pending_claims = [ json.loads(pending_claim)['payload'] for pending_claim in pending_claims]
+     try:
+        donor_uuid = currently_authenticated_user["uuid"]
+    except KeyError: 
+        return json.dumps({"message": "Fields are missing!"})
+
+    donations = manager.get_food_by_donor(donor_uuid)
+
+    all_pending_claims = []
+    for food in donations:
+        food_uuid = food.uuid
+        pending_claims = list_pending_messages(food_uuid)
+        pending_claims = [ json.loads(pending_claim)['payload'] for pending_claim in pending_claims]
+        all_pending_claims += pending_claims
     
     return json.dumps({
         "data":[{
             "pickup_time": pending_claim['pickup_time'],
-            "food_uuid": pending_claim['food_uuid'],
-            "customer_uuid": pending_claim['customer_uuid']
-        } for pending_claim in pending_claims]
+            "customer_uuid": pending_claim['customer_uuid'],
+            "data": pending_claim["data"]
+        } for pending_claim in all_pending_claims]
     })

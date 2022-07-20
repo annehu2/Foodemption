@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,23 +68,25 @@ fun HomeListingsPending(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedPendingFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedPendingFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -173,23 +176,25 @@ fun HomeListingsActive(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -279,23 +284,25 @@ fun HomeListingsClaimed(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -384,23 +391,25 @@ fun HomeListingsAvailableFood(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(

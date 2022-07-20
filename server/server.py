@@ -26,6 +26,7 @@ app.add_url_rule('/verify_donor', view_func=donator_controller.verify_donor, met
 app.add_url_rule('/verify_customer', view_func=customer_controller.verify_customer, methods=['POST'])
 app.add_url_rule('/claimed_food', view_func=controller.retrieve_all_claimed_food, methods=['GET'])
 app.add_url_rule('/available_food', view_func=controller.retrieve_all_available_food, methods=['GET'])
+app.add_url_rule('/make_claim', view_func=customer_controller.make_food_claim, methods=['POST'])
 
 app.add_url_rule('/filters_bulk_create', view_func=filter_controller.create_filters, methods=['GET'])
 app.add_url_rule('/filter_intersect', view_func=filter_controller.filter_intersect)

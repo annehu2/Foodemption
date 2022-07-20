@@ -96,13 +96,6 @@ fun DetailedActiveFoodListingsPage(context: Context) {
 
         val coroutineScope = rememberCoroutineScope()
 
-        /*
-        LaunchedEffect(Unit) {
-            thread {
-                donations.value = FoodemptionApiClient.getAllDonationsOld(context)
-            }
-        }*/
-
         LaunchedEffect(Unit) {
             coroutineScope.launch {
                 val result =

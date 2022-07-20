@@ -49,7 +49,7 @@ fun DonorHome(context: Context) {
             .fillMaxHeight()
     ) {
         val orgName = SharedPreferenceHelper.getOrgName(context)
-        Title("Donor", orgName)
+        Title("Welcome Donor", orgName)
         Spacer(Modifier.size(40.dp))
         HomeListingsPending(context, subTitle = "My Pending Requests")
         Spacer(Modifier.size(40.dp))

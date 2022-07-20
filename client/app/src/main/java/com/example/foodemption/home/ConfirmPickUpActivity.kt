@@ -18,64 +18,44 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.example.foodemption.R
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 import java.util.*
 
-class ConfirmPickUpActivity: ComponentActivity() {
+class ConfirmPickUpActivity : ComponentActivity() {
 
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContent {
-        FoodemptionTheme {
-            // A surface container using the 'background' color from the theme
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colors.background
-            ) {
-                ConfirmPickUp(this, "org name")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            FoodemptionTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    val photoUri = intent.getStringExtra("photoUri").toString()
+                    val title = intent.getStringExtra("title").toString()
+                    val description = intent.getStringExtra("description").toString()
+                    val bestBefore = intent.getStringExtra("bestBefore").toString()
+                    ConfirmPickUp(this, photoUri, title, description, bestBefore)
+                }
             }
         }
     }
 }
-}
 
 @Composable
-fun ConfirmPickUp(context: Context, orgName: String) {
+fun ConfirmPickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String) {
 
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val image: Painter = painterResource(id = R.drawable.logo)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 40.dp)
-        ) {
-            Image(
-                painter = image,
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(start = 40.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-            ) {
-                Text(
-                    "Confirm Pick Up",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    orgName,
-                    fontSize = 16.sp,
-                )
-            }
-        }
-
+        Spacer(modifier = Modifier.size(40.dp))
+        Title("Confirm Pick Up", SharedPreferenceHelper.getOrgName(context))
         Spacer(modifier = Modifier.size(20.dp))
 
         Box(
@@ -89,10 +69,9 @@ fun ConfirmPickUp(context: Context, orgName: String) {
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val uploadImg: Painter = painterResource(id = R.drawable.upload)
                 Image(
-                    painter = uploadImg,
-                    contentDescription = ""
+                    painter = rememberImagePainter(photoUri),
+                    contentDescription = null,
                 )
             }
         }
@@ -101,21 +80,22 @@ fun ConfirmPickUp(context: Context, orgName: String) {
 
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(start = 40.dp),
             horizontalAlignment = Alignment.Start
         ) {
 
-            var titleText = "Title of Food"
+            var titleText = title
             Text(titleText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            var descriptionText = "Description of Food"
+            var descriptionText = "Description: $description"
             Text(descriptionText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            var bestBefore = "Best Before Date"
+            var bestBefore = "Best Before: $bestBefore"
             Text(bestBefore, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))

@@ -3,6 +3,7 @@ package com.example.foodemption
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent.getIntent
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
@@ -22,12 +23,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
+import com.example.foodemption.utils.SharedPreferenceHelper
 import java.util.*
+
 
 class SchedulePickUpActivity : ComponentActivity() {
 
@@ -40,7 +44,11 @@ class SchedulePickUpActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SchedulePickUp(this, "org name")
+                    val photoUri = intent.getStringExtra("photoUri").toString()
+                    val title = intent.getStringExtra("title").toString()
+                    val description = intent.getStringExtra("description").toString()
+                    val bestBefore = intent.getStringExtra("bestBefore").toString()
+                    SchedulePickUp(this, photoUri, title, description, bestBefore)
                 }
             }
         }
@@ -49,40 +57,14 @@ class SchedulePickUpActivity : ComponentActivity() {
 
 
 @Composable
-fun SchedulePickUp(context: Context, orgName: String) {
+fun SchedulePickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val image: Painter = painterResource(id = R.drawable.logo)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 40.dp)
-        ) {
-            Image(
-                painter = image,
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(start = 40.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-            ) {
-                Text(
-                    "Schedule Pick Up",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    orgName,
-                    fontSize = 16.sp,
-                )
-            }
-        }
-
+        Spacer(modifier = Modifier.size(40.dp))
+        Title("Schedule Pick Up", SharedPreferenceHelper.getOrgName(context))
         Spacer(modifier = Modifier.size(20.dp))
 
         Box(
@@ -96,27 +78,26 @@ fun SchedulePickUp(context: Context, orgName: String) {
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val uploadImg: Painter = painterResource(id = R.drawable.upload)
                 Image(
-                    painter = uploadImg,
-                    contentDescription = ""
+                    painter = rememberImagePainter(photoUri),
+                    contentDescription = null,
                 )
             }
         }
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        var titleText = "Title of Food"
+        var titleText = title
         Text(titleText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        var descriptionText = "Description of Food"
+        var descriptionText = description
         Text(descriptionText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        var bestBefore = "Date"
+        var bestBefore = "Best Before: $bestBefore"
         Text(bestBefore, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.size(20.dp))

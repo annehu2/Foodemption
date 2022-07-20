@@ -2,10 +2,14 @@
 import jwt,json
  
 from flask import request
-
 from controllers.middleware import authentication_required
-from manager.manager import apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers, create_all_filters, intersect_filter
+from manager.manager import get_food, get_donor,apply_change_set_to_customer_filter, apply_change_set_to_food_filter, get_all_customers, create_all_filters, intersect_filter
 from controllers.middleware import customer_only, donator_only
+from models.app import Foods
+from controllers.customer_controller import get_kafka_message_for_requests
+ 
+from models.app import Donors
+from manager.manager import get_user_session_data
 from utils.redis_accecssor import buffer_notification_msgs
 
 @authentication_required
@@ -45,6 +49,27 @@ def get_device_tokens_base_on_food_filters(food_id):
         
     return json.dumps({"message": "successful！","device_tokens": device_tokens })
 
+def get_donor_info_given_food(food_uuid):
+    device_tokens = []
+    food_object : Foods = get_food(food_uuid)
+    if food_object is None:
+        return json.dumps({"message": "Unsuccessful..said food object doest not exist!", "device_tokens":[]})
+    
+    donor: Donors  = get_donor(food_object.donor_id)
+    
+    user_session_data = get_user_session_data(donor.uuid)
+    
+    if donor is None:
+        return json.dumps({"message": "Unsuccessful..said food object doest not exist!", "device_tokens":[]})
+    if user_session_data.is_logged_in:
+        device_tokens.append(user_session_data.device_token)
+    else:
+        pickup_time = request.args.get("pickup_time")
+        customer_uuid = request.args.get("customer_uuid")
+        buffered_request_object = get_kafka_message_for_requests(customer_uuid, pickup_time, food_uuid)
+        print("Buffering this object ", json.dumps(buffered_request_object))
+
+    return json.dumps({"message":"success!", "device_tokens": device_tokens})
 
 # TODO Implement it such that information regarding filters comes form backend
 def get_kafka_message_for_donations(food_id):

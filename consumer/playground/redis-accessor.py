@@ -17,10 +17,11 @@ new_donation_object = {
     }
 }
 
-r.rpush("USER_NANOID", json.dumps(new_donation_object)) # push list
-
-while (r.llen("USER_NANOID") != 0): # get value one by one
-    object_to_send = json.loads(r.rpop("USER_NANOID"))
-    print(object_to_send)
+r.rpush("USER_NANOIDS", json.dumps(new_donation_object)) # push list
+elements = r.lrange( "USER_NANOIDS", 0, -1 )
+print(elements)
+# while (r.llen("USER_NANOID") != 0): # get value one by one
+#     object_to_send = json.loads(r.rpop("USER_NANOID"))
+#     print(object_to_send)
 
 # r.flushdb() # remove all fr

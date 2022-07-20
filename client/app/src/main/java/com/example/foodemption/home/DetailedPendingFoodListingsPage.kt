@@ -91,49 +91,50 @@ fun DetailedPendingFoodListingsPage(context: Context) {
             }
         }
 
-        val donations =
+        val requests =
             remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
 
         val coroutineScope = rememberCoroutineScope()
 
-        // TODO: Change this to get all pending requests
-//        LaunchedEffect(Unit) {
-//            coroutineScope.launch {
-//                val result =
-//                    try {
-//                        FoodemptionApiClient.getAllDonations(context)
-//                    }
-//                    catch(e: Exception) {
-//                        Log.d("ERROR", e.message.toString())
-//                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
-//                    }
-//                when (result) {
-//                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
-//                        Log.d("INFO", "HERE")
-//                        donations.value = result.data
-//                    }
-//                    is FoodemptionApiClient.Result.Error -> {
-//                        val errorMessage = result.exception.message.toString()
-//                        withContext(Dispatchers.Main) {
-//                            showMessage(context, errorMessage)
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        LaunchedEffect(Unit) {
+            coroutineScope.launch {
+                val result =
+                    try {
+                        FoodemptionApiClient.getAllDonations(context)
+                    }
+                    catch(e: Exception) {
+                        Log.d("ERROR", e.message.toString())
+                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                    }
+                when (result) {
+                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
+                        Log.d("INFO", "HERE")
+                        requests.value = result.data
+                    }
+                    is FoodemptionApiClient.Result.Error -> {
+                        val errorMessage = result.exception.message.toString()
+                        withContext(Dispatchers.Main) {
+                            showMessage(context, errorMessage)
+                        }
+                    }
+                }
+            }
+        }
 
-        val donationsLen = donations.value.size
+        val donationsLen = requests.value.size
         for (i in (donationsLen - 1) downTo 0) {
-            if (!donations.value[i].is_claimed) {
+            if (!requests.value[i].is_claimed) {
                 Spacer(Modifier.size(40.dp))
-                DetailedListing(
+                DetailedRequest(
                     context,
-                    donations.value[i].image_url,
-                    donations.value[i].title,
-                    donations.value[i].best_before,
-                    donations.value[i].description,
-                    donations.value[i].uuid,
-                    2
+                    "Fake PickUp Time",
+                    requests.value[i].image_url,
+                    requests.value[i].title,
+                    requests.value[i].best_before,
+                    requests.value[i].description,
+                    requests.value[i].uuid,
+                    "817c5efb-b6a2-4476-83fc-314802a38c7f",
+                    "org name"
                 )
             }
         }

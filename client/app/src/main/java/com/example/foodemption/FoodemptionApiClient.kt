@@ -137,6 +137,38 @@ object FoodemptionApiClient {
         }
     }
 
+    suspend fun getPendingRequestsForFoodUuid(context: Context, food_uuid: String, numRetries: Int = 5): Result<List<PendingFoodData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/get_pending_claims?food_uuid=$food_uuid".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                try {
+                    val json = response.body.string()
+                    val responseBody = Json.decodeFromString<PendingFoodBody>(json)
+                    Result.Success(responseBody.data)
+                }
+                catch (e: Exception) {
+                    if (numRetries > 0) {
+                        val message = e.toString()
+                        Log.d("INFO", "Failed with $message. Retrying...")
+                        getPendingRequestsForFoodUuid(context, food_uuid, numRetries-1)
+                    }
+                    else {
+                        throw e
+                    }
+                }
+            }
+            else {
+                Result.Error(Exception("User not verified."))
+            }
+        }
+    }
+
     suspend fun processLogin(email: String, password: String, deviceToken: String, numRetries: Int = 5): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
@@ -301,6 +333,19 @@ object FoodemptionApiClient {
     fun convertToBase64(attachment: File): String {
         return Base64.encodeToString(attachment.readBytes(), Base64.DEFAULT)
     }
+
+    @Serializable
+    data class PendingFoodData(
+        val pickup_time: String,
+        val customer_uuid: String,
+        val organization_name: String,
+        val data: DonationsBodyData,
+    )
+
+    @Serializable
+    data class PendingFoodBody(
+        val data: List<PendingFoodData>
+    )
 
     @Serializable
     data class AcceptFoodBody(

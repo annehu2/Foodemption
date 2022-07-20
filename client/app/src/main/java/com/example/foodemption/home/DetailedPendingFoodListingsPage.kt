@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 
-class DetailedActiveFoodListingsPage : ComponentActivity() {
+class DetailedPendingFoodListingsPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -46,7 +46,7 @@ class DetailedActiveFoodListingsPage : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DetailedActiveFoodListingsPage(this)
+                    DetailedPendingFoodListingsPage(this)
                 }
             }
         }
@@ -54,7 +54,7 @@ class DetailedActiveFoodListingsPage : ComponentActivity() {
 }
 
 @Composable
-fun DetailedActiveFoodListingsPage(context: Context) {
+fun DetailedPendingFoodListingsPage(context: Context) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,7 +83,7 @@ fun DetailedActiveFoodListingsPage(context: Context) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "Active Listings",
+                    "Pending Requests",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 10.dp)
@@ -96,30 +96,31 @@ fun DetailedActiveFoodListingsPage(context: Context) {
 
         val coroutineScope = rememberCoroutineScope()
 
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                val result =
-                    try {
-                        FoodemptionApiClient.getAllDonations(context)
-                    }
-                    catch(e: Exception) {
-                        Log.d("ERROR", e.message.toString())
-                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
-                    }
-                when (result) {
-                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
-                        Log.d("INFO", "HERE")
-                        donations.value = result.data
-                    }
-                    is FoodemptionApiClient.Result.Error -> {
-                        val errorMessage = result.exception.message.toString()
-                        withContext(Dispatchers.Main) {
-                            showMessage(context, errorMessage)
-                        }
-                    }
-                }
-            }
-        }
+        // TODO: Change this to get all pending requests
+//        LaunchedEffect(Unit) {
+//            coroutineScope.launch {
+//                val result =
+//                    try {
+//                        FoodemptionApiClient.getAllDonations(context)
+//                    }
+//                    catch(e: Exception) {
+//                        Log.d("ERROR", e.message.toString())
+//                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+//                    }
+//                when (result) {
+//                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
+//                        Log.d("INFO", "HERE")
+//                        donations.value = result.data
+//                    }
+//                    is FoodemptionApiClient.Result.Error -> {
+//                        val errorMessage = result.exception.message.toString()
+//                        withContext(Dispatchers.Main) {
+//                            showMessage(context, errorMessage)
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         val donationsLen = donations.value.size
         for (i in (donationsLen - 1) downTo 0) {
@@ -131,7 +132,7 @@ fun DetailedActiveFoodListingsPage(context: Context) {
                     donations.value[i].title,
                     donations.value[i].best_before,
                     donations.value[i].description,
-                    0
+                    2
                 )
             }
         }

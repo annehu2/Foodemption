@@ -50,7 +50,7 @@ fun ConsumerHome(context: Context) {
             .fillMaxHeight()
     ) {
         val orgName = SharedPreferenceHelper.getOrgName(context)
-        Title("", orgName)
+        Title("Welcome", orgName)
         Spacer(Modifier.size(40.dp))
         HomeListingsAvailableFood(context, subTitle = "Available Food")
         Spacer(Modifier.size(40.dp))

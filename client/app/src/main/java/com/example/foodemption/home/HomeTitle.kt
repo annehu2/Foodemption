@@ -54,7 +54,7 @@ fun Title(name: String, orgName: String) {
             )
         }
         Text(
-            text = "Welcome, $name",
+            text = name,
             textAlign = TextAlign.Start,
             fontSize = 27.sp,
             letterSpacing = 0.sp,

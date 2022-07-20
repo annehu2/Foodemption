@@ -61,6 +61,8 @@
         </activity>
         <activity android:name=".home.DetailedAvailableFoodsPage">
         </activity>
+        <activity android:name=".home.DetailedPendingFoodListingsPage">
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAx1DygeE3mhVgUTGuJloWJPgqGPr-Y0AQ" />

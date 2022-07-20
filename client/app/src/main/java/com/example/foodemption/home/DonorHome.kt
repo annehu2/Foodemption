@@ -51,9 +51,11 @@ fun DonorHome(context: Context) {
         val orgName = SharedPreferenceHelper.getOrgName(context)
         Title("Donor", orgName)
         Spacer(Modifier.size(40.dp))
+        HomeListingsPending(context, subTitle = "My Pending Requests")
+        Spacer(Modifier.size(40.dp))
         HomeListingsActive(context, subTitle = "My Active Food Listings")
         Spacer(Modifier.size(40.dp))
-        HomeListingsClaimed(context, subTitle = "My Claimed Food")
+        HomeListingsClaimed(context, subTitle = "Previously Claimed Food")
         Spacer(Modifier.size(40.dp))
         Box(Modifier.padding(), Alignment.BottomCenter) {
             OutlinedButton(

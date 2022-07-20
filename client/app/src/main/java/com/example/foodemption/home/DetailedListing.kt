@@ -90,11 +90,11 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                     var buttonText = ""
                     var intent: Intent
                     if (pageCode == 1) {
-                        buttonText = "Schedule PickUp"
+                        buttonText = "Schedule Pick Up"
                         intent = Intent(context, SchedulePickUpActivity::class.java)
                     }
                     else {
-                        buttonText = "Confirm PickUp"
+                        buttonText = "Confirm Pick Up"
                         intent = Intent(context, ConfirmPickUpActivity::class.java)
                     }
                     OutlinedButton(

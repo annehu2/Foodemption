@@ -31,14 +31,14 @@ def verify_customer(currently_authenticated_user):
     return "", 200
 
 
-def get_kafka_message_for_requests(customer_uuid, customer_name, pickup_time, food_uuid, food_data):
+def get_kafka_message_for_requests(customer_uuid, organization_name, pickup_time, food_uuid, food_data):
     new_request_object = {
         'message_type': 'Requests',
         'payload':{
             'food_uuid': food_uuid, 
             'data': food_data
             'customer_uuid': customer_uuid,
-            'customer_name': customer_name,
+            'organization_name': organization_name,
             'pickup_time': pickup_time,
             'message': "You have a new food claim request."  
         }
@@ -60,8 +60,8 @@ def make_food_claim(currently_authenticated_user):
         food = get_food(food_uuid)
         if food == None:
             return json.dumps({"message": "Food with given uuid doesn't exist."}), 400
-        cusstomer_name = manager.get_user_object(customer_uuid).organization_name
-        buffer_notification_object = get_kafka_message_for_requests(customer_uuid, customer_name, pickup_time, food_uuid, 
+        organization_name = manager.get_user_object(customer_uuid).organization_name
+        buffer_notification_object = get_kafka_message_for_requests(customer_uuid, organization_name, pickup_time, food_uuid, 
             {   
                 "uuid": food.uuid,
                 "title": food.title,

@@ -191,7 +191,7 @@ def retrieve_all_pending_claims(current_authenticated_user):
     return json.dumps({
         "data":[{
             "pickup_time": pending_claim['pickup_time'],
-            "customer_name": pending_claim['customer_name'],
+            "organization_name": pending_claim['organization_name'],
             "customer_uuid": pending_claim['customer_uuid'],
             "data": pending_claim["data"]
         } for pending_claim in all_pending_claims]

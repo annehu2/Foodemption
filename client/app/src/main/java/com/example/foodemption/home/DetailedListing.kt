@@ -28,7 +28,7 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
     Box(
         modifier = Modifier
             .width(300.dp)
-            .height(119.dp)
+            .height(135.dp)
             .clip(
                 RoundedCornerShape(
                     topStart = 0.dp,
@@ -72,7 +72,6 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                     modifier = Modifier
                         .width(150.dp)
                 )
-                Spacer(Modifier.size(5.dp))
                 if (pageCode != 0) {
                     var buttonText = ""
                     var buttonColor = 0xFF2A3B92
@@ -94,7 +93,7 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                         colors = ButtonDefaults.textButtonColors(backgroundColor = Color(buttonColor)),
                         modifier = Modifier
                             .width(200.dp)
-                            .height(40.dp)
+                            .height(50.dp)
                             .clip(
                                 RoundedCornerShape(
                                     topStart = 9.dp,

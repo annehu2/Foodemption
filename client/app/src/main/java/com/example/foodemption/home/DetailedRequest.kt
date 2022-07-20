@@ -28,7 +28,7 @@ fun DetailedRequest(context: Context, pickUpTime: String, photoUrl: String, titl
     Box(
         modifier = Modifier
             .width(300.dp)
-            .height(119.dp)
+            .height(135.dp)
             .clip(
                 RoundedCornerShape(
                     topStart = 0.dp,

@@ -67,12 +67,17 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAx1DygeE3mhVgUTGuJloWJPgqGPr-Y0AQ" />
         <activity
-            android:name=".MapsActivity"
+            android:name=".maps.MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps">
         </activity>
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".maps.MapsConsumerActivity"
+            android:exported="true"
+            android:label="@string/title_consumer_activity_maps">
+        </activity>
+        <activity
+            android:name=".maps.SplashScreenActivity"
             android:exported="true"
             android:theme="@style/SplashScreen">
         </activity>

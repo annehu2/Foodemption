@@ -9,6 +9,7 @@
     <string name="user_type">user_type</string>
     <string name="user_org_name">user_org_name</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_consumer_activity_maps">MapsActivity</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="save_places">Save Places</string>

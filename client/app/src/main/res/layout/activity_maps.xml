@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     map:layout_constraintHeight_percent="0.65"
-    tools:context=".MapsActivity"
+    tools:context=".maps.MapsActivity"
     map:layout_constraintTop_toTopOf="parent"
     map:layout_constraintStart_toStartOf="parent"/>
 

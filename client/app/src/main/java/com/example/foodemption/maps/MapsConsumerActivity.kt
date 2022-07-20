@@ -1,4 +1,4 @@
-package com.example.foodemption
+package com.example.foodemption.maps
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.foodemption.R
 import com.example.foodemption.databinding.ActivityMapsBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
@@ -36,8 +37,8 @@ import kotlin.random.Random
 private const val TAG = "BasicMapActivity"
 
 private val uw = LatLng(43.47302294446692, -80.54628464593662)
-private val foodBank = LatLng(43.429002515081564, -80.4770191699787)
-private val communityFridge = LatLng(43.45243501375896, -80.4845722706156)
+private val splus = LatLng(43.47276594980127, -80.53735528836131)
+private val proofKitchen = LatLng(43.46382179474564, -80.52847892032257)
 
 private val defaultCameraPosition = CameraPosition.fromLatLngZoom(uw, 11f)
 
@@ -47,7 +48,7 @@ private lateinit var db : DatabaseReference
 private var dataId = ""
 private var defaultMaps = GoogleMap.MAP_TYPE_NORMAL
 
-class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
+class MapsConsumerActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private val viewModel by viewModels<MapsActivityViewModel>()
 
@@ -77,7 +78,7 @@ class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCl
             }
 
             Box(Modifier.fillMaxSize()) {
-                GoogleMapView(
+                GoogleMapView2(
                     modifier = Modifier.matchParentSize(),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
@@ -117,7 +118,8 @@ class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCl
     }
 
     override fun onMapClick(latLng: LatLng) {
-        if(TextUtils.isEmpty(binding.etLongitude.editText?.text.toString()) && TextUtils.isEmpty(binding.etLatitude.editText?.text.toString())){
+        if(TextUtils.isEmpty(binding.etLongitude.editText?.text.toString()) && TextUtils.isEmpty(
+                binding.etLatitude.editText?.text.toString())){
             mMap.addMarker(
                 MarkerOptions().position(latLng).title(getFullyAddress(latLng)).icon(BitmapDescriptorFactory.defaultMarker(
                     Random.nextDouble(0.0,360.0).toFloat())))
@@ -152,7 +154,8 @@ class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCl
     }
     private fun toggleButton() {
         if(TextUtils.isEmpty(dataId)) binding.btnSave.text = getString(R.string.save_places) else binding.btnSave.text = getString(
-            R.string.update_places)
+            R.string.update_places
+        )
     }
 
     private fun updateData(placesData: PlacesData) {
@@ -218,15 +221,15 @@ class MapsActivity  : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCl
 }
 
 @Composable
-fun GoogleMapView(
+fun GoogleMapView2(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
     content: @Composable () -> Unit = {}
 ) {
     val uwState = rememberMarkerState(position = uw)
-    val cfState = rememberMarkerState(position = communityFridge)
-    val fbState = rememberMarkerState(position = foodBank)
+    val cfState = rememberMarkerState(position = proofKitchen)
+    val fbState = rememberMarkerState(position = splus)
     var circleCenter by remember { mutableStateOf(uw) }
     if (uwState.dragState == DragState.END) {
         circleCenter = uwState.position
@@ -268,7 +271,7 @@ fun GoogleMapView(
             }
             MarkerInfoWindowContent(
                 state = cfState,
-                title = "Community Fridge",
+                title = "Proof Kitchen Restaurant",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                 onClick = markerClick,
             ) {
@@ -276,7 +279,7 @@ fun GoogleMapView(
             }
             MarkerInfoWindowContent(
                 state = fbState,
-                title = "Waterloo Food Bank",
+                title = "Shawarma Plus Waterloo",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                 onClick = markerClick,
             ) {

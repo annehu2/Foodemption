@@ -1,4 +1,4 @@
-package com.example.foodemption
+package com.example.foodemption.maps
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

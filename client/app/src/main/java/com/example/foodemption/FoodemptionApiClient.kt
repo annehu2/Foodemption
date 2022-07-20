@@ -137,6 +137,38 @@ object FoodemptionApiClient {
         }
     }
 
+    suspend fun getPendingRequestsForFoodUuid(context: Context, numRetries: Int = 5): Result<List<PendingFoodData>> {
+        return withContext(Dispatchers.IO) {
+            val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+            val request = Request.Builder()
+                .header("Content-Type", "application/json")
+                .addHeader("Authorization", jwtToken)
+                .url("$backendUrl/get_pending_claims".toHttpUrl())
+                .build()
+            val response = okHttpClient.newCall(request).execute()
+            if (response.code == 200) {
+                try {
+                    val json = response.body.string()
+                    val responseBody = Json.decodeFromString<PendingFoodBody>(json)
+                    Result.Success(responseBody.data)
+                }
+                catch (e: Exception) {
+                    if (numRetries > 0) {
+                        val message = e.toString()
+                        Log.d("INFO", "Failed with $message. Retrying...")
+                        getPendingRequestsForFoodUuid(context, numRetries-1)
+                    }
+                    else {
+                        throw e
+                    }
+                }
+            }
+            else {
+                Result.Error(Exception("User not verified."))
+            }
+        }
+    }
+
     suspend fun processLogin(email: String, password: String, deviceToken: String, numRetries: Int = 5): Result<LoginResponseBody> {
         return withContext(Dispatchers.IO) {
             val loginBody = LoginRequestBody(email, password, deviceToken)
@@ -240,6 +272,35 @@ object FoodemptionApiClient {
         })
     }
 
+    fun consumerMakeRequest(
+        pickUpTime: String,
+        food_uuid: String,
+        context: Context
+    ) {
+        val foodBody = MakeRequestBody(pickUpTime, food_uuid)
+
+        val payload = Json.encodeToString(foodBody)
+        val requestBody = payload.toRequestBody()
+
+        val jwtToken = SharedPreferenceHelper.getUserJwt(context)
+
+        val request = Request.Builder()
+            .method("POST", requestBody)
+            .header("Content-Type", "application/json")
+            .addHeader("Authorization", jwtToken)
+            .url("$backendUrl/make_claim".toHttpUrl())
+            .build()
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i("Failure", "fail")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.i("Success", "Success")
+            }
+        })
+    }
+
     fun donorAcceptFood(
         customer_id: String,
         food_id: String,
@@ -274,8 +335,27 @@ object FoodemptionApiClient {
     }
 
     @Serializable
+    data class PendingFoodData(
+        val pickup_time: String,
+        val customer_uuid: String,
+        val organization_name: String,
+        val data: DonationsBodyData,
+    )
+
+    @Serializable
+    data class PendingFoodBody(
+        val data: List<PendingFoodData>
+    )
+
+    @Serializable
     data class AcceptFoodBody(
         val customer_uuid: String,
+        val food_uuid: String,
+    )
+
+    @Serializable
+    data class MakeRequestBody(
+        val pickup_time: String,
         val food_uuid: String,
     )
 

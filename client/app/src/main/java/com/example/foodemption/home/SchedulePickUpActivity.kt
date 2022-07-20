@@ -3,6 +3,7 @@ package com.example.foodemption
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.content.Intent.getIntent
 import android.os.Bundle
 import android.widget.DatePicker
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,6 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.example.foodemption.home.ConsumerHome
+import com.example.foodemption.home.DonorHome
 import com.example.foodemption.home.Title
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
@@ -48,7 +52,8 @@ class SchedulePickUpActivity : ComponentActivity() {
                     val title = intent.getStringExtra("title").toString()
                     val description = intent.getStringExtra("description").toString()
                     val bestBefore = intent.getStringExtra("bestBefore").toString()
-                    SchedulePickUp(this, photoUri, title, description, bestBefore)
+                    val food_uuid = intent.getStringExtra("food_uuid").toString()
+                    SchedulePickUp(this, photoUri, title, description, bestBefore, food_uuid)
                 }
             }
         }
@@ -57,7 +62,7 @@ class SchedulePickUpActivity : ComponentActivity() {
 
 
 @Composable
-fun SchedulePickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String) {
+fun SchedulePickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String, food_uuid: String) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -178,9 +183,16 @@ fun SchedulePickUp(context: Context, photoUri: String, title: String, descriptio
 
         Spacer(modifier = Modifier.size(20.dp))
 
+        val openDialog = remember { mutableStateOf(false) }
+
         OutlinedButton(
             onClick = {
-                /*TODO*/
+                openDialog.value = true
+                FoodemptionApiClient.consumerMakeRequest(
+                    pickUpTime = "${pickUpDate.value} at ${pickUpTime.value}",
+                    food_uuid,
+                    context
+                )
             },
             colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
             modifier = Modifier
@@ -199,7 +211,48 @@ fun SchedulePickUp(context: Context, photoUri: String, title: String, descriptio
                 color = Color.White,
                 fontSize = 20.sp)
         }
+        openAlertPickupBox(
+            context,
+            openDialog,
+            "Success!",
+            "Claim Request was made!"
+        )
     }
+}
+
+@Composable
+fun openAlertPickupBox(
+    context: Context,
+    openDialog: MutableState<Boolean>,
+    title: String,
+    text: String
+): MutableState<Boolean> {
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+                val intent = Intent(context, ConsumerHome::class.java)
+                context.startActivity(intent)
+            },
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = text)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                        val intent = Intent(context, ConsumerHome::class.java)
+                        context.startActivity(intent)
+                    }) {
+                    Text("Ok")
+                }
+            }
+        )
+    }
+    return openDialog
 }
 
 

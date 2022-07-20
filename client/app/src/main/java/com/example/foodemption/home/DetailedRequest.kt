@@ -24,7 +24,7 @@ import com.example.foodemption.SchedulePickUpActivity
 
 
 @Composable
-fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefore: String, description: String, food_uuid: String, pageCode: Int) {
+fun DetailedRequest(context: Context, pickUpTime: String, photoUrl: String, title: String, bestBefore: String, description: String, food_uuid: String, customer_uuid:String, orgName: String) {
     Box(
         modifier = Modifier
             .width(300.dp)
@@ -73,25 +73,20 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                         .width(150.dp)
                 )
                 Spacer(Modifier.size(5.dp))
-                if (pageCode != 0) {
-                    var buttonText = ""
-                    var buttonColor = 0xFF2A3B92
-                    var intent = Intent(context, SchedulePickUpActivity::class.java)
-                    if (pageCode == 1) {
-                        buttonText = "Schedule Pick Up"
-                        buttonColor = 0xFF00a79c
-                        intent.putExtra("bestBefore", bestBefore)
-                        intent.putExtra("description", description)
-                        intent.putExtra("photoUri", photoUrl)
-                        intent.putExtra("title", title)
-                        intent.putExtra("food_uuid", food_uuid)
-                    }
-
+                var intent = Intent(context, ConfirmPickUpActivity::class.java)
+                    intent.putExtra("bestBefore", bestBefore)
+                    intent.putExtra("description", description)
+                    intent.putExtra("photoUri", photoUrl)
+                    intent.putExtra("title", title)
+                    intent.putExtra("customer_uuid", customer_uuid)
+                    intent.putExtra("food_uuid", food_uuid)
+                    intent.putExtra("pickUpTime", pickUpTime)
+                    intent.putExtra("orgName", orgName)
                     OutlinedButton(
                         onClick = {
                             context.startActivity(intent)
                         },
-                        colors = ButtonDefaults.textButtonColors(backgroundColor = Color(buttonColor)),
+                        colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                         modifier = Modifier
                             .width(200.dp)
                             .height(40.dp)
@@ -104,12 +99,9 @@ fun DetailedListing(context: Context, photoUrl: String, title: String, bestBefor
                                 )
                             )
                     ) {
-                        Text(buttonText, color = Color.White)
+                        Text("Confirm Pick Up", color = Color.White)
                     }
                 }
             }
         }
     }
-
-
-}

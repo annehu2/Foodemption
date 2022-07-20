@@ -1,6 +1,7 @@
 package com.example.foodemption.home
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.example.foodemption.FoodemptionApiClient
 import com.example.foodemption.R
+import com.example.foodemption.openAlertPickupBox
 import com.example.foodemption.ui.theme.FoodemptionTheme
 import com.example.foodemption.utils.SharedPreferenceHelper
 import java.util.*
@@ -39,7 +45,11 @@ class ConfirmPickUpActivity : ComponentActivity() {
                     val title = intent.getStringExtra("title").toString()
                     val description = intent.getStringExtra("description").toString()
                     val bestBefore = intent.getStringExtra("bestBefore").toString()
-                    ConfirmPickUp(this, photoUri, title, description, bestBefore)
+                    val pickUpTime = intent.getStringExtra("pickUpTime").toString()
+                    val customer_uuid = intent.getStringExtra("customer_uuid").toString()
+                    val food_uuid = intent.getStringExtra("food_uuid").toString()
+                    val orgName = intent.getStringExtra("orgName").toString()
+                    ConfirmPickUp(this, photoUri, title, description, bestBefore, pickUpTime, customer_uuid, food_uuid, orgName)
                 }
             }
         }
@@ -47,7 +57,7 @@ class ConfirmPickUpActivity : ComponentActivity() {
 }
 
 @Composable
-fun ConfirmPickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String) {
+fun ConfirmPickUp(context: Context, photoUri: String, title: String, description:String, bestBefore: String, pickUpTime: String, customer_uuid:String, food_uuid:String, orgName:String) {
 
     Column(
         modifier = Modifier
@@ -100,24 +110,26 @@ fun ConfirmPickUp(context: Context, photoUri: String, title: String, description
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            var pickUpDate = "Proposed Pick Up Date"
+            var pickUpDate = "Pick Up Time: $pickUpTime"
             Text(pickUpDate, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            var pickUpTime = "Proposed Pick Up Time"
-            Text(pickUpDate, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-
-            Spacer(modifier = Modifier.size(20.dp))
-
-            var pickUpOrgName = "Proposed Pick Up Org"
+            var pickUpOrgName = "Pick Up By: $orgName"
             Text(pickUpOrgName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.size(20.dp))
 
+            val openDialog = remember { mutableStateOf(false) }
+
             OutlinedButton(
                 onClick = {
-                    /*TODO*/
+                    openDialog.value = true
+                    FoodemptionApiClient.donorAcceptFood(
+                        customer_uuid,
+                        food_uuid,
+                        context
+                    )
                 },
                 colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xFF2A3B92)),
                 modifier = Modifier
@@ -138,6 +150,47 @@ fun ConfirmPickUp(context: Context, photoUri: String, title: String, description
                     fontSize = 20.sp
                 )
             }
+            openAlertConfirm(
+                context,
+                openDialog,
+                "Success!",
+                "Pick up is Confirmed! $orgName will be on their way soon!"
+            )
         }
     }
+}
+
+@Composable
+fun openAlertConfirm(
+    context: Context,
+    openDialog: MutableState<Boolean>,
+    title: String,
+    text: String
+): MutableState<Boolean> {
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+                val intent = Intent(context, DonorHome::class.java)
+                context.startActivity(intent)
+            },
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = text)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                        val intent = Intent(context, DonorHome::class.java)
+                        context.startActivity(intent)
+                    }) {
+                    Text("Ok")
+                }
+            }
+        )
+    }
+    return openDialog
 }

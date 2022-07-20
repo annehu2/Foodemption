@@ -74,7 +74,7 @@ fun DonorHome(context: Context) {
                         )
                     )
             ) {
-                Text("View Closest Organisations", color = Color.White, fontSize = 18.sp,)
+                Text("View Closest Organizations", color = Color.White, fontSize = 18.sp,)
             }
         }
         Spacer(Modifier.size(20.dp))

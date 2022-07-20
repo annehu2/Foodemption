@@ -125,6 +125,7 @@ fun DetailedAvailableFoodsPage(context: Context) {
                 donations.value[i].title,
                 donations.value[i].best_before,
                 donations.value[i].description,
+                donations.value[i].uuid,
                 1
             )
         }

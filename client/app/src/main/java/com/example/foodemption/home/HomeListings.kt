@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,75 +68,75 @@ fun HomeListingsPending(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedPendingFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedPendingFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            val donations =
-                remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+            val requests =
+                remember { mutableStateOf(emptyList<FoodemptionApiClient.PendingFoodData>()) }
 
-            // TODO: Change this to get all pending foods
-//            val coroutineScope = rememberCoroutineScope()
-//            LaunchedEffect(Unit) {
-//                coroutineScope.launch {
-//                    val result =
-//                        try {
-//                            FoodemptionApiClient.getAllDonations(context)
-//                        }
-//                        catch(e: Exception) {
-//                            Log.d("ERROR", e.message.toString())
-//                            FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
-//                        }
-//                    when (result) {
-//                        is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
-//                            donations.value = result.data
-//                        }
-//                        is FoodemptionApiClient.Result.Error -> {
-//                            val errorMessage = result.exception.message.toString()
-//                            withContext(Dispatchers.Main) {
-//                                showMessage(context, errorMessage)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-            val donationsLen = donations.value.size
-            for (i in (donationsLen - 1) downTo 0) {
-                if (!donations.value[i].is_claimed) {
-                    Box(
-                        modifier = Modifier
-                            .width(112.dp)
-                            .height(115.dp)
-                            .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+            val coroutineScope = rememberCoroutineScope()
 
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(donations.value[i].image_url),
-                            contentDescription = "",
-                            alignment = Alignment.TopStart,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    val result =
+                        try {
+                            FoodemptionApiClient.getPendingRequestsForFoodUuid(context)
+                        } catch (e: Exception) {
+                            Log.d("ERROR", e.message.toString())
+                            FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                        }
+                    when (result) {
+                        is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.PendingFoodData>> -> {
+                            Log.d("INFO", "HERE")
+                            requests.value = result.data
+                        }
+                        is FoodemptionApiClient.Result.Error -> {
+                            val errorMessage = result.exception.message.toString()
+                            withContext(Dispatchers.Main) {
+                                showMessage(context, errorMessage)
+                            }
+                        }
                     }
+                }
+            }
+            val requestLen = requests.value.size
+            for (i in (requestLen - 1) downTo 0) {
+                Box(
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(115.dp)
+                        .padding(start = 0.dp, top = 40.dp, end = 0.dp, bottom = 0.dp)
+
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(requests.value[i].data.image_url),
+                        contentDescription = "",
+                        alignment = Alignment.TopStart,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
                 }
             }
         }
@@ -173,23 +174,25 @@ fun HomeListingsActive(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedActiveFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -205,8 +208,7 @@ fun HomeListingsActive(context: Context, subTitle: String) {
                     val result =
                         try {
                             FoodemptionApiClient.getAllDonations(context)
-                        }
-                        catch(e: Exception) {
+                        } catch (e: Exception) {
                             Log.d("ERROR", e.message.toString())
                             FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                         }
@@ -279,23 +281,25 @@ fun HomeListingsClaimed(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedClaimedFoodListingsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -311,8 +315,7 @@ fun HomeListingsClaimed(context: Context, subTitle: String) {
                     val result =
                         try {
                             FoodemptionApiClient.getAllDonations(context)
-                        }
-                        catch(e: Exception) {
+                        } catch (e: Exception) {
                             Log.d("ERROR", e.message.toString())
                             FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                         }
@@ -384,23 +387,25 @@ fun HomeListingsAvailableFood(context: Context, subTitle: String) {
                     .alpha(1f),
                 color = Color(red = 0f, green = 0f, blue = 0f, alpha = 1f),
             )
-            OutlinedButton(
-                onClick = {
-                    val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
-                    context.startActivity(intent)
-                },
-                colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
-                modifier = Modifier
-                    .width(170.dp)
-                    .height(30.dp)
-                    .padding(start = 100.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            ) {
-                val image: Painter = painterResource(id = R.drawable.greyarrow)
-                Image(
-                    painter = image,
-                    contentDescription = "",
-                    alignment = Alignment.TopStart,
-                )
+            Box(Modifier.fillMaxSize()) {
+                OutlinedButton(
+                    onClick = {
+                        val intent = Intent(context, DetailedAvailableFoodsPage::class.java)
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color(0xffFFFFFF)),
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val image: Painter = painterResource(id = R.drawable.greyarrow)
+                    Image(
+                        painter = image,
+                        contentDescription = "",
+                        alignment = Alignment.TopEnd,
+                    )
+                }
             }
         }
         Row(
@@ -416,8 +421,7 @@ fun HomeListingsAvailableFood(context: Context, subTitle: String) {
                     val result =
                         try {
                             FoodemptionApiClient.getAllAvailableFood(context)
-                        }
-                        catch(e: Exception) {
+                        } catch (e: Exception) {
                             Log.d("ERROR", e.message.toString())
                             FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
                         }

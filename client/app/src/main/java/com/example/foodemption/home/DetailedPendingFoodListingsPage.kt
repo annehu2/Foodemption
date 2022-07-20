@@ -91,50 +91,50 @@ fun DetailedPendingFoodListingsPage(context: Context) {
             }
         }
 
-        val donations =
-            remember { mutableStateOf(emptyList<FoodemptionApiClient.DonationsBodyData>()) }
+        val requests =
+            remember { mutableStateOf(emptyList<FoodemptionApiClient.PendingFoodData>()) }
 
         val coroutineScope = rememberCoroutineScope()
 
-        // TODO: Change this to get all pending requests
-//        LaunchedEffect(Unit) {
-//            coroutineScope.launch {
-//                val result =
-//                    try {
-//                        FoodemptionApiClient.getAllDonations(context)
-//                    }
-//                    catch(e: Exception) {
-//                        Log.d("ERROR", e.message.toString())
-//                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
-//                    }
-//                when (result) {
-//                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.DonationsBodyData>> -> {
-//                        Log.d("INFO", "HERE")
-//                        donations.value = result.data
-//                    }
-//                    is FoodemptionApiClient.Result.Error -> {
-//                        val errorMessage = result.exception.message.toString()
-//                        withContext(Dispatchers.Main) {
-//                            showMessage(context, errorMessage)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-        val donationsLen = donations.value.size
-        for (i in (donationsLen - 1) downTo 0) {
-            if (!donations.value[i].is_claimed) {
-                Spacer(Modifier.size(40.dp))
-                DetailedListing(
-                    context,
-                    donations.value[i].image_url,
-                    donations.value[i].title,
-                    donations.value[i].best_before,
-                    donations.value[i].description,
-                    2
-                )
+        LaunchedEffect(Unit) {
+            coroutineScope.launch {
+                val result =
+                    try {
+                        FoodemptionApiClient.getPendingRequestsForFoodUuid(context)
+                    }
+                    catch(e: Exception) {
+                        Log.d("ERROR", e.message.toString())
+                        FoodemptionApiClient.Result.Error(Exception("Could not connect to server."))
+                    }
+                when (result) {
+                    is FoodemptionApiClient.Result.Success<List<FoodemptionApiClient.PendingFoodData>> -> {
+                        Log.d("INFO", "HERE")
+                        requests.value = result.data
+                    }
+                    is FoodemptionApiClient.Result.Error -> {
+                        val errorMessage = result.exception.message.toString()
+                        withContext(Dispatchers.Main) {
+                            showMessage(context, errorMessage)
+                        }
+                    }
+                }
             }
+        }
+
+        val requestsLen = requests.value.size
+        for (i in (requestsLen - 1) downTo 0) {
+            Spacer(Modifier.size(40.dp))
+            DetailedRequest(
+                context,
+                requests.value[i].pickup_time,
+                requests.value[i].data.image_url,
+                requests.value[i].data.title,
+                requests.value[i].data.best_before,
+                requests.value[i].data.description,
+                requests.value[i].data.uuid,
+                requests.value[i].customer_uuid,
+                requests.value[i].organization_name,
+            )
         }
         Spacer(Modifier.size(60.dp))
     }

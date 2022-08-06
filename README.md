@@ -1,4 +1,4 @@
-# cs446-Foodemption!
+# Foodemption!
 
 # Android Jetpack Compose App
 1. Make sure to open the client folder in Android Studio Code (not the entire repo)
